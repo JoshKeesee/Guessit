@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="An online quiz game"
+    />
+    <title><%= appName %> - An online quiz game</title>
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+  </head>
+  <body>
+    <div id="container">
+        <%- include('./components/header.html') %>
+        <div id="content">
+            <div id="about">
+                <h2>About</h2>
+                <p>
+                    This is a simple online quiz game. You can play with your friends or join a game with other players.
+                </p>
+            </div>
+            <div id="features">
+                <h2>Features</h2>
+                <ul>
+                    <li>Play with friends</li>
+                    <li>Join a game with other players</li>
+                    <li>Leaderboard</li>
+                </ul>
+            </div>
+            <div id="contact">
+                <h2>Contact</h2>
+                <p>
+                    If you have any questions or feedback, please contact us at
+                    <a href="mailto:<%= contactEmail %>" target="_blank">
+                      <%= contactEmail %>
+                    </a>.
+                </p>
+            </div>
+          </div>
+        </div>
+        <%- include('./components/footer.html') %>
+    </div>
+  </body>
+</html>
