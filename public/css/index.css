@@ -377,8 +377,9 @@
 #section.accent {
   color: #fff;
   background-image: linear-gradient(
+    to top,
     rgba(var(--primary-color-rgb), 0.5),
-    rgba(var(--primary-color-rgb), 0.5)
+    rgba(var(--primary-color-rgb), 0.8)
   );
 }
 
