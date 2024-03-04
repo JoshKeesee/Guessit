@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="An online quiz game"
+    />
+    <title><%= appName %> - <%= title %></title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/404.css" />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Oxanium:wght@200..800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="container">
+        <%- include('./components/header.html') %>
+        <div id="content">
+            <div id="box" class="not-found">
+                <h1>404</h1>
+                <h2>Not Found</h2>
+                <p>
+                    Oops! This is not the page you're looking for <br>
+                    <a href="javascript:history.back()">Go Back</a>
+                </p>
+            </div>
+        </div>
+        <%- include('./components/footer.html') %>
+    </div>
+  </body>
+</html>

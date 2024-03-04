@@ -1,0 +1,19 @@
+#box.not-found {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: calc(100vh - var(--footer-height));
+  min-height: 400px;
+}
+
+#box.not-found h1 {
+  font-size: 100px;
+}
+
+#box.not-found p {
+  text-align: center;
+  line-height: 2;
+}

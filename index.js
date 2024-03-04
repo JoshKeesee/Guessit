@@ -18,19 +18,32 @@ app.set("views", __dirname + "/public/views");
 
 app.use(express.static(__dirname + "/public"));
 
-app.get("/", (req, res) => res.render("index", { ...renderData, title: "An online quiz game show", homepage: true }));
-app.get("/login", (req, res) => res.render("auth", {
-  ...renderData,
-  title: "Login",
-  newUser: false,
-  buttons: false,
-}));
-app.get("/signup", (req, res) => res.render("auth", {
-  ...renderData,
-  title: "Sign Up",
-  newUser: true,
-  buttons: false,
-}));
+app.get("/", (req, res) =>
+  res.render("index", {
+    ...renderData,
+    title: "An online quiz game show",
+    homepage: true,
+  }),
+);
+app.get("/login", (req, res) =>
+  res.render("auth", {
+    ...renderData,
+    title: "Login",
+    newUser: false,
+    buttons: false,
+  }),
+);
+app.get("/signup", (req, res) =>
+  res.render("auth", {
+    ...renderData,
+    title: "Sign Up",
+    newUser: true,
+    buttons: false,
+  }),
+);
+app.use("*", (req, res) =>
+  res.render("404", { ...renderData, title: "Not found", buttons: false }),
+);
 
 io.use(auth);
 
