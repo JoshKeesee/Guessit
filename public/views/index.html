@@ -6,9 +6,10 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="An online quiz game"
+      content="An online quiz game show"
     />
-    <title><%= appName %> - An online quiz application</title>
+    <title><%= appName %> - <%= title %></title>
+    <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/index.css" />
     <link rel="icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,7 +63,6 @@
         </div>
         <%- include('./components/footer.html') %>
     </div>
-    <script src="socket.io/socket.io.js"></script>
     <script src="js/index.js"></script>
   </body>
 </html>

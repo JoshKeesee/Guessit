@@ -1,5 +1,3 @@
-const socket = io();
-
 const menu = document.querySelector("#menu");
 const menuBtn = document.querySelector("#menu-btn");
 const menuExit = document.querySelector("#menu-btn.exit");
