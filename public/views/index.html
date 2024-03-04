@@ -1,21 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="An online quiz game show"
-    />
-    <title><%= appName %> - <%= title %></title>
-    <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/index.css" />
-    <link rel="icon" href="favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Oxanium:wght@200..800&display=swap" rel="stylesheet">
-  </head>
+  <%- include('./components/head.html') %>
   <body>
     <div id="container">
         <%- include('./components/header.html') %>
@@ -63,6 +48,5 @@
         </div>
         <%- include('./components/footer.html') %>
     </div>
-    <script src="js/index.js"></script>
   </body>
 </html>

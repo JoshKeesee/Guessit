@@ -1,49 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="An online quiz game"
-    />
-    <title><%= appName %> - <%= title %></title>
-    <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/auth.css" />
-    <link rel="icon" href="favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Oxanium:wght@200..800&display=swap" rel="stylesheet">
-  </head>
+  <%- include('./components/head.html') %>
   <body>
     <div id="container">
         <%- include('./components/header.html') %>
         <div id="content">
-          <div id="auth">
-            <div id="box" class="auth">
-              <h1><%= title %></h1>
-              <form id="auth-form" action="/auth" method="post">
-                <% if (newUser) { %>
-                  <input type="text" name="username" placeholder="Username" required autocomplete="username" />
-                <% } %>
-                <input type="email" name="email" placeholder="<%= newUser ? 'Email' : 'Username or Email' %>" required autocomplete="username" />
-                <input type="password" name="password" placeholder="Password" required autocomplete="<%= newUser ? 'new-password' : 'current-password' %>" />
-                <% if (newUser) { %>
-                  <input type="password" name="confirm" placeholder="Confirm Password" required />
-                <% } %>
-                <button type="submit" class="btn primary submit"><%= title %></button>
-              </form>
-              <p>
-                <%= newUser ? "Already have" : "Don't have" %> an account?
-                <a href="/<%= newUser ? "login" : "signup" %>"><%= newUser ? "Login" : "Sign Up" %></a>
-              </p>
-            </div>
+          <div id="box" class="auth">
+            <h1><%= title %></h1>
+            <form id="auth-form" action="/<%= newUser ? 'signup' : 'login' %>" method="post">
+              <input type="text" name="username" placeholder="Username" required autocomplete="username" autofocus />
+              <div id="username-error" class="error"></div>
+              <% if (newUser) { %>
+                <input type="email" name="email" placeholder="<%= newUser ? 'Email' : 'Username or Email' %>" autocomplete="email" required />
+                <div id="email-error" class="error"></div>
+              <% } %>
+              <input type="password" name="password" placeholder="Password" required autocomplete="<%= newUser ? 'new-password' : 'current-password' %>" />
+              <div id="password-error" class="error"></div>
+              <% if (newUser) { %>
+                <input type="password" name="confirm" placeholder="Confirm Password" required />
+                <div id="confirm-error" class="error"></div>
+              <% } %>
+              <button type="submit" class="btn primary submit"><%= title %></button>
+            </form>
+            <p>
+              <%= newUser ? "Already have" : "Don't have" %> an account?
+              <a href="/<%= newUser ? "login" : "signup" %>"><%= newUser ? "Login" : "Sign Up" %></a>
+            </p>
           </div>
         </div>
         <%- include('./components/footer.html') %>
     </div>
-    <script src="socket.io/socket.io.js"></script>
     <script src="js/auth.js"></script>
   </body>
 </html>
