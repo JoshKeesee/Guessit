@@ -235,6 +235,8 @@ html:has(#header #bar):root {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  height: fit-content;
+  margin-top: 10px;
 }
 
 #footer {
@@ -583,6 +585,10 @@ html:has(#header #bar):root {
 
   #header #menu-btn {
     display: flex;
+  }
+
+  #header #title {
+    margin-top: 5px;
   }
 
   #menu #menu-btn.exit {

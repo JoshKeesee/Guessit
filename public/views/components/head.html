@@ -7,15 +7,13 @@
         content="An online quiz game show"
     />
     <title><%= appName %> - <%= title %></title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="css/main.css" />
-    <% if (styles) { %>
-        <% styles.forEach(style => { %>
-            <link rel="stylesheet" href="<%= style %>" />
-        <% }) %>
-    <% } %>
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <% styles.forEach(style => { %>
+        <link rel="stylesheet" href="<%= style %>" />
+    <% }) %>
     <link rel="icon" href="icon.png" />
-    <script src="socket.io/socket.io.js"></script>
-    <script src="js/menu.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/menu.js"></script>
 </head>

@@ -14,7 +14,6 @@ const renderData = {
   bar: false,
   search: false,
   styles: [
-    "css/main.css",
     "https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Oxanium:wght@200..800&display=swap",
   ],
 };
@@ -55,7 +54,7 @@ app.get("/", (req, res) => {
     homepage: true,
     styles: [
       ...renderData.styles,
-      "css/index.css",
+      "/css/index.css",
     ],
   });
 });
@@ -67,7 +66,7 @@ app.get("/login", (req, res) =>
     buttons: false,
     styles: [
       ...renderData.styles,
-      "css/auth.css",
+      "/css/auth.css",
     ],
   }),
 );
@@ -79,7 +78,7 @@ app.get("/signup", (req, res) =>
     buttons: false,
     styles: [
       ...renderData.styles,
-      "css/auth.css",
+      "/css/auth.css",
     ],
   }),
 );
@@ -155,7 +154,7 @@ app.get("/dashboard", (req, res) => {
     packs,
     styles: [
       ...renderData.styles,
-      "css/dashboard.css",
+      "/css/dashboard.css",
     ],
   });
 });
@@ -166,7 +165,7 @@ app.use("*", (req, res) =>
     buttons: false,
     styles: [
       ...renderData.styles,
-      "css/404.css",
+      "/css/404.css",
     ],
   }),
 );

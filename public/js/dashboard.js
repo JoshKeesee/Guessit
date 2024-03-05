@@ -14,6 +14,16 @@ const switchTab = (tab) => {
     c.classList.add("active");
 };
 
+const updatePacks = () => {
+    const packs = document.querySelectorAll("#pack");
+    packs.forEach((pack) => {
+        const id = pack.dataset.id;
+        pack.onclick = () => {
+            window.location.href = `pack/${id}`;
+        };
+    });
+};
+
 tabs.forEach((e) => {
     e.addEventListener("click", () => switchTab(e.dataset.tab));
 });
@@ -22,4 +32,5 @@ window.onload = () => {
     const url = new URL(window.location.href);
     const tab = url.searchParams.get("tab");
     switchTab(tab || "home");
+    updatePacks();
 };

@@ -3,6 +3,7 @@
     display: flex;
     width: 100%;
     margin: 0 auto;
+    max-width: 1400px;
 }
 
 .content {
@@ -40,51 +41,55 @@
     margin-bottom: 20px;
 }
 
-.pack {
+#pack {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 20px 0;
     padding: 15px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     background-color: #fff;
+    text-decoration: none;
+    outline: 2px solid transparent;
+    cursor: pointer;
     transition: all 0.3s;
 }
 
-.pack:hover {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+#pack:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    outline: 2px solid var(--primary-color);
 }
 
-.pack img {
+#pack img {
     width: 80px;
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 10px;
 }
 
-.pack .info {
+#pack .info {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-.pack .info .text {
+#pack .info .text {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.pack .info h2 {
+#pack .info h2 {
     font-size: 24px;
 }
 
-.pack .info p {
+#pack .info p {
     font-size: 16px;
     color: #666;
 }
 
-.pack .btns {
+#pack .btns {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -98,5 +103,21 @@
     .empty img {
         width: 300px;
         height: 300px;
+    }
+
+    #pack {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    #pack #divider {
+        display: none;
+    }
+
+    #pack .btns {
+        justify-content: space-between;
+        width: 100%;
+        gap: 0;
     }
 }
