@@ -17,3 +17,9 @@ const switchTab = (tab) => {
 tabs.forEach((e) => {
     e.addEventListener("click", () => switchTab(e.dataset.tab));
 });
+
+window.onload = () => {
+    const url = new URL(window.location.href);
+    const tab = url.searchParams.get("tab");
+    switchTab(tab || "home");
+};

@@ -7,6 +7,11 @@
 
 .content {
     width: 100%;
+    display: none;
+}
+
+.content.active {
+    display: block;
 }
 
 .empty {

@@ -145,7 +145,6 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 app.get("/dashboard", (req, res) => {
-  const tab = req.query.tab || "home";
   const packs = db.get("packs").filter((pack) => pack.author == req.session.user.id);
   res.render("dashboard", {
     ...renderData,
@@ -153,7 +152,6 @@ app.get("/dashboard", (req, res) => {
     user: req.session.user,
     bar: true,
     search: true,
-    tab,
     packs,
     styles: [
       ...renderData.styles,
