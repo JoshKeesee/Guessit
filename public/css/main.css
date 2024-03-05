@@ -95,9 +95,10 @@ html:has(#header #bar):root {
 }
 
 #header:has(#bar) {
+  position: fixed;
   background: #f0f0f0;
-  backdrop-filter: blur(10px);
   border-bottom: 2px solid #ddd;
+  box-shadow: 0 0 10px rgba(100, 100, 100, 0.1);
 }
 
 #header #bar {
@@ -290,11 +291,27 @@ html:has(#header #bar):root {
   transition: color 0.3s ease;
 }
 
-.btn:not(.primary):not(.secondary):not(.showy):hover {
+.btn.bg {
+  transition: all 0.3s ease;
+}
+
+.btn.bg:hover {
+  background: rgba(100, 100, 100, 0.1);
+}
+
+.tab.active {
+  transition: filter 0.3s ease;
+}
+
+.tab.active:hover {
+  filter: brightness(120%);
+}
+
+.btn.default:hover, .tab.active {
   color: var(--primary-color);
 }
 
-.btn:not(.primary):not(.secondary):not(.showy)::before {
+.btn.default::before, .tab.active::before {
   content: "";
   position: absolute;
   bottom: 2px;
@@ -309,7 +326,7 @@ html:has(#header #bar):root {
   transition: transform 0.3s ease;
 }
 
-.btn:not(.primary):not(.secondary):not(.showy):hover::before {
+.btn.default:hover::before, .tab.active::before {
   transform: scaleX(1);
   transform-origin: left;
 }
@@ -345,6 +362,8 @@ html:has(#header #bar):root {
 .btn.secondary {
   position: relative;
   overflow: hidden;
+  z-index: 1;
+  font-family: sans-serif;
 }
 
 .btn.secondary:hover {
@@ -437,9 +456,38 @@ html:has(#header #bar):root {
   padding: 15px 40px;
 }
 
+.btn.success {
+  background-color: var(--success-color);
+  color: var(--white-color);
+  transition: all 0.3s ease;
+}
+
+.btn.success:hover {
+  background-color: #218838;
+}
+
+.btn.success.pushable {
+  background-color: var(--success-color);
+  box-shadow: 0 4px 0 #218838;
+  transition: all 0.3s ease;
+}
+
+.btn.success.pushable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #218838;
+  transition: all 0.3s ease;
+}
+
+.btn.success.pushable:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #218838;
+  transition: all 0.05s ease !important;
+}
+
 .btn.danger {
   background-color: var(--danger-color);
   color: var(--white-color);
+  transition: all 0.3s ease;
 }
 
 .btn.danger:hover {

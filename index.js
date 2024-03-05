@@ -20,6 +20,7 @@ const renderData = {
 };
 
 if (!db.get("users")) db.set("users", []);
+if (!db.get("packs")) db.set("packs", []);
 
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
@@ -143,19 +144,23 @@ app.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/");
 });
-app.get("/dashboard", (req, res) =>
+app.get("/dashboard", (req, res) => {
+  const tab = req.query.tab || "home";
+  const packs = db.get("packs").filter((pack) => pack.author == req.session.user.id);
   res.render("dashboard", {
     ...renderData,
     title: "Dashboard",
     user: req.session.user,
     bar: true,
     search: true,
+    tab,
+    packs,
     styles: [
       ...renderData.styles,
       "css/dashboard.css",
     ],
-  }),
-);
+  });
+});
 app.use("*", (req, res) =>
   res.render("404", {
     ...renderData,
