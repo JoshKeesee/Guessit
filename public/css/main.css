@@ -6,7 +6,7 @@
   -webkit-touch-callout: none;
 }
 
-:root {
+html:root {
   --header-height: 60px;
   --footer-height: 100px;
   --primary-color: #007bff;
@@ -37,6 +37,24 @@ a:hover {
   color: var(--primary-color-dark);
 }
 
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  padding: 10px;
+  border: 1px solid #ddd;
+  outline: 2px solid transparent;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: all 0.1s ease;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus {
+  border-color: transparent;
+  outline: 2px solid var(--primary-color);
+}
+
 #container {
   position: relative;
   width: 100%;
@@ -63,24 +81,96 @@ a:hover {
   left: 0;
   z-index: 10;
   width: 100%;
+  --header-height: inherit;
   height: var(--header-height);
   color: var(--black-color);
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: auto 1fr;
   padding: 0 20px;
   user-select: none;
+}
+
+html:has(#header #bar):root {
+  --header-height: 120px;
+}
+
+#header:has(#bar) {
+  background: #f0f0f0;
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #ddd;
+}
+
+#header #bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+#header #search {
+  margin-top: auto;
+  margin-bottom: auto;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  height: max-content;
+  background: var(--white-color);
+  border: 1px solid #ddd;
+  outline: 2px solid transparent;
+  border-radius: 5px;
+  min-width: 300px;
+  margin-left: 10px;
+  transition: all 0.3s ease;
+}
+
+#header #search:has(input:focus) {
+  border-color: transparent;
+  outline: 2px solid var(--primary-color);
+}
+
+#header #search input {
+  width: 100%;
+  padding: 5px;
+  border: none;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+#header #search input:focus {
+  outline: none;
+}
+
+#header #search-btn {
+  background: var(--primary-color);
+  color: var(--white-color);
+  cursor: pointer;
+  width: 40px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+#header #search-btn:hover {
+  filter: brightness(120%);
+}
+
+#header #search svg {
+  width: 15px;
+  fill: currentColor;
 }
 
 #header #menu {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 #header #menu-fade {
   position: fixed;
   top: 0;
-  bottom: -80%;
+  bottom: 0;
   left: 0;
   right: 0;
   background: rgba(0, 0, 0, 0.9);
@@ -90,21 +180,29 @@ a:hover {
 }
 
 #header #menu-btn {
-  position: relative;
   display: none;
-  flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+#header #menu-btn svg {
+  fill: currentColor;
+  width: 30px;
+  height: 30px;
+  transition: all 0.3s ease;
+}
+
+#header #menu-btn #menu-svg {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 30px;
   height: 30px;
   cursor: pointer;
 }
 
-#header #menu-btn svg {
-  fill: currentColor;
-  transition: all 0.3s ease;
-}
-
-#header #menu-btn::before {
+#header #menu-btn #menu-svg::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -119,11 +217,11 @@ a:hover {
   transition: all 0.15s ease;
 }
 
-#header #menu-btn:hover {
+#header #menu-btn #menu-svg:hover {
   color: #555;
 }
 
-#header #menu-btn:hover::before {
+#header #menu-btn #menu-svg:hover::before {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
@@ -132,8 +230,10 @@ a:hover {
   font-size: 35px;
   font-weight: 800;
   margin-left: 10px;
-  margin-right: auto;
   font-family: "Oxanium", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 #footer {
@@ -190,11 +290,11 @@ a:hover {
   transition: color 0.3s ease;
 }
 
-.btn:hover {
+.btn:not(.primary):not(.secondary):not(.showy):hover {
   color: var(--primary-color);
 }
 
-.btn:not(.primary .showy)::before {
+.btn:not(.primary):not(.secondary):not(.showy)::before {
   content: "";
   position: absolute;
   bottom: 2px;
@@ -209,7 +309,7 @@ a:hover {
   transition: transform 0.3s ease;
 }
 
-.btn:not(.primary):hover::before {
+.btn:not(.primary):not(.secondary):not(.showy):hover::before {
   transform: scaleX(1);
   transform-origin: left;
 }
@@ -239,7 +339,68 @@ a:hover {
 .btn.primary:active {
   transform: translateY(2px);
   box-shadow: 0 2px 0 var(--primary-color-dark);
-  transition: all 0.05s ease;
+  transition: all 0.05s ease !important;
+}
+
+.btn.secondary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn.secondary:hover {
+  color: var(--white-color);
+}
+
+.btn.secondary .bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  border: 3px solid transparent;
+  border-radius: inherit;
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  transition: all 0.3s ease;
+}
+
+.btn.secondary .bg::before, .btn.secondary::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  transform: translate(-50%, -50%) rotate(0deg);
+  width: 200%;
+  aspect-ratio: 1 / 1;
+  background: conic-gradient(
+    var(--primary-color),
+    var(--primary-accent-color),
+    var(--primary-color)
+  ) border-box;
+  animation: secondary 3s linear infinite;
+}
+
+.btn.secondary::before {
+  background: linear-gradient(
+    to top,
+    var(--primary-color),
+    var(--primary-accent-color)
+  );
+  animation: none;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.btn.secondary:hover::before {
+  opacity: 1;
+}
+
+.btn.secondary:hover .bg {
+  opacity: 0;
 }
 
 .btn.showy {
@@ -259,13 +420,16 @@ a:hover {
     var(--primary-accent-color) calc(50% + var(--flash-w)) 100%
   );
   background-position: right;
-  box-shadow: 0 6px 0 var(--primary-accent-color-dark);
   transition:
     all 0.3s ease,
     background-color 0s 0.3s ease;
 }
 
-.btn.showy:active {
+.btn.primary.showy:hover {
+  box-shadow: 0 6px 0 var(--primary-accent-color-dark);
+}
+
+.btn.primary.showy:active {
   box-shadow: 0 2px 0 var(--primary-accent-color-dark);
 }
 
@@ -399,7 +563,12 @@ a:hover {
     font-size: 20px;
   }
 
-  .btn:not(.primary .showy)::before {
+  #header #search {
+    min-width: 0;
+    margin-left: 0;
+  }
+
+  .btn:not(.primary):not(.secondary):not(.showy)::before {
     content: "";
     position: absolute;
     top: 0;
@@ -414,7 +583,7 @@ a:hover {
     transition: all 0.3s ease;
   }
 
-  .btn:not(.primary .showy):hover::before {
+  .btn:not(.primary):not(.secondary):not(.showy):hover::before {
     transform: scale(1);
     opacity: 1;
   }
@@ -424,11 +593,31 @@ a:hover {
   }
 }
 
+@media screen and (max-width: 520px) {
+  html:has(#header #bar):root {
+    --header-height: 100px;
+  }
+
+  #header #search {
+    display: none;
+  }
+
+  #header #bar {
+    grid-column: span 2;
+  }
+}
+
 @keyframes showy {
   from {
     background-position: left;
   }
   to {
     background-position: right;
+  }
+}
+
+@keyframes secondary {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }

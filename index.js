@@ -11,10 +11,10 @@ const renderData = {
   user: null,
   buttons: true,
   homepage: false,
+  bar: false,
+  search: false,
   styles: [
     "css/main.css",
-    "https://fonts.googleapis.com",
-    "https://fonts.gstatic.com",
     "https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Oxanium:wght@200..800&display=swap",
   ],
 };
@@ -148,6 +148,8 @@ app.get("/dashboard", (req, res) =>
     ...renderData,
     title: "Dashboard",
     user: req.session.user,
+    bar: true,
+    search: true,
     styles: [
       ...renderData.styles,
       "css/dashboard.css",
