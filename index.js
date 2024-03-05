@@ -144,7 +144,14 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 app.get("/dashboard", (req, res) => {
-  const packs = db.get("packs").filter((pack) => pack.author == req.session.user.id);
+  const users = db.get("users");
+  const packs = db.get("packs").filter((pack) => pack.author == req.session.user.id).map((pack) => {
+    const user = users.find((user) => user.id == pack.author);
+    return {
+      ...pack,
+      user,
+    };
+  });
   res.render("dashboard", {
     ...renderData,
     title: "Dashboard",

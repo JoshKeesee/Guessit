@@ -34,6 +34,10 @@
                                     <span class="text">
                                         <h2><%= packs[i].name %></h2>
                                         <p><%= packs[i].description %></p>
+                                        <p>
+                                            <span class="tag">Created by: <%= packs[i].user.username %> on <%= new Date(packs[i].created).toLocaleDateString() %></span>
+                                            <span class="tag"><%= packs[i].questions.length %> Questions</span>
+                                        </p>
                                     </span>
                                 </div>
                                 <div class="btns">

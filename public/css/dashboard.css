@@ -53,7 +53,7 @@
     text-decoration: none;
     outline: 2px solid transparent;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
 #pack:hover {
@@ -87,6 +87,19 @@
 #pack .info p {
     font-size: 16px;
     color: #666;
+}
+
+#pack .info .tag {
+    background: rgba(var(--primary-color-rgb), 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+#pack .info .tag:hover {
+    background: rgba(var(--primary-color-rgb), 1);
 }
 
 #pack .btns {
