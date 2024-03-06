@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./components/head.html') %>
+  <body>
+    <div id="container">
+        <%- include('./components/header.html') %>
+        <div id="content">
+            <div id="create">
+                <div class="title">
+                    <h1>Create a New Pack</h1>
+                </div>
+                <form id="create-form" action="/create" method="post" enctype="multipart/form-data">
+                    <div class="input">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required autofocus />
+                    </div>
+                    <div class="input">
+                        <label for="description">Description (optional)</label>
+                        <textarea id="description" name="description"></textarea>
+                    </div>
+                    <div class="flex">
+                        <div class="input">
+                            <label for="image">Cover Image (optional)</label>
+                            <input type="file" id="image" name="image" />
+                        </div>
+                        <div class="input">
+                            <label for="public">Public</label>
+                            <div class="flex">
+                                <input type="checkbox" id="public" name="public" />
+                                <span class="check"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input">
+                        <button class="btn primary bold" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
+                            </svg>
+                            <span>Create Pack</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <%- include('./components/footer.html') %>
+    <script src="js/create.js"></script>
+    </body>
+</html>

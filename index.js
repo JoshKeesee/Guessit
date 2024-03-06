@@ -2,6 +2,18 @@ const express = require("express");
 const auth = require("./assets/auth");
 const app = express();
 const session = require("express-session");
+const multer = require("multer");
+const upload = multer({
+  dest: "public/uploads/",
+  limits: { fileSize: 1000000 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(null, false);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "." + file.originalname.split(".").pop());
+  }
+});
 const db = require("@jkeesee/json-db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -188,30 +200,29 @@ app.get("/create", (req, res) => {
     ...renderData,
     title: "Create a pack",
     user: req.session.user,
-    bar: true,
-    search: true,
     styles: [
       ...renderData.styles,
       "/css/create.css",
     ],
   });
 });
-app.post("/create", (req, res) => {
-  const { name, description, questions, public } = req.body;
+app.post("/create", upload.single("image"), (req, res) => {
+  const { name, description, public } = req.body;
   const packs = db.get("packs");
   const pack = {
     id: packs.length + 1,
+    author: req.session.user.id,
     name,
     description,
-    image: null,
-    public,
+    image: req.file ? req.file.filename : null,
+    public: public == "on",
     created_at: new Date(),
     updated_at: new Date(),
-    questions: JSON.parse(questions),
+    questions: [],
   };
   packs.push(pack);
   db.set("packs", packs);
-  res.json({ success: true });
+  res.redirect("/pack/" + pack.id);
 });
 app.use("*", (req, res) =>
   res.render("404", {

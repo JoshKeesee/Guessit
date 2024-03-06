@@ -39,20 +39,29 @@ a:hover {
 
 input[type="email"],
 input[type="password"],
-input[type="text"] {
+input[type="text"],
+textarea {
   padding: 10px;
   border: 1px solid #ddd;
   outline: 2px solid transparent;
   border-radius: 5px;
   font-size: 16px;
+  font-family: sans-serif;
   transition: all 0.1s ease;
 }
 
 input[type="email"]:focus,
 input[type="password"]:focus,
-input[type="text"]:focus {
+input[type="text"]:focus,
+textarea:focus {
   border-color: transparent;
   outline: 2px solid var(--primary-color);
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }
 
 #container {

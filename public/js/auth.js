@@ -10,7 +10,8 @@ authForm.addEventListener("submit", async (e) => {
         },
         body: JSON.stringify(Object.fromEntries(formData)),
     })).json();
-    if (data.success) location.href = "/";
+    const url = new URL(location.href);
+    if (data.success) location.href = url.searchParams.get("redirect") || "/";
     else {
         const errors = document.querySelectorAll("#auth-form .error");
         errors.forEach((error) => error.textContent = "");
