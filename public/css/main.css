@@ -58,7 +58,8 @@ textarea:focus {
   outline: 2px solid var(--primary-color);
 }
 
-input[type="checkbox"] {
+input[type="checkbox"],
+input[type="radio"] {
   width: 20px;
   height: 20px;
   margin-right: 10px;
@@ -97,6 +98,31 @@ input[type="checkbox"] {
   grid-template-columns: auto 1fr;
   padding: 0 20px;
   user-select: none;
+}
+
+#header #profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  gap: 10px;
+  margin-left: 10px;
+  padding: 5px;
+  padding-left: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+#header #profile:hover {
+  background-color: rgba(100, 100, 100, 0.1);
+}
+
+#header #profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
 html:has(#header #bar):root {
@@ -318,11 +344,13 @@ html:has(#header #bar):root {
   filter: brightness(120%);
 }
 
-.btn.default:hover, .tab.active {
+.btn.default:hover,
+.tab.active {
   color: var(--primary-color);
 }
 
-.btn.default::before, .tab.active::before {
+.btn.default::before,
+.tab.active::before {
   content: "";
   position: absolute;
   bottom: 2px;
@@ -337,7 +365,8 @@ html:has(#header #bar):root {
   transition: transform 0.3s ease;
 }
 
-.btn.default:hover::before, .tab.active::before {
+.btn.default:hover::before,
+.tab.active::before {
   transform: scaleX(1);
   transform-origin: left;
 }
@@ -397,7 +426,8 @@ html:has(#header #bar):root {
   transition: all 0.3s ease;
 }
 
-.btn.secondary .bg::before, .btn.secondary::before {
+.btn.secondary .bg::before,
+.btn.secondary::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -407,10 +437,11 @@ html:has(#header #bar):root {
   width: 200%;
   aspect-ratio: 1 / 1;
   background: conic-gradient(
-    var(--primary-color),
-    var(--primary-accent-color),
-    var(--primary-color)
-  ) border-box;
+      var(--primary-color),
+      var(--primary-accent-color),
+      var(--primary-color)
+    )
+    border-box;
   animation: secondary 3s linear infinite;
 }
 
@@ -596,10 +627,6 @@ html:has(#header #bar):root {
     display: flex;
   }
 
-  #header #title {
-    margin-top: 5px;
-  }
-
   #menu #menu-btn.exit {
     position: absolute;
     top: 0;
@@ -656,7 +683,7 @@ html:has(#header #bar):root {
   }
 }
 
-@media screen and (max-width: 520px) {
+@media screen and (max-width: 550px) {
   html:has(#header #bar):root {
     --header-height: 100px;
   }
@@ -667,6 +694,10 @@ html:has(#header #bar):root {
 
   #header #bar {
     grid-column: span 2;
+  }
+
+  #header #title {
+    margin-top: 5px;
   }
 }
 

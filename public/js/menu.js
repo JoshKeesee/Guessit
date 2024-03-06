@@ -1,4 +1,4 @@
-const main = () => {
+const menuSetup = () => {
   "use strict";
   const menu = document.querySelector("#menu");
   const menuBtn = document.querySelector("#menu-btn #menu-svg");
@@ -13,4 +13,4 @@ const main = () => {
       };
 };
 
-window.onload = main;
+window.addEventListener("load", menuSetup);

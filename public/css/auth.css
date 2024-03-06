@@ -6,7 +6,7 @@
   height: 100%;
   padding: 20px;
   height: calc(100vh - var(--footer-height));
-  min-height: 600px;
+  min-height: 650px;
 }
 
 #box.auth {
@@ -33,4 +33,14 @@
 
 #auth-form + p {
   text-align: center;
+}
+
+#auth-form #gender {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+#auth-form #gender label {
+  margin-left: -20px;
 }

@@ -3,17 +3,23 @@ const auth = require("./assets/auth");
 const app = express();
 const session = require("express-session");
 const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "." + file.originalname.split(".").pop());
+  },
+});
 const upload = multer({
-  dest: "public/uploads/",
-  limits: { fileSize: 1000000 },
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) cb(null, true);
     else cb(null, false);
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "." + file.originalname.split(".").pop());
-  }
 });
+const fs = require("fs");
 const db = require("@jkeesee/json-db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -49,13 +55,14 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: Date.now() + 60 * 60 * 1000 },
-  })
+  }),
 );
 app.use((req, res, next) => {
   const allowed = ["/login", "/signup", "/"];
-  const notAllowed = ["/dashboard"];
-  if (!req.session.user && notAllowed.includes(req.path)) return res.redirect("/login?redirect=" + req.path);
-  if (req.session.user && allowed.includes(req.path)) return res.redirect("/dashboard");
+  if (!req.session.user && !allowed.includes(req.path))
+    return res.redirect("/login?redirect=" + req.path);
+  if (req.session.user && allowed.includes(req.path))
+    return res.redirect("/dashboard");
   next();
 });
 
@@ -64,10 +71,7 @@ app.get("/", (req, res) => {
     ...renderData,
     title: "An online quiz game show",
     homepage: true,
-    styles: [
-      ...renderData.styles,
-      "/css/index.css",
-    ],
+    styles: [...renderData.styles, "/css/index.css"],
   });
 });
 app.get("/login", (req, res) =>
@@ -76,10 +80,7 @@ app.get("/login", (req, res) =>
     title: "Login",
     newUser: false,
     buttons: false,
-    styles: [
-      ...renderData.styles,
-      "/css/auth.css",
-    ],
+    styles: [...renderData.styles, "/css/auth.css"],
   }),
 );
 app.get("/signup", (req, res) =>
@@ -88,10 +89,7 @@ app.get("/signup", (req, res) =>
     title: "Sign Up",
     newUser: true,
     buttons: false,
-    styles: [
-      ...renderData.styles,
-      "/css/auth.css",
-    ],
+    styles: [...renderData.styles, "/css/auth.css"],
   }),
 );
 app.post("/login", (req, res) => {
@@ -103,41 +101,53 @@ app.post("/login", (req, res) => {
         delete user.password;
         req.session.user = user;
         res.json({ success: true });
-      } else res.json({
+      } else
+        res.json({
           success: false,
-          errors: [
-            { param: "password", msg: "Incorrect password" },
-          ]
+          errors: [{ param: "password", msg: "Incorrect password" }],
         });
     });
   } else {
-    res.json({ success: false, errors: [{ param: "username", msg: "User not found" }] });
+    res.json({
+      success: false,
+      errors: [{ param: "username", msg: "User not found" }],
+    });
   }
 });
 app.post("/signup", (req, res) => {
-  const { username, email, password, confirm } = req.body;
+  const { username, email, password, confirm, gender } = req.body;
   const users = db.get("users");
   const errors = [];
-  if (password != confirm) errors.push({
-    param: "confirm",
-    msg: "Passwords do not match",
-  });
-  if (password.length < 6) errors.push({
-    param: "password",
-    msg: "Password must be at least 6 characters long",
-  });
-  if (users.find((user) => user.username == username)) errors.push({
-    param: "username",
-    msg: "Username already taken",
-  });
-  if (users.find((user) => user.email == email)) errors.push({
-    param: "email",
-    msg: "Email already taken",
-  });
+  if (password != confirm)
+    errors.push({
+      param: "confirm",
+      msg: "Passwords do not match",
+    });
+  if (password.length < 6)
+    errors.push({
+      param: "password",
+      msg: "Password must be at least 6 characters long",
+    });
+  if (users.find((user) => user.username == username))
+    errors.push({
+      param: "username",
+      msg: "Username already taken",
+    });
+  if (users.find((user) => user.email == email))
+    errors.push({
+      param: "email",
+      msg: "Email already taken",
+    });
   if (errors.length) res.json({ success: false, errors });
   else
     bcrypt.hash(password, saltRounds, (err, hash) => {
-      req.session.user = { username, email, profile: null, id: users.length + 1 };
+      req.session.user = {
+        username,
+        email,
+        profile: null,
+        gender,
+        id: users.length + 1,
+      };
       db.set("users", [
         ...users,
         {
@@ -145,6 +155,7 @@ app.post("/signup", (req, res) => {
           email,
           password: hash,
           profile: null,
+          gender,
           id: users.length + 1,
         },
       ]);
@@ -157,13 +168,16 @@ app.get("/logout", (req, res) => {
 });
 app.get("/dashboard", (req, res) => {
   const users = db.get("users");
-  const packs = db.get("packs").filter((pack) => pack.author == req.session.user.id).map((pack) => {
-    const user = users.find((user) => user.id == pack.author);
-    return {
-      ...pack,
-      user,
-    };
-  });
+  const packs = db
+    .get("packs")
+    .filter((pack) => pack.author == req.session.user.id)
+    .map((pack) => {
+      const user = users.find((user) => user.id == pack.author);
+      return {
+        ...pack,
+        user,
+      };
+    });
   res.render("dashboard", {
     ...renderData,
     title: "Dashboard",
@@ -171,16 +185,14 @@ app.get("/dashboard", (req, res) => {
     bar: true,
     search: true,
     packs,
-    styles: [
-      ...renderData.styles,
-      "/css/dashboard.css",
-    ],
+    styles: [...renderData.styles, "/css/dashboard.css"],
   });
 });
 app.get("/pack/:id", (req, res) => {
   const users = db.get("users");
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
-  if (!pack || (!pack.public && pack.author != req.session.user.id)) return res.redirect("/");
+  if (!pack || (!pack.public && pack.author != req.session.user.id))
+    return res.redirect("/");
   const user = users.find((user) => user.id == pack.author);
   pack.user = user;
   res.render("pack", {
@@ -189,21 +201,25 @@ app.get("/pack/:id", (req, res) => {
     user: req.session.user,
     pack,
     user,
-    styles: [
-      ...renderData.styles,
-      "/css/pack.css",
-    ],
+    styles: [...renderData.styles, "/css/pack.css"],
   });
+});
+app.get("/pack/:id/delete", (req, res) => {
+  const packs = db.get("packs");
+  const pack = packs.find((pack) => pack.id == req.params.id);
+  if (!pack || pack.author != req.session.user.id) return res.redirect("/");
+  if (pack.image && fs.existsSync(__dirname + "/public" + pack.image))
+    fs.unlinkSync(__dirname + "/public" + pack.image);
+  packs.splice(packs.indexOf(pack), 1);
+  db.set("packs", packs);
+  res.redirect("/dashboard");
 });
 app.get("/create", (req, res) => {
   res.render("create", {
     ...renderData,
     title: "Create a pack",
     user: req.session.user,
-    styles: [
-      ...renderData.styles,
-      "/css/create.css",
-    ],
+    styles: [...renderData.styles, "/css/create.css"],
   });
 });
 app.post("/create", upload.single("image"), (req, res) => {
@@ -214,7 +230,7 @@ app.post("/create", upload.single("image"), (req, res) => {
     author: req.session.user.id,
     name,
     description,
-    image: req.file ? req.file.filename : null,
+    image: req.file ? "/uploads/" + req.file.filename : null,
     public: public == "on",
     created_at: new Date(),
     updated_at: new Date(),
@@ -229,10 +245,7 @@ app.use("*", (req, res) =>
     ...renderData,
     title: "Not found",
     buttons: false,
-    styles: [
-      ...renderData.styles,
-      "/css/404.css",
-    ],
+    styles: [...renderData.styles, "/css/404.css"],
   }),
 );
 

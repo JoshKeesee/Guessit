@@ -13,6 +13,16 @@
               <% if (newUser) { %>
                 <input type="email" name="email" placeholder="<%= newUser ? 'Email' : 'Username or Email' %>" autocomplete="email" required />
                 <div id="email-error" class="error"></div>
+                <p>Select gender:</p>
+                <div id="gender">
+                  <input type="radio" name="gender" id="male" value="male" required />
+                  <label for="male">Male</label>
+                  <input type="radio" name="gender" id="female" value="female" required />
+                  <label for="female">Female</label>
+                  <input type="radio" name="gender" id="other" value="other" required />
+                  <label for="other">Prefer not to say</label>
+                </div>
+                <div id="gender-error" class="error"></div>
               <% } %>
               <input type="password" name="password" placeholder="Password" required autocomplete="<%= newUser ? 'new-password' : 'current-password' %>" />
               <div id="password-error" class="error"></div>
