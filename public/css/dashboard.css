@@ -50,9 +50,8 @@
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     background-color: #fff;
-    text-decoration: none;
-    outline: 2px solid transparent;
     cursor: pointer;
+    outline: 2px solid transparent;
     transition: all 0.3s ease;
 }
 
@@ -61,14 +60,20 @@
     outline: 2px solid var(--primary-color);
 }
 
+#pack:hover .info h2 {
+    text-decoration: underline;
+}
+
 #pack img {
     width: 80px;
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 #pack .info {
+    cursor: default;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -81,12 +86,15 @@
 }
 
 #pack .info h2 {
+    cursor: pointer;
     font-size: 24px;
+    transition: all 0.3s ease;
 }
 
 #pack .info p {
     font-size: 16px;
     color: #666;
+    cursor: pointer;
 }
 
 #pack .info .tag {
@@ -95,6 +103,7 @@
     padding: 5px 10px;
     border-radius: 5px;
     font-size: 14px;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
@@ -106,6 +115,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    cursor: default;
 }
 
 @media screen and (max-width: 850px) {

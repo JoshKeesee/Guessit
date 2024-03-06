@@ -17,6 +17,8 @@ const switchTab = (tab) => {
 const updatePacks = () => {
     const packs = document.querySelectorAll("#pack");
     packs.forEach((pack) => {
+        const c = pack.dataset.created, u = pack.dataset.updated, s = c == u;
+        pack.querySelector(".tag.date").innerText = `${s ? "Created" : "Updated"} ${timeAgo(new Date(s ? c : u))}`;
         const id = pack.dataset.id;
         pack.onclick = () => {
             window.location.href = `pack/${id}`;

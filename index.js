@@ -42,7 +42,7 @@ app.use(
 app.use((req, res, next) => {
   const allowed = ["/login", "/signup", "/"];
   const notAllowed = ["/dashboard"];
-  if (!req.session.user && notAllowed.includes(req.path)) return res.redirect("/login");
+  if (!req.session.user && notAllowed.includes(req.path)) return res.redirect("/login?redirect=" + req.path);
   if (req.session.user && allowed.includes(req.path)) return res.redirect("/dashboard");
   next();
 });
@@ -164,6 +164,54 @@ app.get("/dashboard", (req, res) => {
       "/css/dashboard.css",
     ],
   });
+});
+app.get("/pack/:id", (req, res) => {
+  const users = db.get("users");
+  const pack = db.get("packs").find((pack) => pack.id == req.params.id);
+  if (!pack || (!pack.public && pack.author != req.session.user.id)) return res.redirect("/");
+  const user = users.find((user) => user.id == pack.author);
+  pack.user = user;
+  res.render("pack", {
+    ...renderData,
+    title: pack.name,
+    user: req.session.user,
+    pack,
+    user,
+    styles: [
+      ...renderData.styles,
+      "/css/pack.css",
+    ],
+  });
+});
+app.get("/create", (req, res) => {
+  res.render("create", {
+    ...renderData,
+    title: "Create a pack",
+    user: req.session.user,
+    bar: true,
+    search: true,
+    styles: [
+      ...renderData.styles,
+      "/css/create.css",
+    ],
+  });
+});
+app.post("/create", (req, res) => {
+  const { name, description, questions, public } = req.body;
+  const packs = db.get("packs");
+  const pack = {
+    id: packs.length + 1,
+    name,
+    description,
+    image: null,
+    public,
+    created_at: new Date(),
+    updated_at: new Date(),
+    questions: JSON.parse(questions),
+  };
+  packs.push(pack);
+  db.set("packs", packs);
+  res.json({ success: true });
 });
 app.use("*", (req, res) =>
   res.render("404", {

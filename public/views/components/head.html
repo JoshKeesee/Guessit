@@ -13,7 +13,10 @@
     <% styles.forEach(style => { %>
         <link rel="stylesheet" href="<%= style %>" />
     <% }) %>
-    <link rel="icon" href="icon.png" />
+    <link rel="icon" href="/icon.png" />
+    <script>
+        const user = <%- JSON.stringify(user) %>;
+    </script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/menu.js"></script>
 </head>
