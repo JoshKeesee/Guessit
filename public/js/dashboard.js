@@ -33,9 +33,5 @@ tabs.forEach((e) => {
   e.addEventListener("click", () => switchTab(e.dataset.tab));
 });
 
-window.addEventListener("load", () => {
-  const url = new URL(window.location.href);
-  const tab = url.searchParams.get("tab");
-  switchTab(tab || "home");
-  updatePacks();
-});
+switchTab(new URL(window.location.href).searchParams.get("tab") || "home");
+updatePacks();

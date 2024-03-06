@@ -40,11 +40,11 @@
                                     <% } %>
                                     <span class="text">
                                         <h2><%= packs[i].name %></h2>
-                                        <p><%= packs[i].description %></p>
+                                        <p class="description"><%= packs[i].description %></p>
                                         <p>
                                             <span class="tag author">Created by: <b><%= packs[i].user.username %></b></span>
                                             <span class="tag date"></span>
-                                            <span class="tag"><%= packs[i].questions.length %> Questions</span>
+                                            <span class="tag"><%= packs[i].questions.length %> Question<%= packs[i].questions.length == 1 ? "" : "s" %></span>
                                         </p>
                                     </span>
                                 </div>
