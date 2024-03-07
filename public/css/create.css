@@ -38,7 +38,6 @@
 
 #create #create-form .input label {
   margin-bottom: 5px;
-  font-size: 16px;
   font-weight: 500;
 }
 
@@ -51,7 +50,18 @@
 
 #create #create-form .flex {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
+}
+
+#create #create-form .mb {
+  margin-bottom: 5px !important;
+}
+
+#create #create-form .flex label {
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .check {
