@@ -274,6 +274,7 @@ html:has(#header #bar):root {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  width: fit-content;
   height: fit-content;
   margin-top: 10px;
 }
