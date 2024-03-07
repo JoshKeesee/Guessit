@@ -1,4 +1,4 @@
-#content {
+#content:not(:has(#pack.editing)) {
   padding-top: 0 !important;
 }
 

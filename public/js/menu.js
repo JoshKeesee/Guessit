@@ -9,9 +9,10 @@ const menuSetup = () => {
   menuBtn.onclick =
     menuExit.onclick =
     menuFade.onclick =
-      () => {
-        menu.classList.toggle("toggled");
-        popups.forEach((e) => e.classList.toggle("active"));
+      (e) => {
+        if (e.target.id != "menu-fade") menu.classList.toggle("toggled");
+        else menu.classList.remove("toggled");
+        popups.forEach((e) => e.classList.remove("active"));
       };
 };
 

@@ -1,3 +1,17 @@
+#content {
+  padding-top: var(--header-height) !important;
+  padding-bottom: 20px !important;
+}
+
+#pack {
+  padding: 0 60px;
+}
+
+#pack #questions {
+  padding-top: 0 !important;
+  overflow-y: visible !important;
+}
+
 #add-question {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -84,4 +98,11 @@
 #question-container {
   display: grid;
   grid-template-columns: repeat(minmax(300px, 1fr));
+}
+
+@media screen and (max-width: 850px) {
+  #pack {
+    padding: 0 20px;
+    padding-bottom: 0;
+  }
 }
