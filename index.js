@@ -36,8 +36,11 @@ const renderData = {
   ],
 };
 
+const games = {};
+
 if (!db.get("users")) db.set("users", []);
 if (!db.get("packs")) db.set("packs", []);
+if (!fs.existsSync(__dirname + "/public/uploads")) fs.mkdirSync(__dirname + "/public/uploads");
 
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
@@ -59,6 +62,7 @@ app.use(
 );
 app.use((req, res, next) => {
   const allowed = ["/login", "/signup", "/"];
+  if (req.path.startsWith("/play")) return next();
   if (!req.session.user && !allowed.includes(req.path))
     return res.redirect("/login?redirect=" + req.path);
   if (req.session.user && allowed.includes(req.path))
@@ -186,6 +190,30 @@ app.get("/dashboard", (req, res) => {
     search: true,
     packs,
     styles: [...renderData.styles, "/css/dashboard.css"],
+  });
+});
+app.get("/host/:id", (req, res) => {
+  const pack = db.get("packs").find((pack) => pack.id == req.params.id);
+  if (!pack || (pack.author != req.session.user.id && !pack.public)) return res.redirect("/");
+  const joinCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+  res.render("host", {
+    ...renderData,
+    title: "Host",
+    user: req.session.user,
+    pack,
+    joinCode,
+    styles: [...renderData.styles, "/css/host.css"],
+  });
+});
+app.get("/host/:id/play", (req, res) => {
+  const pack = db.get("packs").find((pack) => pack.id == req.params.id);
+  if (!pack || (pack.author != req.session.user.id && !pack.public)) return res.redirect("/");
+  res.render("host-play", {
+    ...renderData,
+    title: "Host",
+    user: req.session.user,
+    pack,
+    styles: [...renderData.styles, "/css/host-play.css"],
   });
 });
 app.get("/pack/:id", (req, res) => {
@@ -320,7 +348,50 @@ app.use("*", (req, res) =>
 io.use(auth);
 
 io.on("connection", (socket) => {
-  // console.log(socket.user);
+  socket.on("join", (data) => {
+    socket.join(data.room);
+    socket.emit("joined", data);
+  });
+  socket.on("host join", (data) => {
+    socket.join(data.room);
+    socket.emit("host joined", data);
+  });
+  socket.on("start game", (data) => {
+    const game = {
+      ...data,
+      players: [],
+      questions: [],
+      current: 0,
+      started: false,
+    };
+    games[data.room] = game;
+    io.to(data.room).emit("game started", game);
+  });
+  socket.on("player join", (data) => {
+    const game = games[data.room];
+    if (!game) return;
+    game.players.push(data);
+    io.to(data.room).emit("player joined", data);
+  });
+  socket.on("next question", (data) => {
+    const game = games[data.room];
+    if (!game) return;
+    game.current++;
+    io.to(data.room).emit("question", game.questions[game.current]);
+  });
+  socket.on("submit answer", (data) => {
+    const game = games[data.room];
+    if (!game) return;
+    game.questions[game.current].answers = game.questions[game.current].answers || [];
+    game.questions[game.current].answers.push(data);
+    io.to(data.room).emit("answer submitted", data);
+  });
+  socket.on("end game", (data) => {
+    const game = games[data.room];
+    if (!game) return;
+    io.to(data.room).emit("game ended", game);
+    delete games[data.room];
+  });
 });
 
 server.listen(port, () => console.log(`Server listening on port ${port}`));
