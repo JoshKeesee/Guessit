@@ -204,6 +204,59 @@ app.get("/pack/:id", (req, res) => {
     styles: [...renderData.styles, "/css/pack.css"],
   });
 });
+app.get("/pack/:id/edit", (req, res) => {
+  const pack = db.get("packs").find((pack) => pack.id == req.params.id);
+  if (!pack || pack.author != req.session.user.id) return res.redirect("/");
+  res.render("edit", {
+    ...renderData,
+    title: "Edit " + pack.name,
+    user: req.session.user,
+    pack,
+    styles: [...renderData.styles, "/css/edit.css", "/css/pack.css"],
+  });
+});
+app.post("/pack/:id/edit", (req, res) => {
+  const { name, description, public } = req.body;
+  const packs = db.get("packs");
+  const pack = packs.find((pack) => pack.id == req.params.id);
+  if (!pack || pack.author != req.session.user.id) return res.redirect("/");
+  pack.name = name;
+  pack.description = description;
+  pack.public = public;
+  db.set("packs", packs);
+  res.redirect("/pack/" + pack.id);
+});
+app.post("/pack/:id/add-question", (req, res) => {
+  const packs = db.get("packs");
+  const pack = packs.find((pack) => pack.id == req.params.id);
+  if (!pack || pack.author != req.session.user.id)
+    return res.json({ success: false });
+  const q = {
+    ...req.body,
+    id: (pack.questions.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1,
+  };
+  pack.questions = pack.questions || [];
+  pack.questions.push(q);
+  db.set("packs", packs);
+  res.json({
+    success: true,
+    question: q,
+  });
+});
+app.post("/pack/:id/edit-question", (req, res) => {
+  const packs = db.get("packs");
+  const pack = packs.find((pack) => pack.id == req.params.id);
+  if (!pack || pack.author != req.session.user.id)
+    return res.json({ success: false });
+  pack.questions = pack.questions || [];
+  const q = pack.questions.indexOf(req.body.id);
+  pack.questions[q] = req.body;
+  db.set("packs", packs);
+  res.json({
+    success: true,
+    question: req.body,
+  });
+});
 app.get("/pack/:id/delete", (req, res) => {
   const packs = db.get("packs");
   const pack = packs.find((pack) => pack.id == req.params.id);

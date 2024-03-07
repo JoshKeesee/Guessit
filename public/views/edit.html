@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./components/head.html') %>
+  <body>
+    <div id="container">
+        <%- include('./components/header.html') %>
+        <div id="content">
+            <div id="pack">
+                <div id="questions">
+                    <div id="question-list">
+                        <div id="question-header">
+                            <h2>Questions</h2>
+                            <p id="question-num"><span><%= pack.questions.length %> question<%= pack.questions.length == 1 ? "" : "s" %></span> in this pack</p>
+                        </div>
+                        <div id="add-question" class="btn secondary bold">
+                            <span class="bg"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
+                            </svg>
+                            <span>Add Question</span>
+                        </div>
+                        <form id="question-popup" class="popup">
+                            <h1><span id="task">New</span> Question</h1>
+                            <label for="type">Type:</label>
+                            <select id="type" name="type">
+                                <option value="multiple">Multiple Choice</option>
+                                <option value="tof">True or False</option>
+                            </select>
+                            <input id="question" type="text" placeholder="Question..." required />
+                            <div id="divider" class="h"></div>
+                            <div id="true-or-false">
+                                <div id="input">
+                                    <input type="checkbox" name="tof-a" id="tof-a" checked />
+                                    <label for="tof-a"></label>
+                                </div>
+                            </div>
+                            <div id="multiple-choice" class="active">
+                                <div id="input">
+                                    <input type="text" placeholder="Answer Choice 1" id="a1" class="answer" />
+                                    <input type="checkbox" name="c1" id="c1" checked />
+                                    <label for="c1"></label>
+                                </div>
+                                <div id="input">
+                                    <input type="text" placeholder="Answer Choice 2" id="a2" class="answer" />
+                                    <input type="checkbox" name="c2" id="c2" />
+                                    <label for="c2"></label>
+                                </div>
+                                <div id="input">
+                                    <input type="text" placeholder="Answer Choice 3" id="a3" class="answer" />
+                                    <input type="checkbox" name="c3" id="c3" />
+                                    <label for="c3"></label>
+                                </div>
+                                <div id="input">
+                                    <input type="text" placeholder="Answer Choice 4" id="a4" class="answer" />
+                                    <input type="checkbox" name="c4" id="c4" />
+                                    <label for="c4"></label>
+                                </div>
+                            </div>
+                            <div class="error"></div>
+                            <div class="btns">
+                                <div id="cancel" class="btn bg">
+                                    <span>Cancel</span>
+                                </div>
+                                <button type="submit" class="btn primary bold">
+                                    <span id="task">Add</span>
+                                </button>
+                            </div>
+                        </form>
+                        <div id="question-container">
+                            <% for (let i = 0; i < pack.questions.length; i++) { %>
+                                <div class="question" data-id="<%= pack.questions[i].id %>" data-type="<%= pack.questions[i].type %>">
+                                    <h3><%= i + 1 %>) <%= pack.questions[i].question %></h3>
+                                    <div class="answers">
+                                        <% pack.questions[i].answer_choices.forEach((choice) => { %>
+                                            <div class="answer" data-correct="<%= pack.questions[i].answers.includes(choice) %>">
+                                                <span><%= choice %></span>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/time.js"></script>
+    <script src="/js/edit.js"></script>
+  </body>
+</html>

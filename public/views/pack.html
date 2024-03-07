@@ -58,7 +58,7 @@
                                     <h3><%= i + 1 %>) <%= pack.questions[i].question %></h3>
                                     <div class="answers">
                                         <% pack.questions[i].answer_choices.forEach((choice) => { %>
-                                            <div class="answer" data-correct="<%= choice == pack.questions[i].answer %>">
+                                            <div class="answer" data-correct="<%= pack.questions[i].answers.includes(choice) %>">
                                                 <span><%= choice %></span>
                                             </div>
                                         <% }) %>

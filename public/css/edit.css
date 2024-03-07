@@ -1,0 +1,87 @@
+#add-question {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  gap: 10px;
+}
+
+#input label::before {
+  content: "Incorrect Answer";
+  color: var(--danger-color);
+}
+
+#true-or-false label::before {
+  content: "False";
+}
+
+#input input[type="checkbox"]:not(#tof-a):checked + label::before {
+  content: "Correct Answer";
+  color: var(--success-color);
+}
+
+#true-or-false input[type="checkbox"]:checked + label::before {
+  content: "True";
+  color: var(--success-color);
+}
+
+.btns {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+#question-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 12;
+  transform: translate(-50%, -70%) scale(0.5);
+  transform-origin: center;
+  padding: 20px;
+  border-radius: 20px;
+  width: 70%;
+  min-width: 500px;
+  background: var(--white-color);
+  pointer-events: none;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+  transition: all 0.3s ease;
+}
+
+#question-popup.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translate(-50%, -50%);
+}
+
+#container:has(#question-popup.active) #menu-fade {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#multiple-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#question-popup:has(#multiple-choice.active) #true-or-false,
+#multiple-choice:not(.active) {
+  display: none;
+}
+
+#question-container {
+  display: grid;
+  grid-template-columns: repeat(minmax(300px, 1fr));
+}
