@@ -21,6 +21,31 @@ t.onchange = () => {
     .classList.toggle("active", t.value == "multiple");
 };
 
+const svg = (path, viewBox) => {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  s.setAttribute("viewBox", viewBox);
+  const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  p.setAttribute("d", path);
+  s.appendChild(p);
+  return s;
+};
+
+const btn = (text, s, type, fn = () => {}) => {
+  const b = document.createElement("div");
+  b.onclick = fn;
+  b.classList.add(...["btn", "bold"]);
+  if (type) b.classList.add(type);
+  const t = document.createElement("span");
+  t.innerText = text;
+  b.appendChild(t);
+  if (typeof s == "object") {
+    const i = svg(s.path, s.viewBox);
+    b.appendChild(i);
+  }
+  return b;
+};
+
 const editQuestion = (el) => {
   popup.classList.add("active");
   popup.classList.add("editing");
@@ -51,6 +76,14 @@ const editQuestion = (el) => {
   popup.dataset.currentId = q.id;
 };
 
+const checkDel = (e) => {
+  const b = e.target;
+  if (b.classList.contains("delete")) return true;
+  if (b.parentElement.classList.contains("delete")) return true;
+  if (b.parentElement.parentElement.classList.contains("delete")) return true;
+  return false;
+};
+
 const createQuestion = (q) => {
   const c = document.createElement("div");
   c.className = "question";
@@ -70,15 +103,38 @@ const createQuestion = (q) => {
     b.appendChild(s);
     a.appendChild(b);
   });
+  const e = btn("Edit Question", {
+    path: "M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V299.6l-94.7 94.7c-8.2 8.2-14 18.5-16.8 29.7l-15 60.1c-2.3 9.4-1.8 19 1.4 27.8H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM549.8 235.7l14.4 14.4c15.6 15.6 15.6 40.9 0 56.6l-29.4 29.4-71-71 29.4-29.4c15.6-15.6 40.9-15.6 56.6 0zM311.9 417L441.1 287.8l71 71L382.9 487.9c-4.1 4.1-9.2 7-14.9 8.4l-60.1 15c-5.5 1.4-11.2-.2-15.2-4.2s-5.6-9.7-4.2-15.2l15-60.1c1.4-5.6 4.3-10.8 8.4-14.9z",
+    viewBox: "0 0 576 512",
+  });
+  const d = btn(
+    "Delete Question",
+    {
+      path: "M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z",
+      viewBox: "0 0 384 512",
+    },
+    "delete",
+    () => deleteQuestion(q.id),
+  );
+  c.appendChild(e);
+  c.appendChild(d);
   c.appendChild(h);
   c.appendChild(a);
-  c.onclick = () => editQuestion(c);
+  c.onclick = (e) => {
+    if (checkDel(e)) return;
+    editQuestion(c);
+  };
   return c;
 };
 
-document
-  .querySelectorAll(".question")
-  .forEach((e) => (e.onclick = () => editQuestion(e)));
+document.querySelectorAll(".question").forEach((el) => {
+  el.querySelector(".btn.delete").onclick = (e) =>
+    deleteQuestion(el.dataset.id);
+  el.onclick = (e) => {
+    if (checkDel(e)) return;
+    editQuestion(el);
+  };
+});
 
 popup.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -107,7 +163,6 @@ popup.addEventListener("submit", async (e) => {
       "Please add at least two answer choices");
   popup.querySelector(".error").innerText = "";
   if (editing) question.id = popup.dataset.currentId;
-  console.log(question);
   const data = await (
     await fetch((editing ? "edit" : "add") + "-question", {
       method: "POST",
@@ -141,3 +196,31 @@ popup.addEventListener("submit", async (e) => {
   } else
     popup.querySelector(".error").innerText = data.error || "An error occurred";
 });
+
+const deleteQuestion = async (id) => {
+  const data = await (
+    await fetch("delete-question", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ id }),
+    })
+  ).json();
+  if (data.success) {
+    const q = qc.querySelector(".question[data-id='" + data.id + "']");
+    q.remove();
+    const qs = qc.querySelectorAll(".question");
+    qs.forEach((e, i) => {
+      const h = e.querySelector("h3");
+      h.innerText = i + 1 + ") " + h.innerText.split(") ")[1];
+    });
+    const qnum = qs.length;
+    document
+      .querySelectorAll("#question-num span")
+      .forEach(
+        (e) => (e.innerText = qnum + " question" + (qnum == 1 ? "" : "s")),
+      );
+  }
+};

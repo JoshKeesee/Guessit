@@ -233,7 +233,7 @@ app.post("/pack/:id/add-question", (req, res) => {
     return res.json({ success: false });
   const q = {
     ...req.body,
-    id: (pack.questions.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1,
+    id: parseInt(pack.questions.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1,
   };
   pack.questions = pack.questions || [];
   pack.questions.push(q);
@@ -249,12 +249,27 @@ app.post("/pack/:id/edit-question", (req, res) => {
   if (!pack || pack.author != req.session.user.id)
     return res.json({ success: false });
   pack.questions = pack.questions || [];
-  const q = pack.questions.indexOf(req.body.id);
+  const q = pack.questions.findIndex((e) => e.id == req.body.id);
   pack.questions[q] = req.body;
   db.set("packs", packs);
   res.json({
     success: true,
     question: req.body,
+  });
+});
+app.post("/pack/:id/delete-question", (req, res) => {
+  const packs = db.get("packs");
+  const pack = packs.find((pack) => pack.id == req.params.id);
+  if (!pack || pack.author != req.session.user.id)
+    return res.json({ success: false });
+  pack.questions = pack.questions || [];
+  const q = pack.questions.find((e) => e.id == req.body.id);
+  if (!q) return res.json({ success: false });
+  pack.questions.splice(pack.questions.indexOf(q), 1);
+  db.set("packs", packs);
+  res.json({
+    success: true,
+    id: req.body.id,
   });
 });
 app.get("/pack/:id/delete", (req, res) => {
