@@ -195,13 +195,23 @@ app.get("/dashboard", (req, res) => {
 app.get("/host/:id", (req, res) => {
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
   if (!pack || (pack.author != req.session.user.id && !pack.public)) return res.redirect("/");
-  const joinCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+  const codeLength = 6;
+  const joinCode = Math.floor(Math.random() * Math.pow(10, codeLength - 1)) + Math.pow(10, codeLength - 1);
   res.render("host", {
     ...renderData,
     title: "Host",
     user: req.session.user,
     pack,
     joinCode,
+    settings: {
+      time: 10,
+      pointsPerQuestion: 100,
+      pointsPerIncorrect: -50,
+      minPoints: 0,
+      maxPlayers: Infinity,
+      minPlayers: 1,
+      randomizeAnswers: true,
+    },
     styles: [...renderData.styles, "/css/host.css"],
   });
 });
@@ -395,3 +405,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(port, () => console.log(`Server listening on port ${port}`));
+
+process.on("uncaughtException", (err) => console.error(err));

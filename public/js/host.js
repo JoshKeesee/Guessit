@@ -24,6 +24,10 @@ document.onfullscreenchange = () => {
 
 document.querySelector("#join-link").innerText = location.host + "/play";
 
+socket.on("connect", () => {
+    socket.emit("host join", room);
+});
+
 socket.on("player joined", (player) => {
     const p = document.createElement("div");
     player.className = "player";

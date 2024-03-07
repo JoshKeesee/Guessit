@@ -58,6 +58,15 @@
                 </div>
             </div>
         </div>
+        <script>
+            const room = {
+                id: <%= pack.id %>,
+                joinCode: "<%= joinCode %>",
+                players: [],
+                pack: <%- JSON.stringify(pack) %>,
+                settings: <%- JSON.stringify(settings) %>,
+            };
+        </script>
         <script src="/js/host.js"></script>
     </body>
 </html>
