@@ -6,7 +6,7 @@ let name = "",
 socket.on("player joined", (player) => {
   if (player.name != name) return;
   document.querySelector("#stats #username").innerText = player.name;
-  document.querySelector("#stats #score").innerText = player.points;
+  animateScore(player.points);
   setTimeout(() => {
     document.querySelector("#lobby").classList.remove("active");
     document.querySelector("#loading").classList.remove("active");
@@ -44,5 +44,18 @@ socket.on("question", (id) => {
 socket.on("player answered", (player) => {
   if (player.name != name) return;
   document.querySelector("#stats #username").innerText = player.name;
-  document.querySelector("#stats #score").innerText = player.points;
+  animateScore(player.points);
 });
+
+const animateScore = (score) => {
+  const scoreEl = document.querySelector("#stats #score");
+  const easing = 0.3;
+  let curr = parseInt(scoreEl.innerText.replace(/,/g, "").replace("$", "")) || 0;
+  const update = () => {
+    curr += (score - curr) * easing;
+    scoreEl.innerText = ("$" + Math.round(curr).toString().withCommas()).replace("-", "-$").replace("$-", "-");
+    if (Math.abs(score - curr) < 1) scoreEl.innerText = ("$" + score.toString().withCommas()).replace("-", "-$").replace("$-", "-");
+    else requestAnimationFrame(update);
+  };
+  update();
+};

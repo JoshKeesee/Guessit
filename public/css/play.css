@@ -70,21 +70,20 @@
   font-weight: 600;
   font-family: sans-serif;
   color: var(--black-color);
+  user-select: none;
   transition: all 0.3s ease;
 }
 
 #game #score {
   transform: scale(0);
-  margin-left: calc(-100% - 20px);
+  margin-left: -20px;
+  padding: 0;
   opacity: 0;
-}
-
-#game #score::after {
-  content: "$";
 }
 
 #game:has(#play-lobby:not(.active)) #score {
   transform: scale(1);
   margin-left: 0;
+  padding: 10px;
   opacity: 1;
 }
