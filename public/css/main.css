@@ -25,6 +25,14 @@ html:root {
   --white-color: #fff;
   --black-color: #000;
   --flash-w: 5px;
+  --a1: rgb(140, 15, 15);
+  --a1-dark: rgb(110, 0, 0);
+  --a2: rgb(30, 120, 15);
+  --a2-dark: rgb(0, 90, 0);
+  --a3: rgb(175, 152, 10);
+  --a3-dark: rgb(145, 122, 0);
+  --a4: rgb(15, 30, 140);
+  --a4-dark: rgb(0, 0, 110);
 }
 
 a {
@@ -729,4 +737,14 @@ html:has(#header #bar):root {
   to {
     transform: translate(-50%, -50%) rotate(360deg);
   }
+}
+
+@font-face {
+  font-family: "Oxanium";
+  src: url("../fonts/Oxanium.ttf");
+}
+
+@font-face {
+  font-family: "Exo 2";
+  src: url("../fonts/Exo2.ttf");
 }

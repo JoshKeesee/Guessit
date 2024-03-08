@@ -16,6 +16,7 @@ html {
   color: var(--white-color);
   display: flex;
   justify-content: space-between;
+  gap: 10px;
   padding: 0 20px;
   border-bottom: 4px solid transparent;
   border-image-source: linear-gradient(
@@ -172,5 +173,5 @@ html {
 #players .player:hover::before {
   opacity: 1;
   transform: translate(-50%, calc(-100% - 5px)) scale(1);
-  transition: all 0.2s 2s ease;
+  transition: all 0.2s 0.5s ease;
 }

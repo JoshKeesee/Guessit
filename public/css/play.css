@@ -1,7 +1,10 @@
 #game {
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--header-height));
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 #game #game-header {
@@ -24,24 +27,64 @@
 #game #content {
   width: 100%;
   height: 100%;
+  padding-top: 0 !important;
 }
 
-#game #content #cont {
+#game #content #play-lobby,
+#game #content #questions {
   width: 100%;
   height: 100%;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: var(--white-color);
-  margin-top: -10px;
 }
 
-#game #content #cont h3 {
+#game #content #play-lobby.active,
+#game #content #play-lobby:not(.active) + #questions {
+  display: flex;
+}
+
+#game #content #play-lobby h3 {
   margin-bottom: 20px;
   font-weight: 400;
 }
 
-#game #content #cont #loading {
+#game #content #play-lobby #loading {
   font-weight: 800;
+}
+
+#game #stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+#game #score,
+#game #username {
+  background: var(--white-color);
+  border-radius: 5px;
+  padding: 10px;
+  font-weight: 600;
+  font-family: sans-serif;
+  color: var(--black-color);
+  transition: all 0.3s ease;
+}
+
+#game #score {
+  transform: scale(0);
+  margin-left: calc(-100% - 20px);
+  opacity: 0;
+}
+
+#game #score::after {
+  content: "$";
+}
+
+#game:has(#play-lobby:not(.active)) #score {
+  transform: scale(1);
+  margin-left: 0;
+  opacity: 1;
 }

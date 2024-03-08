@@ -1,5 +1,4 @@
 const express = require("express");
-const auth = require("./assets/auth");
 const app = express();
 const session = require("express-session");
 const multer = require("multer");
@@ -31,9 +30,7 @@ const renderData = {
   homepage: false,
   bar: false,
   search: false,
-  styles: [
-    "https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Oxanium:wght@200..800&display=swap",
-  ],
+  styles: [],
 };
 
 const games = {};
@@ -95,7 +92,12 @@ app.get("/play", (req, res) => {
     title: "Join Game",
     user: req.session.user,
     buttons: false,
-    styles: [...renderData.styles, "/css/play.css", "/css/lobby.css"],
+    styles: [
+      ...renderData.styles,
+      "/css/play.css",
+      "/css/lobby.css",
+      "/css/question.css",
+    ],
   });
 });
 app.get("/login", (req, res) =>
@@ -225,12 +227,14 @@ app.get("/host/:id", (req, res) => {
     joinCode,
     settings: {
       time: 10,
-      pointsPerQuestion: 100,
-      pointsPerIncorrect: -50,
-      minPoints: 0,
+      startingPoints: 0,
+      pointsPerQuestion: 1,
+      pointsPerIncorrect: 1,
+      minPoints: -100,
       maxPlayers: Infinity,
       minPlayers: 1,
       randomizeAnswers: true,
+      joinInLate: true,
     },
     styles: [...renderData.styles, "/css/host.css"],
   });
@@ -364,25 +368,51 @@ app.use("*", (req, res) =>
   }),
 );
 
-io.use(auth);
-
 io.on("connection", (socket) => {
-  const user = socket.user;
+  let user = {
+    room: null,
+    name: null,
+    id: null,
+    socketId: socket.id,
+    points: 0,
+    history: [],
+    isHost: false,
+    pointsPerQuestion: 0,
+    pointsPerIncorrect: 0,
+  };
   socket.on("check code", (code, cb = () => {}) => {
     const game = games[code];
-    if (!game) return cb(false);
+    if (!game) return cb(false, "Game not found");
+    if (game.ended) return cb(false, "Game has ended");
+    if (!game.settings.joinInLate && game.started)
+      return cb(false, "You can't join in late");
+    if (game.players.length >= game.maxPlayers) return cb(false, "Game full");
     cb(true);
   });
   socket.on("join", (code, name, cb = () => {}) => {
     const game = games[code];
-    if (!game) return cb(false);
+    if (!game) return cb(false, "Game not found");
+    if (game.ended) return cb(false, "Game has ended");
+    if (!game.settings.joinInLate && game.started)
+      return cb(false, "You can't join in late");
+    if (game.players.length >= game.maxPlayers) return cb(false, "Game full");
+    if (game.players.find((e) => e.name == name))
+      return cb(false, "Name already taken");
     user.name = name;
     user.id = (game.players.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1;
     user.room = code;
+    user.points = game.settings.startingPoints;
+    user.pointsPerQuestion = game.settings.pointsPerQuestion;
+    user.pointsPerIncorrect = game.settings.pointsPerIncorrect;
     game.players.push(user);
+    user = game.players.find((e) => e.id == user.id);
     socket.join(code);
     cb(true);
     io.to(code).emit("player joined", user);
+    if (game.started) {
+      socket.emit("game started", game);
+      socket.emit("question", game.current);
+    }
   });
   socket.on("disconnect", () => {
     const game = games[user.room];
@@ -399,11 +429,11 @@ io.on("connection", (socket) => {
     }
   });
   socket.on("remove player", (data) => {
-    if (!user.isHost) return;
+    if (!user.isHost) return socket.emit("error", "You are not the host");
     const game = games[data.room];
-    if (!game) return;
+    if (!game) return socket.emit("error", "Game not found");
     const player = game.players.find((player) => player.id == data.id);
-    if (!player) return;
+    if (!player) return socket.emit("error", "Player not found");
     game.players.splice(game.players.indexOf(player), 1);
     io.to(data.room).emit("player left", player, "removed by host");
   });
@@ -415,8 +445,8 @@ io.on("connection", (socket) => {
     games[data.room] = {
       ...data,
       players: [user],
-      questions: [],
       started: false,
+      ended: false,
       current: 0,
     };
     socket.join(data.room);
@@ -425,39 +455,49 @@ io.on("connection", (socket) => {
   socket.on("start game", (data) => {
     const game = games[data.room];
     if (!game) return;
+    if (!user.isHost) return;
+    if (game.ended) return;
+    if (game.started) return;
+    if (game.players.length < game.minPlayers)
+      return io.to(data.room).emit("error", "Not enough players");
+    game.ended = false;
     game.started = true;
     game.current = 0;
     io.to(data.room).emit("game started", game);
-    io.to(data.room).emit("question", game.questions[game.current]);
+    io.to(data.room).emit("question", game.current);
   });
   socket.on("player join", (data) => {
     const game = games[data.room];
-    if (!game) return;
+    if (!game) return socket.emit("error", "Game not found");
     game.players.push(data);
     io.to(data.room).emit("player joined", data);
   });
   socket.on("next question", (data) => {
     const game = games[data.room];
-    if (!game) return;
+    if (!game) return socket.emit("error", "Game not found");
     game.current++;
-    io.to(data.room).emit("question", game.questions[game.current]);
+    io.to(data.room).emit("question", game.current);
   });
   socket.on("submit answer", (data) => {
-    const game = games[data.room];
-    if (!game) return;
-    const player = game.players.find((player) => player.id == data.player);
-    if (!player) return;
-    const question = game.questions[game.current];
+    const game = games[user.room];
+    if (!game) return socket.emit("error", "Game not found");
+    const question =
+      game.pack.questions.find((e) => e.id == data.current) ||
+      game.pack.questions[game.current];
     if (!question) return;
+    const player = game.players.find((e) => e.id == user.id);
+    if (!player) return;
     const correct = question.answers;
     if (correct.includes(data.answer))
-      player.points += game.settings.pointsPerQuestion;
-    else player.points += game.settings.pointsPerIncorrect;
-    io.to(data.room).emit("player answered", player);
+      player.points += player.pointsPerQuestion;
+    else player.points -= player.pointsPerIncorrect;
+    if (player.points < game.settings.minPoints)
+      player.points = game.settings.minPoints;
+    io.to(user.room).emit("player answered", player);
   });
   socket.on("end game", (data) => {
     const game = games[data.room];
-    if (!game) return;
+    if (!game) return socket.emit("error", "Game not found");
     io.to(data.room).emit("game ended", game);
     delete games[data.room];
   });
