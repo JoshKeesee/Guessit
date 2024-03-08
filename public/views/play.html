@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./components/head.html') %>
+    <body>
+        <div id="container">
+            <div id="lobby" class="active">
+                <div id="fade"></div>
+                <div id="loading">
+                    <div id="dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <div id="text">Loading you in</div>
+                </div>
+                <div id="join-popup" class="popup">
+                    <div id="title" class="showy bold">
+                        <span><%= appName %></span>
+                    </div>
+                    <div id="input">
+                        <input
+                            id="join-code"
+                            type="number"
+                            placeholder="Join Code"
+                            autocomplete="off"
+                            maxlength="15"
+                            autofocus
+                        >
+                    </div>
+                    <button id="join">Join</button>
+                    <div class="error"></div>
+                </div>
+            </div>
+            <div id="game">
+                <div id="game-header">
+                    <div id="title">
+                        <span><%= appName %></span>
+                    </div>
+                </div>
+                <div id="content">
+                    <div id="cont">
+                        <h1>You're in!</h1>
+                        <h3>See your name on the board?</h3>
+                        <div id="loading" class="normal">
+                            <div id="dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                            <div id="text">Waiting for the host to start the game</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/js/play.js"></script>
+        <script src="/js/lobby.js"></script>
+    </body>
+</html>

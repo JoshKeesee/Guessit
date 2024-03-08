@@ -30,8 +30,21 @@ socket.on("connect", () => {
 
 socket.on("player joined", (player) => {
     const p = document.createElement("div");
-    player.className = "player";
-    p.innerText = player;
+    p.classList.add("player");
+    p.innerText = player.name;
+    p.onclick = () => {
+        socket.emit("remove player", player);
+    };
     playerList.appendChild(p);
-    playerCount.innerText = playerList.children.length;
+    playerCount.innerText = playerList.children.length + " Player" + (playerList.children.length == 1 ? "" : "s");
+});
+
+socket.on("player left", (player) => {
+    for (const p of playerList.children) {
+        if (p.innerText == player.name) {
+            p.remove();
+            break;
+        }
+    }
+    playerCount.innerText = playerList.children.length + " Player" + (playerList.children.length == 1 ? "" : "s");
 });

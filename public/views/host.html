@@ -4,6 +4,7 @@
     <body>
         <div id="container">
             <div id="header">
+                <div id="menu-fade"></div>
                 <div id="title">
                     <span><%= appName %></span>
                 </div>
@@ -15,7 +16,7 @@
                         target="_blank"
                     ></a> and enter code:</span>
                     <br>
-                    <span id="code"><%= joinCode %></span>
+                    <span id="code" class="showy warmbold"><%= joinCode %></span>
                 </div>
                 <div id="host-controls">
                     <div id="start">
@@ -49,10 +50,7 @@
                 <div id="players">
                     <div id="player-header">
                         <h2>Players</h2>
-                        <div id="player-count-container" class="bold">
-                            <span id="player-count">0</span>
-                            Players
-                        </div>
+                        <div id="player-count" class="bold">0 Players</div>
                     </div>
                     <div id="player-list"></div>
                 </div>
@@ -61,8 +59,7 @@
         <script>
             const room = {
                 id: <%= pack.id %>,
-                joinCode: "<%= joinCode %>",
-                players: [],
+                room: "<%= joinCode %>",
                 pack: <%- JSON.stringify(pack) %>,
                 settings: <%- JSON.stringify(settings) %>,
             };

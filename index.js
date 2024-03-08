@@ -45,6 +45,16 @@ if (!fs.existsSync(__dirname + "/public/uploads")) fs.mkdirSync(__dirname + "/pu
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
+const generateJoinCode = (length) => {
+  const characters = '0123456789';
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters[randomIndex];
+  }
+  return code;
+};
+
 app.engine("html", require("ejs").renderFile);
 app.set("view engine", "html");
 app.set("views", __dirname + "/public/views");
@@ -76,6 +86,15 @@ app.get("/", (req, res) => {
     title: "An online quiz game show",
     homepage: true,
     styles: [...renderData.styles, "/css/index.css"],
+  });
+});
+app.get("/play", (req, res) => {
+  res.render("play", {
+    ...renderData,
+    title: "Join Game",
+    user: req.session.user,
+    buttons: false,
+    styles: [...renderData.styles, "/css/play.css", "/css/lobby.css"],
   });
 });
 app.get("/login", (req, res) =>
@@ -195,8 +214,7 @@ app.get("/dashboard", (req, res) => {
 app.get("/host/:id", (req, res) => {
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
   if (!pack || (pack.author != req.session.user.id && !pack.public)) return res.redirect("/");
-  const codeLength = 6;
-  const joinCode = Math.floor(Math.random() * Math.pow(10, codeLength - 1)) + Math.pow(10, codeLength - 1);
+  const joinCode = generateJoinCode(6);
   res.render("host", {
     ...renderData,
     title: "Host",
@@ -358,24 +376,64 @@ app.use("*", (req, res) =>
 io.use(auth);
 
 io.on("connection", (socket) => {
-  socket.on("join", (data) => {
-    socket.join(data.room);
-    socket.emit("joined", data);
+  const user = socket.user;
+  socket.on("check code", (code, cb = () => {}) => {
+    const game = games[code];
+    if (!game) return cb(false);
+    cb(true);
+  });
+  socket.on("join", (code, name, cb = () => {}) => {
+    const game = games[code];
+    if (!game) return cb(false);
+    user.name = name;
+    user.id = (game.players.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1;
+    user.room = code;
+    game.players.push(user);
+    socket.join(code);
+    cb(true);
+    io.to(code).emit("player joined", user);
+  });
+  socket.on("disconnect", () => {
+    const game = games[user.room];
+    if (!game) return;
+    if (!user.isHost) {
+      game.players.splice(game.players.findIndex((player) => player.id == user.id), 1);
+      io.to(user.room).emit("player left", user, "disconnected from the game");
+    } else {
+      io.to(user.room).emit("end game", game);
+      delete games[user.room];
+    }
+  });
+  socket.on("remove player", (data) => {
+    if (!user.isHost) return;
+    const game = games[data.room];
+    if (!game) return;
+    const player = game.players.find((player) => player.id == data.id);
+    if (!player) return;
+    game.players.splice(game.players.indexOf(player), 1);
+    io.to(data.room).emit("player left", player, "removed by host");
   });
   socket.on("host join", (data) => {
+    const game = games[data.room];
+    if (game) return socket.emit("error", "Game already exists");
+    user.isHost = true;
+    games[data.room] = {
+      ...data,
+      players: [user],
+      questions: [],
+      started: false,
+      current: 0,
+    };
     socket.join(data.room);
     socket.emit("host joined", data);
   });
   socket.on("start game", (data) => {
-    const game = {
-      ...data,
-      players: [],
-      questions: [],
-      current: 0,
-      started: false,
-    };
-    games[data.room] = game;
+    const game = games[data.room];
+    if (!game) return;
+    game.started = true;
+    game.current = 0;
     io.to(data.room).emit("game started", game);
+    io.to(data.room).emit("question", game.questions[game.current]);
   });
   socket.on("player join", (data) => {
     const game = games[data.room];
@@ -392,9 +450,16 @@ io.on("connection", (socket) => {
   socket.on("submit answer", (data) => {
     const game = games[data.room];
     if (!game) return;
-    game.questions[game.current].answers = game.questions[game.current].answers || [];
-    game.questions[game.current].answers.push(data);
-    io.to(data.room).emit("answer submitted", data);
+    const player = game.players.find((player) => player.id == data.player);
+    if (!player) return;
+    const question = game.questions[game.current];
+    if (!question) return;
+    const correct = question.answers;
+    if (correct.includes(data.answer))
+      player.points += game.settings.pointsPerQuestion;
+    else 
+      player.points += game.settings.pointsPerIncorrect;
+    io.to(data.room).emit("player answered", player);
   });
   socket.on("end game", (data) => {
     const game = games[data.room];

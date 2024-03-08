@@ -30,7 +30,7 @@ html {
 
 #header #join-code {
     background: var(--white-color);
-    color: var(--primary-accent-color);
+    color: #555;
     border: none;
     padding: 10px 20px;
     height: fit-content;
@@ -41,6 +41,9 @@ html {
     margin-bottom: auto;
     cursor: pointer;
     text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
     transition: all 0.3s ease;
 }
 
@@ -50,15 +53,17 @@ html {
 
 #header #join-link {
     content: attr(href);
-    color: var(--primary-accent-color);
+    color: inherit;
     text-decoration: underline;
 }
 
 #header #join-code #code {
-    font-size: 50px;
+    font-size: 60px;
     font-weight: bold;
     text-align: center;
     width: 100%;
+    cursor: text;
+    user-select: all;
 }
 
 #header #host-controls {
@@ -95,7 +100,7 @@ html {
     font-weight: bold;
 }
 
-#players #player-header #player-count-container {
+#players #player-header #player-count {
     background: var(--white-color);
     color: var(--black-color);
     font-size: 20px;
@@ -153,16 +158,17 @@ html {
     position: absolute;
     top: 0;
     left: 50%;
-    transform: translate(-50%, calc(-100% - 5px));
+    transform: translate(-50%, 0) scale(0.8);
     background: var(--danger-color);
     padding: 5px 10px;
     border-radius: 10px;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 #players .player:hover::before {
     opacity: 1;
-    transition: opacity 0.2s 0.5s ease;
+    transform: translate(-50%, calc(-100% - 5px)) scale(1);
+    transition: all 0.2s 2s ease;
 }

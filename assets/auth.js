@@ -6,8 +6,6 @@ module.exports = (socket, next) => {
     socketId: socket.id,
     score: 0,
     history: [],
-    isReady: false,
-    isPlaying: false,
     isHost: false,
   };
 
