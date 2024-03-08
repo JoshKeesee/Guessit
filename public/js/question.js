@@ -2,7 +2,7 @@ const qns = document.querySelector("#questions");
 let currQuestion = 0;
 
 const nextQuestion = (i) => {
-  const id = i || Math.floor(Math.random() * game.pack.questions.length);
+  const id = i || shuffle([...Array(game.pack.questions.length).keys()])[0];
   const nq = createQuestion(game.pack.questions[id]);
   const q = qns.querySelector("#question-container");
   if (q) {
@@ -52,6 +52,15 @@ const checkAnswer = (a) => {
   }, 500);
 };
 
+const shuffle = (arr) => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
 const createQuestion = (question) => {
   const c = document.createElement("div");
   c.id = "question-container";
@@ -74,8 +83,7 @@ const createQuestion = (question) => {
   const ans = document.createElement("div");
   ans.classList.add("answers");
   let answers = structuredClone(question.answer_choices);
-  if (game.settings.randomizeAnswers)
-    answers = answers.sort(() => Math.random() - 0.5);
+  if (game.settings.randomizeAnswers) answers = shuffle(answers);
   answers.forEach((e, i) => {
     const a = document.createElement("div");
     a.classList.add("answer");
@@ -91,11 +99,7 @@ const createQuestion = (question) => {
   const btn = document.createElement("div");
   btn.classList.add("btn");
   btn.innerText = "Continue";
-  btn.onclick = () => {
-    currQuestion++;
-    if (currQuestion >= game.pack.questions.length) currQuestion = 0;
-    nextQuestion(currQuestion);
-  };
+  btn.onclick = () => nextQuestion();
   next.appendChild(btn);
   c.appendChild(q);
   c.appendChild(ans);
