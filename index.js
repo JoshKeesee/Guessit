@@ -40,13 +40,14 @@ const games = {};
 
 if (!db.get("users")) db.set("users", []);
 if (!db.get("packs")) db.set("packs", []);
-if (!fs.existsSync(__dirname + "/public/uploads")) fs.mkdirSync(__dirname + "/public/uploads");
+if (!fs.existsSync(__dirname + "/public/uploads"))
+  fs.mkdirSync(__dirname + "/public/uploads");
 
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
 const generateJoinCode = (length) => {
-  const characters = '0123456789';
+  const characters = "0123456789";
   let code = "";
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
@@ -213,7 +214,8 @@ app.get("/dashboard", (req, res) => {
 });
 app.get("/host/:id", (req, res) => {
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
-  if (!pack || (pack.author != req.session.user.id && !pack.public)) return res.redirect("/");
+  if (!pack || (pack.author != req.session.user.id && !pack.public))
+    return res.redirect("/");
   const joinCode = generateJoinCode(6);
   res.render("host", {
     ...renderData,
@@ -231,17 +233,6 @@ app.get("/host/:id", (req, res) => {
       randomizeAnswers: true,
     },
     styles: [...renderData.styles, "/css/host.css"],
-  });
-});
-app.get("/host/:id/play", (req, res) => {
-  const pack = db.get("packs").find((pack) => pack.id == req.params.id);
-  if (!pack || (pack.author != req.session.user.id && !pack.public)) return res.redirect("/");
-  res.render("host-play", {
-    ...renderData,
-    title: "Host",
-    user: req.session.user,
-    pack,
-    styles: [...renderData.styles, "/css/host-play.css"],
   });
 });
 app.get("/pack/:id", (req, res) => {
@@ -397,7 +388,10 @@ io.on("connection", (socket) => {
     const game = games[user.room];
     if (!game) return;
     if (!user.isHost) {
-      game.players.splice(game.players.findIndex((player) => player.id == user.id), 1);
+      game.players.splice(
+        game.players.findIndex((player) => player.id == user.id),
+        1,
+      );
       io.to(user.room).emit("player left", user, "disconnected from the game");
     } else {
       io.to(user.room).emit("end game", game);
@@ -417,6 +411,7 @@ io.on("connection", (socket) => {
     const game = games[data.room];
     if (game) return socket.emit("error", "Game already exists");
     user.isHost = true;
+    user.room = data.room;
     games[data.room] = {
       ...data,
       players: [user],
@@ -457,8 +452,7 @@ io.on("connection", (socket) => {
     const correct = question.answers;
     if (correct.includes(data.answer))
       player.points += game.settings.pointsPerQuestion;
-    else 
-      player.points += game.settings.pointsPerIncorrect;
+    else player.points += game.settings.pointsPerIncorrect;
     io.to(data.room).emit("player answered", player);
   });
   socket.on("end game", (data) => {

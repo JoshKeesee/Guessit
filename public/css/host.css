@@ -1,174 +1,176 @@
 html {
-    --header-height: 200px !important;
+  --header-height: 200px !important;
 }
 
 #container {
-    background-color: var(--black-color);
-    background-image: linear-gradient(
-        rgba(var(--primary-color-rgb), 0.4),
-        rgba(var(--primary-color-rgb), 0.8)
-    );
+  background-color: var(--black-color);
+  background-image: linear-gradient(
+    rgba(var(--primary-color-rgb), 0.4),
+    rgba(var(--primary-color-rgb), 0.8)
+  );
 }
 
 #header {
-    height: var(--header-height);
-    background: rgba(var(--primary-color-rgb), 0.5);
-    color: var(--white-color);
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-    border-bottom: 4px solid transparent;
-    border-image-source: linear-gradient(
-        35deg,
-        var(--primary-color),
-        var(--primary-color),
-        var(--primary-accent-color),
-        var(--primary-color)
-    );
-    border-image-slice: 1;
+  height: var(--header-height);
+  background: rgba(var(--primary-color-rgb), 0.5);
+  color: var(--white-color);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 4px solid transparent;
+  border-image-source: linear-gradient(
+    35deg,
+    var(--primary-color),
+    var(--primary-color),
+    var(--primary-accent-color),
+    var(--primary-color)
+  );
+  border-image-slice: 1;
 }
 
 #header #join-code {
-    background: var(--white-color);
-    color: #555;
-    border: none;
-    padding: 10px 20px;
-    height: fit-content;
-    border-radius: 10px;
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: auto;
-    margin-bottom: auto;
-    cursor: pointer;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    transition: all 0.3s ease;
+  background: var(--white-color);
+  color: #555;
+  border: none;
+  padding: 10px 20px;
+  height: fit-content;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: auto;
+  margin-bottom: auto;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  transition: all 0.3s ease;
 }
 
 #header #join-code:hover {
-    background: #f8f8f8;
+  background: #f8f8f8;
 }
 
 #header #join-link {
-    content: attr(href);
-    color: inherit;
-    text-decoration: underline;
+  content: attr(href);
+  color: inherit;
+  text-decoration: underline;
 }
 
 #header #join-code #code {
-    font-size: 60px;
-    font-weight: bold;
-    text-align: center;
-    width: 100%;
-    cursor: text;
-    user-select: all;
+  font-size: 60px;
+  font-weight: bold;
+  font-family: "Exo 2", sans-serif;
+  text-align: center;
+  cursor: text;
+  user-select: all;
 }
 
 #header #host-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-    height: fit-content;
-    gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  height: fit-content;
+  gap: 10px;
 }
 
-.btn:not(.active) svg.t, .btn.active svg:not(.t) {
-    display: none;
+.btn:not(.active) svg.t,
+.btn.active svg:not(.t) {
+  display: none;
 }
 
 #players {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
 }
 
 #players #player-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
 }
 
 #players #player-header h2 {
-    color: var(--white-color);
-    font-size: 35px;
-    font-weight: bold;
+  color: var(--white-color);
+  font-size: 35px;
+  font-weight: bold;
 }
 
 #players #player-header #player-count {
-    background: var(--white-color);
-    color: var(--black-color);
-    font-size: 20px;
-    padding: 5px 10px;
-    border-radius: 10px;
-    font-family: sans-serif;
+  background: var(--white-color);
+  color: var(--black-color);
+  font-size: 20px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-family: sans-serif;
 }
 
 #players #player-list {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    user-select: none;
-    white-space: pre;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  user-select: none;
+  white-space: pre;
 }
 
 #players #player-list:empty::before {
-    content: "No players have joined yet. \A Waiting for players...";
-    color: var(--white-color);
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    width: 100%;
+  content: "No players have joined yet. \A Waiting for players...";
+  color: var(--white-color);
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
 }
 
 #players .player {
-    position: relative;
-    width: fit-content;
-    height: fit-content;
-    background: var(--white-color);
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 25px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  background: var(--white-color);
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 #players .player:hover {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 #players .player::before {
-    content: "Remove";
-    color: var(--white-color);
-    font-size: 12px;
-    font-weight: bold;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, 0) scale(0.8);
-    background: var(--danger-color);
-    padding: 5px 10px;
-    border-radius: 10px;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.2s ease;
+  content: "Remove";
+  color: var(--white-color);
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0) scale(0.8);
+  background: var(--danger-color);
+  padding: 5px 10px;
+  border-radius: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
 }
 
 #players .player:hover::before {
-    opacity: 1;
-    transform: translate(-50%, calc(-100% - 5px)) scale(1);
-    transition: all 0.2s 2s ease;
+  opacity: 1;
+  transform: translate(-50%, calc(-100% - 5px)) scale(1);
+  transition: all 0.2s 2s ease;
 }
