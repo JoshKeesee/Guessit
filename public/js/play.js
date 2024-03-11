@@ -50,11 +50,17 @@ socket.on("player answered", (player) => {
 const animateScore = (score) => {
   const scoreEl = document.querySelector("#stats #score");
   const easing = 0.3;
-  let curr = parseInt(scoreEl.innerText.replace(/,/g, "").replace("$", "")) || 0;
+  let curr =
+    parseInt(scoreEl.innerText.replace(/,/g, "").replace("$", "")) || 0;
   const update = () => {
     curr += (score - curr) * easing;
-    scoreEl.innerText = ("$" + Math.round(curr).toString().withCommas()).replace("-", "-$").replace("$-", "-");
-    if (Math.abs(score - curr) < 1) scoreEl.innerText = ("$" + score.toString().withCommas()).replace("-", "-$").replace("$-", "-");
+    scoreEl.innerText = ("$" + Math.round(curr).toString().withCommas())
+      .replace("-", "-$")
+      .replace("$-", "-");
+    if (Math.abs(score - curr) < 1)
+      scoreEl.innerText = ("$" + score.toString().withCommas())
+        .replace("-", "-$")
+        .replace("$-", "-");
     else requestAnimationFrame(update);
   };
   update();

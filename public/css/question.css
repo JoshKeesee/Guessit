@@ -188,22 +188,22 @@
 
 #question-container .a1 {
   background: var(--a1);
-  border: 10px solid var(--a1-dark);
+  border: 8px solid var(--a1-dark);
 }
 
 #question-container .a2 {
   background: var(--a2);
-  border: 10px solid var(--a2-dark);
+  border: 8px solid var(--a2-dark);
 }
 
 #question-container .a3 {
   background: var(--a3);
-  border: 10px solid var(--a3-dark);
+  border: 8px solid var(--a3-dark);
 }
 
 #question-container .a4 {
   background: var(--a4);
-  border: 10px solid var(--a4-dark);
+  border: 8px solid var(--a4-dark);
 }
 
 @keyframes fade-in {

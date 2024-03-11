@@ -37,12 +37,20 @@ const checkAnswer = (a) => {
   });
   setTimeout(() => {
     const p = game.players.find((e) => e.name == name);
-    const ca = [...q.querySelectorAll(".answer[data-correct='true']")].map((e) => e.innerText);
+    const ca = [...q.querySelectorAll(".answer[data-correct='true']")].map(
+      (e) => e.innerText,
+    );
     const f = q.querySelector(".feedback");
     f.querySelector("h1").innerText = c ? "Correct!" : "Incorrect";
-    f.querySelector("p").innerHTML =
-      c ? "+$" + p.pointsPerQuestion.toString().withCommas() :
-      "-$" + p.pointsPerIncorrect.toString().withCommas() + "<br><span>The correct answer" + (ca.length > 1 ? "s are" : " is") + ": " + ca.join(", ") + "</span>";
+    f.querySelector("p").innerHTML = c
+      ? "+$" + p.pointsPerQuestion.toString().withCommas()
+      : "-$" +
+        p.pointsPerIncorrect.toString().withCommas() +
+        "<br><span>The correct answer" +
+        (ca.length > 1 ? "s are" : " is") +
+        ": <b>" +
+        ca.join(", ") +
+        "</b></span>";
     if (c) q.classList.add("correct");
     else q.classList.add("incorrect");
     socket.emit("submit answer", {

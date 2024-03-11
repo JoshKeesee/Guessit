@@ -19,6 +19,6 @@ const menuSetup = () => {
 String.prototype.withCommas = function () {
   "use strict";
   return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+};
 
 window.addEventListener("load", menuSetup);
