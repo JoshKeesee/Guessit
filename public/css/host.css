@@ -8,6 +8,7 @@ html {
     rgba(var(--primary-color-rgb), 0.4),
     rgba(var(--primary-color-rgb), 0.8)
   );
+  min-height: 100vh;
 }
 
 #header {
@@ -18,6 +19,9 @@ html {
   justify-content: space-between;
   gap: 10px;
   padding: 0 20px;
+}
+
+#content.lobby #header {
   border-bottom: 4px solid transparent;
   border-image-source: linear-gradient(
     35deg,
@@ -41,9 +45,9 @@ html {
   margin-top: auto;
   margin-bottom: auto;
   cursor: pointer;
-  text-align: center;
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-direction: column;
   transition: all 0.3s ease;
 }
@@ -62,7 +66,6 @@ html {
   font-size: 60px;
   font-weight: bold;
   font-family: "Exo 2", sans-serif;
-  text-align: center;
   cursor: text;
   user-select: all;
 }
@@ -76,9 +79,193 @@ html {
   gap: 10px;
 }
 
+#header #title {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+#header #title #code {
+  font-size: 10px;
+  color: var(--white-color);
+  padding: 0 5px;
+  background: rgb(0, 0, 15);
+  border-radius: 2px;
+  font-family: sans-serif;
+}
+
 .btn:not(.active) svg.t,
 .btn.active svg:not(.t) {
   display: none;
+}
+
+#content:not(.active) {
+  display: none;
+}
+
+#content.game.active {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  padding: 10px;
+  padding-bottom: 0;
+}
+
+#content.game #leaderboard {
+  position: relative;
+  width: 40%;
+  min-width: 350px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--white-color);
+  overflow-y: scroll;
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+#content.game #leaderboard::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+#content.game #leaderboard:empty::before {
+  content: "No players have joined yet.";
+  color: var(--white-color);
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+#content.game #leaderboard .player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  background: var(--white-color);
+  padding: 10px;
+  border-radius: 10px;
+  color: var(--black-color);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  font-weight: 600;
+  font-family: "Exo 2", sans-serif;
+}
+
+#content.game #leaderboard .player::before {
+  content: attr(data-rank) ".";
+}
+
+#content.game #leaderboard .player #name {
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#content.game #host {
+  width: calc(100% - 10px);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+#content.game #host #stats,
+#content.game #host #events {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  color: var(--white-color);
+  user-select: none;
+  font-size: 20px;
+}
+
+#content.game #host #stats {
+  align-items: center;
+  justify-content: center;
+}
+
+#content.game #host #stats #total-earned {
+  padding: 10px 20px;
+  background: rgb(0, 0, 15);
+  border-radius: 10px;
+  font-size: 60px;
+  font-weight: 800;
+}
+
+#content.game #host #events {
+  position: relative;
+  overflow-y: scroll;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+}
+
+#content.game #host #events::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+#content.game #host #events #event {
+  font-size: 20px;
+  animation: fade-in 1s ease;
+}
+
+#content.game #host #events #event:first-child {
+  margin-bottom: 10px;
+}
+
+#content.game #host #events #event.success {
+  color: var(--success-color);
+}
+
+#content.game #host #events #event.danger {
+  color: var(--danger-color);
+}
+
+#content.game #host #events #event.warning {
+  color: var(--warning-color);
+}
+
+#content.game #host #events #event.info {
+  color: var(--info-color);
+}
+
+#content.game #host #events #event .player {
+  color: var(--white-color);
+  font-weight: bold;
+}
+
+html:has(#content.game.active):root {
+  --header-height: 60px !important;
+}
+
+html:has(#content.game.active) #host-controls,
+html:has(#content.game.active) #title {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#container:has(#content.lobby:not(.active)) {
+  background-image: linear-gradient(
+    rgba(var(--primary-color-rgb), 0.6),
+    rgba(var(--primary-color-rgb), 0.6)
+  );
 }
 
 #players {
@@ -113,6 +300,7 @@ html {
 }
 
 #players #player-list {
+  position: relative;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -147,6 +335,7 @@ html {
   padding: 5px 10px;
   cursor: pointer;
   transition: all 0.2s ease;
+  animation: fade-in 1s ease;
 }
 
 #players .player:hover {
@@ -174,4 +363,13 @@ html {
   opacity: 1;
   transform: translate(-50%, calc(-100% - 5px)) scale(1);
   transition: all 0.2s 0.5s ease;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

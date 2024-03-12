@@ -31,6 +31,7 @@ const checkAnswer = (a) => {
   const ans = q.querySelectorAll(".answer");
   const c = a.dataset.correct == "true";
   ans.forEach((e) => {
+    e.onclick = () => {};
     const c = e.dataset.correct == "true";
     if (c || e.dataset.answer == a.dataset.answer) e.classList.add("check");
     else e.classList.add("faded");

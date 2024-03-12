@@ -21,4 +21,20 @@ String.prototype.withCommas = function () {
   return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
+String.prototype.toScore = function () {
+  "use strict";
+  return ("$" + this.withCommas()).replace("-", "-$").replace("$-", "-");
+};
+
+const animateScore = (score, el, easing = 0.2) => {
+  let curr = parseInt(el.innerText.replace(/,/g, "").replace("$", "")) || 0;
+  const update = () => {
+    curr += (score - curr) * easing;
+    el.innerText = Math.round(curr).toString().toScore();
+    if (Math.abs(score - curr) < 1) el.innerText = score.toString().toScore();
+    else requestAnimationFrame(update);
+  };
+  update();
+};
+
 window.addEventListener("load", menuSetup);

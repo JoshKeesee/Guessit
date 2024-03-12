@@ -54,6 +54,8 @@ const checkCode = () => {
               } else {
                 e.innerText = error;
                 joinCode.value = "";
+                joinCode.disabled = false;
+                joinCode.focus();
               }
             });
           } else {

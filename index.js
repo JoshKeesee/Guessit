@@ -30,6 +30,7 @@ const renderData = {
   homepage: false,
   bar: false,
   search: false,
+  io: false,
   styles: [],
 };
 
@@ -79,19 +80,22 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.render("index", {
+  res.render("components/layout", {
     ...renderData,
+    template: "index",
     title: "An online quiz game show",
     homepage: true,
     styles: [...renderData.styles, "/css/index.css"],
   });
 });
 app.get("/play", (req, res) => {
-  res.render("play", {
+  res.render("components/layout", {
     ...renderData,
+    template: "play",
     title: "Join Game",
     user: req.session.user,
     buttons: false,
+    io: true,
     styles: [
       ...renderData.styles,
       "/css/play.css",
@@ -101,8 +105,9 @@ app.get("/play", (req, res) => {
   });
 });
 app.get("/login", (req, res) =>
-  res.render("auth", {
+  res.render("components/layout", {
     ...renderData,
+    template: "auth",
     title: "Login",
     newUser: false,
     buttons: false,
@@ -110,8 +115,9 @@ app.get("/login", (req, res) =>
   }),
 );
 app.get("/signup", (req, res) =>
-  res.render("auth", {
+  res.render("components/layout", {
     ...renderData,
+    template: "auth",
     title: "Sign Up",
     newUser: true,
     buttons: false,
@@ -204,8 +210,9 @@ app.get("/dashboard", (req, res) => {
         user,
       };
     });
-  res.render("dashboard", {
+  res.render("components/layout", {
     ...renderData,
+    template: "dashboard",
     title: "Dashboard",
     user: req.session.user,
     bar: true,
@@ -219,10 +226,12 @@ app.get("/host/:id", (req, res) => {
   if (!pack || (pack.author != req.session.user.id && !pack.public))
     return res.redirect("/");
   const joinCode = generateJoinCode(6);
-  res.render("host", {
+  res.render("components/layout", {
     ...renderData,
+    template: "host",
     title: "Host",
     user: req.session.user,
+    io: true,
     pack,
     joinCode,
     settings: {
@@ -246,8 +255,9 @@ app.get("/pack/:id", (req, res) => {
     return res.redirect("/");
   const user = users.find((user) => user.id == pack.author);
   pack.user = user;
-  res.render("pack", {
+  res.render("components/layout", {
     ...renderData,
+    template: "pack",
     title: pack.name,
     user: req.session.user,
     pack,
@@ -258,8 +268,9 @@ app.get("/pack/:id", (req, res) => {
 app.get("/pack/:id/edit", (req, res) => {
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
   if (!pack || pack.author != req.session.user.id) return res.redirect("/");
-  res.render("edit", {
+  res.render("components/layout", {
     ...renderData,
+    template: "edit",
     title: "Edit " + pack.name,
     user: req.session.user,
     pack,
@@ -334,8 +345,9 @@ app.get("/pack/:id/delete", (req, res) => {
   res.redirect("/dashboard");
 });
 app.get("/create", (req, res) => {
-  res.render("create", {
+  res.render("components/layout", {
     ...renderData,
+    template: "create",
     title: "Create a pack",
     user: req.session.user,
     styles: [...renderData.styles, "/css/create.css"],
@@ -360,8 +372,9 @@ app.post("/create", upload.single("image"), (req, res) => {
   res.redirect("/pack/" + pack.id);
 });
 app.use("*", (req, res) =>
-  res.render("404", {
+  res.render("components/layout", {
     ...renderData,
+    template: "404",
     title: "Not found",
     buttons: false,
     styles: [...renderData.styles, "/css/404.css"],
@@ -443,11 +456,14 @@ io.on("connection", (socket) => {
     user.isHost = true;
     user.room = data.room;
     games[data.room] = {
-      ...data,
-      players: [user],
+      lobby: true,
       started: false,
       ended: false,
       current: 0,
+      totalPointsEarned: 0,
+      totalPointsLost: 0,
+      ...data,
+      players: [user],
     };
     socket.join(data.room);
     socket.emit("host joined", data);
@@ -458,7 +474,7 @@ io.on("connection", (socket) => {
     if (!user.isHost) return;
     if (game.ended) return;
     if (game.started) return;
-    if (game.players.length < game.minPlayers)
+    if (game.players.filter((e) => !e.isHost).length < game.settings.minPlayers)
       return io.to(data.room).emit("error", "Not enough players");
     game.ended = false;
     game.started = true;
@@ -475,6 +491,9 @@ io.on("connection", (socket) => {
   socket.on("next question", (data) => {
     const game = games[data.room];
     if (!game) return socket.emit("error", "Game not found");
+    if (!user.isHost) return socket.emit("error", "You are not the host");
+    if (game.ended) return;
+    if (!game.started) return socket.emit("error", "Game has not started");
     game.current++;
     io.to(data.room).emit("question", game.current);
   });
@@ -488,16 +507,27 @@ io.on("connection", (socket) => {
     const player = game.players.find((e) => e.id == user.id);
     if (!player) return;
     const correct = question.answers;
-    if (correct.includes(data.answer))
+    if (correct.includes(data.answer)) {
       player.points += player.pointsPerQuestion;
-    else player.points -= player.pointsPerIncorrect;
+      game.totalPointsEarned += player.pointsPerQuestion;
+      io.to(user.room).emit("total earned", game.totalPointsEarned);
+    } else {
+      player.points -= player.pointsPerIncorrect;
+      game.totalPointsLost += player.pointsPerIncorrect;
+    }
     if (player.points < game.settings.minPoints)
       player.points = game.settings.minPoints;
+    player.history.push({
+      question: question.question,
+      answer: data.answer,
+      correct,
+    });
     io.to(user.room).emit("player answered", player);
   });
   socket.on("end game", (data) => {
     const game = games[data.room];
     if (!game) return socket.emit("error", "Game not found");
+    if (!user.isHost) return socket.emit("error", "You are not the host");
     io.to(data.room).emit("game ended", game);
     delete games[data.room];
   });

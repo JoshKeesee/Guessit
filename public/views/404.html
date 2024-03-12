@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-  <%- include('./components/head.html') %>
-  <body>
-    <div id="container">
-        <%- include('./components/header.html') %>
-        <div id="content">
-            <div id="box" class="not-found">
-                <h1>404</h1>
-                <h2>Not Found</h2>
-                <p>
-                    Oops! This is not the page you're looking for <br>
-                    <a href="javascript:history.back()">Go Back</a>
-                </p>
-            </div>
-        </div>
-        <%- include('./components/footer.html') %>
-    </div>
-  </body>
-</html>
+<%- include('./components/header.html') %>
+  <div id="content">
+      <div id="box" class="not-found">
+          <h1>404</h1>
+          <h2>Not Found</h2>
+          <p>
+              Oops! This is not the page you're looking for <br>
+              <a href="javascript:history.back()">Go Back</a>
+          </p>
+      </div>
+  </div>
+  <%- include('./components/footer.html') %>

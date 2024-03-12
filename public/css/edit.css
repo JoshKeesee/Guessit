@@ -148,4 +148,36 @@
   #pack {
     padding: 0 20px;
   }
+
+  .question .btn {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .question .delete {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .question .btn::before {
+    display: none;
+  }
+
+  #question-popup {
+    width: 90%;
+    min-width: 0;
+  }
+
+  #question-popup #input {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  #question-popup #input input[type="text"] {
+    width: 100%;
+  }
 }

@@ -1,45 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-  <%- include('./components/head.html') %>
-  <body>
-    <div id="container">
-        <%- include('./components/header.html') %>
-        <div id="content">
-          <div id="box" class="auth">
-            <h1><%= title %></h1>
-            <form id="auth-form" action="/<%= newUser ? 'signup' : 'login' %>" method="post">
-              <input type="text" name="username" placeholder="Username" required autocomplete="username" autofocus />
-              <div id="username-error" class="error"></div>
-              <% if (newUser) { %>
-                <input type="email" name="email" placeholder="<%= newUser ? 'Email' : 'Username or Email' %>" autocomplete="email" required />
-                <div id="email-error" class="error"></div>
-                <p>Select gender:</p>
-                <div id="gender">
-                  <input type="radio" name="gender" id="male" value="male" required />
-                  <label for="male">Male</label>
-                  <input type="radio" name="gender" id="female" value="female" required />
-                  <label for="female">Female</label>
-                  <input type="radio" name="gender" id="other" value="other" required />
-                  <label for="other">Prefer not to say</label>
-                </div>
-                <div id="gender-error" class="error"></div>
-              <% } %>
-              <input type="password" name="password" placeholder="Password" required autocomplete="<%= newUser ? 'new-password' : 'current-password' %>" />
-              <div id="password-error" class="error"></div>
-              <% if (newUser) { %>
-                <input type="password" name="confirm" placeholder="Confirm Password" required />
-                <div id="confirm-error" class="error"></div>
-              <% } %>
-              <button type="submit" class="btn primary submit"><%= title %></button>
-            </form>
-            <p>
-              <%= newUser ? "Already have" : "Don't have" %> an account?
-              <a href="/<%= newUser ? "login" : "signup" %>"><%= newUser ? "Login" : "Sign Up" %></a>
-            </p>
-          </div>
+<%- include('./components/header.html') %>
+<div id="content">
+  <div id="box" class="auth">
+    <h1><%= title %></h1>
+    <form id="auth-form" action="/<%= newUser ? 'signup' : 'login' %>" method="post">
+      <input type="text" name="username" placeholder="Username" required autocomplete="username" autofocus />
+      <div id="username-error" class="error"></div>
+      <% if (newUser) { %>
+        <input type="email" name="email" placeholder="<%= newUser ? 'Email' : 'Username or Email' %>" autocomplete="email" required />
+        <div id="email-error" class="error"></div>
+        <p>Select gender:</p>
+        <div id="gender">
+          <input type="radio" name="gender" id="male" value="male" required />
+          <label for="male">Male</label>
+          <input type="radio" name="gender" id="female" value="female" required />
+          <label for="female">Female</label>
+          <input type="radio" name="gender" id="other" value="other" required />
+          <label for="other">Prefer not to say</label>
         </div>
-        <%- include('./components/footer.html') %>
-    </div>
-    <script src="/js/auth.js"></script>
-  </body>
-</html>
+        <div id="gender-error" class="error"></div>
+      <% } %>
+      <input type="password" name="password" placeholder="Password" required autocomplete="<%= newUser ? 'new-password' : 'current-password' %>" />
+      <div id="password-error" class="error"></div>
+      <% if (newUser) { %>
+        <input type="password" name="confirm" placeholder="Confirm Password" required />
+        <div id="confirm-error" class="error"></div>
+      <% } %>
+      <button type="submit" class="btn primary submit"><%= title %></button>
+    </form>
+    <p>
+      <%= newUser ? "Already have" : "Don't have" %> an account?
+      <a href="/<%= newUser ? "login" : "signup" %>"><%= newUser ? "Login" : "Sign Up" %></a>
+    </p>
+  </div>
+</div>
+<%- include('./components/footer.html') %>
+<script src="/js/auth.js"></script>
