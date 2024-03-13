@@ -33,7 +33,7 @@ const linkSetup = () => {
   document.querySelectorAll("a").forEach(
     (a) =>
       (a.onclick = async (e) => {
-        if (a.target == "_blank") return;
+        if (a.target == "_blank" || a.target == "_self") return;
         clearInterval(check);
         setLoader(0);
         e.preventDefault();
