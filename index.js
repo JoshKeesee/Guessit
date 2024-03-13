@@ -1,6 +1,8 @@
+const ejs = require("ejs");
 const express = require("express");
 const app = express();
 const session = require("express-session");
+const url = require("url");
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -30,8 +32,8 @@ const renderData = {
   homepage: false,
   bar: false,
   search: false,
-  io: false,
   styles: [],
+  scripts: [],
 };
 
 const games = {};
@@ -54,7 +56,7 @@ const generateJoinCode = (length) => {
   return code;
 };
 
-app.engine("html", require("ejs").renderFile);
+app.engine("html", ejs.renderFile);
 app.set("view engine", "html");
 app.set("views", __dirname + "/public/views");
 
@@ -72,58 +74,107 @@ app.use(
 app.use((req, res, next) => {
   const allowed = ["/login", "/signup", "/"];
   if (req.path.startsWith("/play")) return next();
+  if (
+    !req.session.user &&
+    (req.path.startsWith("/login") || req.path.startsWith("/login"))
+  )
+    return next();
   if (!req.session.user && !allowed.includes(req.path))
     return res.redirect("/login?redirect=" + req.path);
   if (req.session.user && allowed.includes(req.path))
-    return res.redirect("/dashboard");
+    return res.redirect(
+      url.format({
+        pathname: "/dashboard",
+        query: req.query,
+      }),
+    );
   next();
 });
 
-app.get("/", (req, res) => {
-  res.render("components/layout", {
+app.get("/", async (req, res) => {
+  const rd = {
     ...renderData,
     template: "index",
     title: "An online quiz game show",
     homepage: true,
+    user: req.session.user,
     styles: [...renderData.styles, "/css/index.css"],
-  });
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
 });
-app.get("/play", (req, res) => {
-  res.render("components/layout", {
+app.get("/play", async (req, res) => {
+  const rd = {
     ...renderData,
     template: "play",
     title: "Join Game",
     user: req.session.user,
     buttons: false,
-    io: true,
     styles: [
       ...renderData.styles,
       "/css/play.css",
       "/css/lobby.css",
       "/css/question.css",
     ],
-  });
+    scripts: ["/js/question.js", "/js/play.js", "/js/lobby.js"],
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
 });
-app.get("/login", (req, res) =>
-  res.render("components/layout", {
+app.get("/login", async (req, res) => {
+  const rd = {
     ...renderData,
     template: "auth",
     title: "Login",
     newUser: false,
     buttons: false,
     styles: [...renderData.styles, "/css/auth.css"],
-  }),
-);
-app.get("/signup", (req, res) =>
-  res.render("components/layout", {
+    scripts: ["/js/auth.js"],
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
+});
+app.get("/signup", async (req, res) => {
+  const rd = {
     ...renderData,
     template: "auth",
     title: "Sign Up",
     newUser: true,
     buttons: false,
     styles: [...renderData.styles, "/css/auth.css"],
-  }),
-);
+    scripts: ["/js/auth.js"],
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
+});
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   const user = db.get("users").find((user) => user.username == username);
@@ -196,9 +247,14 @@ app.post("/signup", (req, res) => {
 });
 app.get("/logout", (req, res) => {
   req.session.destroy();
-  res.redirect("/");
+  res.redirect(
+    url.format({
+      pathname: "/",
+      query: req.query,
+    }),
+  );
 });
-app.get("/dashboard", (req, res) => {
+app.get("/dashboard", async (req, res) => {
   const users = db.get("users");
   const packs = db
     .get("packs")
@@ -209,8 +265,9 @@ app.get("/dashboard", (req, res) => {
         ...pack,
         user,
       };
-    });
-  res.render("components/layout", {
+    })
+    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+  const rd = {
     ...renderData,
     template: "dashboard",
     title: "Dashboard",
@@ -219,19 +276,29 @@ app.get("/dashboard", (req, res) => {
     search: true,
     packs,
     styles: [...renderData.styles, "/css/dashboard.css"],
-  });
+    scripts: ["/js/dashboard.js"],
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
 });
-app.get("/host/:id", (req, res) => {
+app.get("/host/:id", async (req, res) => {
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
   if (!pack || (pack.author != req.session.user.id && !pack.public))
-    return res.redirect("/");
+    return res.redirect("/dashboard");
+  if (pack.questions.length == 0) return res.redirect("/dashboard");
   const joinCode = generateJoinCode(6);
-  res.render("components/layout", {
+  const rd = {
     ...renderData,
     template: "host",
     title: "Host",
     user: req.session.user,
-    io: true,
     pack,
     joinCode,
     settings: {
@@ -246,16 +313,26 @@ app.get("/host/:id", (req, res) => {
       joinInLate: true,
     },
     styles: [...renderData.styles, "/css/host.css"],
-  });
+    scripts: ["/js/host.js"],
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
 });
-app.get("/pack/:id", (req, res) => {
+app.get("/pack/:id", async (req, res) => {
   const users = db.get("users");
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
   if (!pack || (!pack.public && pack.author != req.session.user.id))
-    return res.redirect("/");
+    return res.redirect("/dashboard");
   const user = users.find((user) => user.id == pack.author);
   pack.user = user;
-  res.render("components/layout", {
+  const rd = {
     ...renderData,
     template: "pack",
     title: pack.name,
@@ -263,30 +340,61 @@ app.get("/pack/:id", (req, res) => {
     pack,
     user,
     styles: [...renderData.styles, "/css/pack.css"],
-  });
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
 });
-app.get("/pack/:id/edit", (req, res) => {
+app.get("/pack/:id/edit", async (req, res) => {
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
-  if (!pack || pack.author != req.session.user.id) return res.redirect("/");
-  res.render("components/layout", {
+  if (!pack || pack.author != req.session.user.id)
+    return res.redirect(
+      url.format({
+        pathname: "/",
+        query: req.query,
+      }),
+    );
+  const rd = {
     ...renderData,
     template: "edit",
     title: "Edit " + pack.name,
     user: req.session.user,
     pack,
     styles: [...renderData.styles, "/css/edit.css", "/css/pack.css"],
-  });
+    scripts: ["/js/edit.js"],
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
 });
 app.post("/pack/:id/edit", (req, res) => {
   const { name, description, public } = req.body;
   const packs = db.get("packs");
   const pack = packs.find((pack) => pack.id == req.params.id);
-  if (!pack || pack.author != req.session.user.id) return res.redirect("/");
+  if (!pack || pack.author != req.session.user.id)
+    return res.redirect("/dashboard");
   pack.name = name;
   pack.description = description;
   pack.public = public;
   db.set("packs", packs);
-  res.redirect("/pack/" + pack.id);
+  res.redirect(
+    url.format({
+      pathname: "/pack/" + pack.id,
+      query: req.query,
+    }),
+  );
 });
 app.post("/pack/:id/add-question", (req, res) => {
   const packs = db.get("packs");
@@ -299,6 +407,7 @@ app.post("/pack/:id/add-question", (req, res) => {
   };
   pack.questions = pack.questions || [];
   pack.questions.push(q);
+  pack.updated_at = new Date();
   db.set("packs", packs);
   res.json({
     success: true,
@@ -313,6 +422,7 @@ app.post("/pack/:id/edit-question", (req, res) => {
   pack.questions = pack.questions || [];
   const q = pack.questions.findIndex((e) => e.id == req.body.id);
   pack.questions[q] = req.body;
+  pack.updated_at = new Date();
   db.set("packs", packs);
   res.json({
     success: true,
@@ -328,6 +438,7 @@ app.post("/pack/:id/delete-question", (req, res) => {
   const q = pack.questions.find((e) => e.id == req.body.id);
   if (!q) return res.json({ success: false });
   pack.questions.splice(pack.questions.indexOf(q), 1);
+  pack.updated_at = new Date();
   db.set("packs", packs);
   res.json({
     success: true,
@@ -337,21 +448,37 @@ app.post("/pack/:id/delete-question", (req, res) => {
 app.get("/pack/:id/delete", (req, res) => {
   const packs = db.get("packs");
   const pack = packs.find((pack) => pack.id == req.params.id);
-  if (!pack || pack.author != req.session.user.id) return res.redirect("/");
+  if (!pack || pack.author != req.session.user.id)
+    return res.redirect("/dashboard");
   if (pack.image && fs.existsSync(__dirname + "/public" + pack.image))
     fs.unlinkSync(__dirname + "/public" + pack.image);
   packs.splice(packs.indexOf(pack), 1);
   db.set("packs", packs);
-  res.redirect("/dashboard");
+  res.redirect(
+    url.format({
+      pathname: "/dashboard",
+      query: req.query,
+    }),
+  );
 });
-app.get("/create", (req, res) => {
-  res.render("components/layout", {
+app.get("/create", async (req, res) => {
+  const rd = {
     ...renderData,
     template: "create",
     title: "Create a pack",
     user: req.session.user,
     styles: [...renderData.styles, "/css/create.css"],
-  });
+    scripts: ["/js/create.js"],
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
 });
 app.post("/create", upload.single("image"), (req, res) => {
   const { name, description, public } = req.body;
@@ -369,17 +496,29 @@ app.post("/create", upload.single("image"), (req, res) => {
   };
   packs.push(pack);
   db.set("packs", packs);
-  res.redirect("/pack/" + pack.id);
+  res.json({
+    success: true,
+    redirect: "/pack/" + pack.id,
+  });
 });
-app.use("*", (req, res) =>
-  res.render("components/layout", {
+app.use("*", async (req, res) => {
+  const rd = {
     ...renderData,
     template: "404",
     title: "Not found",
     buttons: false,
     styles: [...renderData.styles, "/css/404.css"],
-  }),
-);
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
+});
 
 io.on("connection", (socket) => {
   let user = {

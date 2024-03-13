@@ -16,13 +16,16 @@
         <link rel="icon" href="/icon.png" />
     </head>
     <body>
-        <script>const user = <%- JSON.stringify(user || {}) %>;</script>
-        <% if (io) { %>
-            <script src="/socket.io/socket.io.js"></script>
-        <% } %>
-        <script src="/js/menu.js"></script>
+        <div id="loader"></div>
         <div id="container">
             <%- include('../' + template + '.html') %>
         </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/menu.js"></script>
+        <script src="/js/time.js"></script>
+        <script src="/js/animateGrid.js"></script>
+        <% scripts.forEach(s => { %>
+            <script src="<%= s %>"></script>
+        <% }) %>
     </body>
 </html>

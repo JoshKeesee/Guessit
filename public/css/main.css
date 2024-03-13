@@ -35,6 +35,31 @@ html:root {
   --a4-dark: rgb(0, 0, 110);
 }
 
+@property --progress {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--progress);
+  height: 3px;
+  z-index: 9999;
+  background: linear-gradient(
+    35deg,
+    var(--primary-color),
+    var(--primary-color),
+    var(--primary-accent-color),
+    var(--primary-color)
+  );
+  pointer-events: none;
+  --progress: 0%;
+  transition: all 0.3s ease;
+}
+
 a {
   color: var(--primary-color);
   text-decoration: underline;
