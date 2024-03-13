@@ -92,7 +92,7 @@
 
 #pack .info .description {
   text-align: left;
-  max-width: calc(60%);
+  max-width: calc(100% - 10px);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -110,6 +110,13 @@
   font-size: 16px;
   color: #666;
   cursor: pointer;
+}
+
+#pack .info #tags {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 #pack .info .tag {
