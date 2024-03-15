@@ -433,6 +433,13 @@ html:has(#header #bar):root {
   transition: all 0.3s ease;
 }
 
+.btn.primary.disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: 0 4px 0 #999;
+}
+
 .btn.primary:hover {
   filter: brightness(120%);
   transform: translateY(-2px);
@@ -440,10 +447,21 @@ html:has(#header #bar):root {
   transition: all 0.3s ease;
 }
 
+.btn.primary.disabled:hover {
+  transform: none;
+  filter: none;
+  box-shadow: 0 4px 0 #999;
+}
+
 .btn.primary:active {
   transform: translateY(2px);
   box-shadow: 0 2px 0 var(--primary-color-dark);
   transition: all 0.05s ease !important;
+}
+
+.btn.primary.disabled:active {
+  transform: none;
+  box-shadow: 0 2px 0 #999;
 }
 
 .btn.secondary {
@@ -511,14 +529,14 @@ html:has(#header #bar):root {
   opacity: 0;
 }
 
-.btn.showy {
+.btn.showy:not(.disabled) {
   background-size: 250%;
   background-repeat: no-repeat;
   background-position: left;
   transition: all 0.3s ease;
 }
 
-.btn.showy:hover {
+.btn.showy:not(.disabled):hover {
   filter: none;
   background-color: var(--primary-accent-color);
   background-image: linear-gradient(
@@ -533,11 +551,11 @@ html:has(#header #bar):root {
     background-color 0s 0.3s ease;
 }
 
-.btn.primary.showy:hover {
+.btn.primary.showy:not(.disabled):hover {
   box-shadow: 0 6px 0 var(--primary-accent-color-dark);
 }
 
-.btn.primary.showy:active {
+.btn.primary.showy:not(.disabled):active {
   box-shadow: 0 2px 0 var(--primary-accent-color-dark);
 }
 
@@ -602,6 +620,19 @@ html:has(#header #bar):root {
   transform: translateY(2px);
   box-shadow: 0 2px 0 #c82333;
   transition: all 0.05s ease !important;
+}
+
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple .ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 600ms linear;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .bold {
@@ -782,6 +813,13 @@ html:has(#header #bar):root {
 @keyframes secondary {
   to {
     transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
   }
 }
 

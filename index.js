@@ -311,6 +311,13 @@ app.get("/host/:id", async (req, res) => {
       minPlayers: 1,
       randomizeAnswers: true,
       joinInLate: true,
+      priceMultiplier: 2,
+      prices: {
+        mpq: 10,
+        multiplier: 30,
+        stocks: 100,
+        insurance: 50,
+      },
     },
     styles: [...renderData.styles, "/css/host.css"],
     scripts: ["/js/host.js"],

@@ -34,9 +34,15 @@
                     <div id="stats">
                         <div id="username"></div>
                         <div id="score"></div>
+                        <div id="store" class="ripple">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                <path d="M36.8 192H603.2c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0H121.7c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224V384v80c0 26.5 21.5 48 48 48H336c26.5 0 48-21.5 48-48V384 224H320V384H128V224H64zm448 0V480c0 17.7 14.3 32 32 32s32-14.3 32-32V224H512z"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
                 <div id="content">
+                    <div id="fade"></div>
                     <div id="play-lobby" class="active">
                         <h1>You're in!</h1>
                         <h3>See your name on the board?</h3>
@@ -50,5 +56,91 @@
                         </div>
                     </div>
                     <div id="questions"></div>
+                    <div id="market">
+                        <div id="market-header">
+                            <div id="title">Market</div>
+                            <div id="close" class="ripple">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                    <path d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div id="market-content">
+                            <div id="market-items">
+                                <div id="mpq" class="market-item purple" data-item="mpq">
+                                    <div id="description">
+                                        <div id="title">Money Per Question</div>
+                                        Increase the amount of money you earn per question
+                                    </div>
+                                    <div id="details">
+                                        <div id="current">
+                                            <b>Current:</b><br>
+                                            <span id="current" class="showy fast">$0</span> per question
+                                        </div>
+                                        <div id="divider"></div>
+                                        <div id="next">
+                                            <b>Next:</b><br>
+                                            <span id="next" class="showy warm fast">$0</span> per question
+                                        </div>
+                                    </div>
+                                    <div id="buy" class="btn primary showy max-bold disabled">Buy <span id="price">$0</span></div>
+                                </div>
+                                <div id="multiplier" class="market-item orange" data-item="multiplier">
+                                    <div id="description">
+                                        <div id="title">Multiplier</div>
+                                        Amp up your answer streak earnings
+                                    </div>
+                                    <div id="details">
+                                        <div id="current">
+                                            <b>Current:</b><br>
+                                            <span id="current" class="showy fast">1x</span> money
+                                        </div>
+                                        <div id="divider"></div>
+                                        <div id="next">
+                                            <b>Next:</b><br>
+                                            <span id="next" class="showy warm fast">1x</span> money
+                                        </div>
+                                    </div>
+                                    <div id="buy" class="btn primary showy max-bold disabled">Buy <span id="price">$0</span></div>
+                                </div>
+                                <div id="stocks" class="market-item green" data-item="stocks">
+                                    <div id="description">
+                                        <div id="title">Stocks</div>
+                                        Earn more money if the stocks are high
+                                    </div>
+                                    <div id="details">
+                                        <div id="current">
+                                            <b>Current:</b><br>
+                                            <span id="current" class="showy fast">$0</span> per question
+                                        </div>
+                                        <div id="divider"></div>
+                                        <div id="next">
+                                            <b>Next:</b><br>
+                                            <span id="next" class="showy warm fast">$0</span> per question
+                                        </div>
+                                    </div>
+                                    <div id="buy" class="btn primary showy max-bold disabled">Buy <span id="price">$0</span></div>
+                                </div>
+                                <div id="insurance" class="market-item red" data-item="insurance">
+                                    <div id="description">
+                                        <div id="title">Insurance</div>
+                                        Lose less money on wrong answers
+                                    </div>
+                                    <div id="details">
+                                        <div id="current">
+                                            <b>Current:</b><br>
+                                            Lose <span id="current" class="showy fast">$0</span> on wrong answer
+                                        </div>
+                                        <div id="divider"></div>
+                                        <div id="next">
+                                            <b>Next:</b><br>
+                                            Lose <span id="next" class="showy warm fast">$0</span> on wrong answer
+                                        </div>
+                                    </div>
+                                    <div id="buy" class="btn primary showy max-bold disabled">Buy <span id="price">$0</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>

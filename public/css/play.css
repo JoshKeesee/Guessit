@@ -75,16 +75,305 @@
   transition: all 0.3s ease;
 }
 
-#game #score {
+#game #score, #game #store {
   transform: scale(0);
   margin-left: -20px;
   padding: 0;
   opacity: 0;
 }
 
-#game:has(#play-lobby:not(.active)) #score {
+#game #store {
+  margin-left: -40px;
+}
+
+#game #store {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0 !important;
+  transition: all 0.3s ease;
+}
+
+#game #store svg {
+  width: 25px;
+  height: 25px;
+  fill: var(--white-color);
+  transition: all 0.3s ease;
+}
+
+#game #store::before,
+#market #close::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+#game #store:hover::before,
+#game #store.active::before,
+#market #close:hover::before,
+#market #close.active::before {
+  transform: scale(1);
+  opacity: 1;
+}
+
+#game #store:active::before,
+#market #close:active::before {
+  background: rgba(255, 255, 255, 0.3);
+  transition: background 0.3s 0.1s ease;
+}
+
+#game:has(#play-lobby:not(.active)) #score,
+#game:has(#play-lobby:not(.active)) #store {
   transform: scale(1);
   margin-left: 0;
   padding: 10px;
   opacity: 1;
+}
+
+#game #fade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+
+#game #market {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 12;
+  transform: translate(-50%, -70%) scale(0.5);
+  transform-origin: center;
+  padding: 20px;
+  border-radius: 20px;
+  width: 70%;
+  min-width: 500px;
+  max-height: 80%;
+  overflow-y: scroll;
+  background: var(--white-color);
+  pointer-events: none;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+  transition: all 0.3s ease;
+}
+
+#game #market.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translate(-50%, -50%);
+}
+
+#game #market::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+#game:has(#market.active) #fade {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#game #market #market-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#game #market #market-header #title {
+  color: var(--black-color);
+  font-size: 40px;
+  font-weight: 800;
+  font-family: "Oxanium", sans-serif;
+  user-select: none;
+}
+
+#game #market #market-header #close {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+#game #market #market-header #close::before {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+#game #market #market-header #close:active::before {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+#game #market #market-header #close svg {
+  width: 25px;
+  height: 25px;
+  fill: var(--black-color);
+  transition: all 0.3s ease;
+}
+
+#game #market #market-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+#game #market #market-items .market-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  min-width: 400px;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
+#game #market #market-items .market-item:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+#game #market #market-items .market-item #title {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--black-color);
+}
+
+#game #market #market-items .market-item #description {
+  font-size: 15px;
+  font-weight: 400;
+  text-align: center;
+  color: #666;
+}
+
+#game #market #market-items .market-item #details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#game #market #market-items .market-item #details:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+#game #market #market-items .market-item #buy {
+  width: 100%;
+}
+
+#game #market #market-items .market-item #buy span::before {
+  content: "(";
+}
+
+#game #market #market-items .market-item #buy span::after {
+  content: ")";
+}
+
+.market-item.purple {
+  background: linear-gradient(
+    45deg,
+    rgba(255, 0, 255, 0.5),
+    rgba(0, 255, 255, 0.5)
+  );
+}
+
+.market-item.red {
+  background: linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 0.5),
+    rgba(255, 255, 0, 0.5)
+  );
+}
+
+.market-item.orange {
+  background: linear-gradient(
+    45deg,
+    rgba(255, 165, 0, 0.5),
+    rgba(255, 255, 0, 0.5)
+  );
+}
+
+.market-item.green {
+  background: linear-gradient(
+    45deg,
+    rgba(0, 255, 0, 0.5),
+    rgba(0, 0, 255, 0.5)
+  );
+}
+
+#close .ripple-effect {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (min-width: 1830px) {
+  #game #market #insurance.market-item {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+  
+  #game #market #insurance.market-item #description {
+    text-align: left !important;
+    margin-top: 0 !important;
+  }
+}
+
+@media screen and (max-width: 1420px) {
+  #game #market #market-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+
+  #game #market #market-items .market-item {
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media screen and (max-width: 1090px) {
+  #game #market {
+    width: 90%;
+    min-width: 300px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  #game #market #market-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
 }

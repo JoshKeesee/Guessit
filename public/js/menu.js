@@ -28,6 +28,24 @@ const menuSetup = () => {
       };
 };
 
+const rippleSetup = () => {
+  "use strict";
+  document.querySelectorAll(".ripple").forEach((el) => {
+    el.onmousedown = (e) => {
+      const r = document.createElement("div");
+      r.classList.add("ripple-effect");
+      const d = Math.max(el.clientWidth, el.clientHeight);
+      const rad = d / 2;
+      const { left, top } = el.getBoundingClientRect();
+      r.style.width = r.style.height = d + "px";
+      r.style.left = e.clientX - left - rad + "px";
+      r.style.top = e.clientY - top - rad + "px";
+      el.appendChild(r);
+      // setTimeout(() => r.remove(), 1000);
+    };
+  });
+};
+
 const linkSetup = () => {
   "use strict";
   document.querySelectorAll("a").forEach(
@@ -122,6 +140,7 @@ const playSound = (sound) => {
 window.addEventListener("load", () => {
   menuSetup();
   linkSetup();
+  rippleSetup();
 });
 
 window.addEventListener("popstate", (e) => {
