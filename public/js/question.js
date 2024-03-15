@@ -27,6 +27,7 @@ const nextQuestion = (i) => {
 };
 
 const checkAnswer = (a) => {
+  playSound("click");
   const q = a.parentElement.parentElement;
   const ans = q.querySelectorAll(".answer");
   const c = a.dataset.correct == "true";
@@ -37,6 +38,8 @@ const checkAnswer = (a) => {
     else e.classList.add("faded");
   });
   setTimeout(() => {
+    if (c) playSound("correct");
+    else playSound("incorrect");
     const p = game.players.find((e) => e.name == name);
     const ca = [...q.querySelectorAll(".answer[data-correct='true']")].map(
       (e) => e.innerText,
@@ -44,10 +47,10 @@ const checkAnswer = (a) => {
     const f = q.querySelector(".feedback");
     f.querySelector("h1").innerText = c ? "Correct!" : "Incorrect";
     f.querySelector("p").innerHTML = c
-      ? "+$" + p.pointsPerQuestion.toString().withCommas()
-      : "-$" +
+      ? "<div id='money'>+$" + p.pointsPerQuestion.toString().withCommas() + "</div>"
+      : "<div id='money'>-$" +
         p.pointsPerIncorrect.toString().withCommas() +
-        "<br><span>The correct answer" +
+        "</div><span>The correct answer" +
         (ca.length > 1 ? "s are" : " is") +
         ": <b>" +
         ca.join(", ") +
@@ -108,7 +111,10 @@ const createQuestion = (question) => {
   const btn = document.createElement("div");
   btn.classList.add("btn");
   btn.innerText = "Continue";
-  btn.onclick = () => nextQuestion();
+  btn.onclick = () => {
+    playSound("click");
+    nextQuestion();
+  };
   next.appendChild(btn);
   c.appendChild(q);
   c.appendChild(ans);

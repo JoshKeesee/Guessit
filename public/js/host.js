@@ -86,7 +86,7 @@
       const i = game.players.findIndex((e) => e.socketId == player.socketId);
       game.players.splice(i, 1);
       const l = document.querySelector("#leaderboard");
-      l.querySelector(".player[data-name='" + player.name + "']").remove();
+      l.querySelector(`.player[data-name="${player.name}"]`).remove();
       updateLeaderboard();
       addEvent(
         `<span class="player">${player.name}</span> left the game`,

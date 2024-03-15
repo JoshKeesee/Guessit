@@ -550,7 +550,7 @@ io.on("connection", (socket) => {
     if (game.players.length >= game.maxPlayers) return cb(false, "Game full");
     if (game.players.find((e) => e.name == name))
       return cb(false, "Name already taken");
-    user.name = name;
+    user.name = name.replace(/[^a-zA-Z0-9]/g, "").trim();
     user.id = (game.players.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1;
     user.room = code;
     user.points = game.settings.startingPoints;

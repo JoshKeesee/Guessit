@@ -33,7 +33,7 @@ const linkSetup = () => {
   document.querySelectorAll("a").forEach(
     (a) =>
       (a.onclick = async (e) => {
-        if (a.target == "_blank" || a.target == "_self") return;
+        if (a.target == "_blank" || a.target == "_self" || a.href.includes("/host")) return;
         clearInterval(check);
         setLoader(0);
         e.preventDefault();
@@ -112,6 +112,11 @@ const animateScore = (score, el, easing = 0.2) => {
     else requestAnimationFrame(update);
   };
   update();
+};
+
+const playSound = (sound) => {
+  const audio = new Audio(`/audio/${sound}.mp3`);
+  audio.play();
 };
 
 window.addEventListener("load", () => {
