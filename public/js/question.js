@@ -11,6 +11,7 @@ const nextQuestion = (i) => {
     q.style.left = "0";
     q.style.zIndex = "999";
     q.style.background = "none";
+    q.style.pointerEvents = "none";
     const d = 300;
     q.animate(
       {
