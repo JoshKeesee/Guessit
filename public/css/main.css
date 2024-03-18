@@ -461,7 +461,7 @@ html:has(#header #bar):root {
 
 .btn.primary.disabled:active {
   transform: none;
-  box-shadow: 0 2px 0 #999;
+  box-shadow: 0 4px 0 #999;
 }
 
 .btn.secondary {
@@ -503,6 +503,7 @@ html:has(#header #bar):root {
   aspect-ratio: 1 / 1;
   background: conic-gradient(
       var(--primary-color),
+      var(--primary-accent-color),
       var(--primary-accent-color),
       var(--primary-color)
     )

@@ -75,7 +75,8 @@
   transition: all 0.3s ease;
 }
 
-#game #score, #game #store {
+#game #score,
+#game #store {
   transform: scale(0);
   margin-left: -20px;
   padding: 0;
@@ -150,7 +151,6 @@
   z-index: 10;
   transition: all 0.3s ease;
 }
-
 
 #game #market {
   position: fixed;
@@ -301,6 +301,27 @@
   content: ")";
 }
 
+#game #market #market-items .market-item.max #details #cont,
+#game #market #market-items .market-item.max #details #divider {
+  display: none;
+}
+
+#game #market #market-items .market-item.max #buy {
+  color: transparent;
+  position: relative;
+  transition: all 1s ease;
+}
+
+#game #market #market-items .market-item.max #buy::after {
+  content: "Max level reached";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #666;
+  animation: fade-in 1s ease;
+}
+
 .market-item.purple {
   background: linear-gradient(
     45deg,
@@ -344,7 +365,7 @@
     flex-wrap: wrap;
     text-align: left;
   }
-  
+
   #game #market #insurance.market-item #description {
     text-align: left !important;
     margin-top: 0 !important;
@@ -375,5 +396,14 @@
   #game #market #market-items {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

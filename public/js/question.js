@@ -48,9 +48,11 @@ const checkAnswer = (a) => {
     const f = q.querySelector(".feedback");
     f.querySelector("h1").innerText = c ? "Correct!" : "Incorrect";
     f.querySelector("p").innerHTML = c
-      ? "<div id='money'>+$" + p.pointsPerQuestion.toString().withCommas() + "</div>"
+      ? "<div id='money'>+$" +
+        p.nextPointsPerCorrect.toString().withCommas() +
+        "</div>"
       : "<div id='money'>-$" +
-        p.pointsPerIncorrect.toString().withCommas() +
+        p.nextPointsPerIncorrect.toString().withCommas() +
         "</div><span>The correct answer" +
         (ca.length > 1 ? "s are" : " is") +
         ": <b>" +
@@ -62,7 +64,7 @@ const checkAnswer = (a) => {
       answer: a.dataset.answer,
       current: q.dataset.id,
     });
-  }, 500);
+  }, 300);
 };
 
 const shuffle = (arr) => {

@@ -229,7 +229,7 @@ app.post("/signup", (req, res) => {
         email,
         profile: null,
         gender,
-        id: users.length + 1,
+        id: parseInt(users.sort((a, b) => b.id - a.id)[0] || 0) + 1,
       };
       db.set("users", [
         ...users,
@@ -239,7 +239,7 @@ app.post("/signup", (req, res) => {
           password: hash,
           profile: null,
           gender,
-          id: users.length + 1,
+          id: parseInt(users.sort((a, b) => b.id - a.id)[0] || 0) + 1,
         },
       ]);
       res.json({ success: true });
@@ -304,19 +304,38 @@ app.get("/host/:id", async (req, res) => {
     settings: {
       time: 10,
       startingPoints: 0,
-      pointsPerQuestion: 1,
-      pointsPerIncorrect: 1,
       minPoints: -100,
       maxPlayers: Infinity,
       minPlayers: 1,
       randomizeAnswers: true,
       joinInLate: true,
       priceMultiplier: 2,
-      prices: {
-        mpq: 10,
-        multiplier: 30,
-        stocks: 100,
-        insurance: 50,
+      powerups: {
+        mpq: {
+          prices: [
+            0, 10, 50, 500, 2000, 10000, 40000, 100000, 200000, 500000, 1000000,
+            20000000,
+          ],
+          levels: [
+            1, 5, 20, 50, 100, 500, 1000, 10000, 20000, 50000, 100000, 1000000,
+          ],
+          level: 0,
+        },
+        multiplier: {
+          prices: [0, 20, 50, 100, 150, 200, 500, 1000, 2000, 10000, 10000000],
+          levels: [1, 2, 5, 10, 15, 20, 50, 100, 200, 1000, 10000],
+          level: 0,
+        },
+        stocks: {
+          price: 100,
+          level: 0,
+          maxLevel: 15,
+        },
+        insurance: {
+          prices: [0, 20, 50, 100, 200, 300, 450, 600, 1000, 10000, 1500000],
+          levels: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+          level: 0,
+        },
       },
     },
     styles: [...renderData.styles, "/css/host.css"],
@@ -491,7 +510,7 @@ app.post("/create", upload.single("image"), (req, res) => {
   const { name, description, public } = req.body;
   const packs = db.get("packs");
   const pack = {
-    id: packs.length + 1,
+    id: (packs.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1,
     author: req.session.user.id,
     name,
     description,
@@ -527,6 +546,43 @@ app.use("*", async (req, res) => {
   res.render("components/layout", rd);
 });
 
+const getCorrectPoints = (pp, streak = 0) => {
+  return Math.floor(
+    Math.max(
+      1,
+      pp["mpq"].levels[pp["mpq"].level] +
+        pp["multiplier"].levels[pp["multiplier"].level] * streak,
+    ),
+  );
+};
+
+const getIncorrectPoints = (pp) => {
+  const ppc = getCorrectPoints(pp);
+  return Math.floor(
+    Math.max(
+      0,
+      ppc - ppc * (pp["insurance"].levels[pp["insurance"].level] / 100),
+    ),
+  );
+};
+
+const getPoints = (p) => {
+  const { powerups: pp, history: h } = p,
+    streak = h.reduce((i, a) => (a.correct ? i + 1 : 0), 0),
+    ppc = getCorrectPoints(pp, streak),
+    ppi = getIncorrectPoints(pp),
+    nppc = getCorrectPoints(pp, streak + 1),
+    nppi = Math.floor(
+      Math.max(
+        0,
+        getCorrectPoints(pp) -
+          getCorrectPoints(pp) *
+            (pp["insurance"].levels[pp["insurance"].level] / 100),
+      ),
+    );
+  return { ppc, ppi, nppc, nppi };
+};
+
 io.on("connection", (socket) => {
   let user = {
     room: null,
@@ -536,8 +592,11 @@ io.on("connection", (socket) => {
     points: 0,
     history: [],
     isHost: false,
-    pointsPerQuestion: 0,
-    pointsPerIncorrect: 0,
+    powerups: {},
+    pointsPerCorrect: 1,
+    pointsPerIncorrect: 1,
+    nextPointsPerCorrect: 1,
+    nextPointsPerIncorrect: 1,
   };
   socket.on("check code", (code, cb = () => {}) => {
     const game = games[code];
@@ -561,8 +620,7 @@ io.on("connection", (socket) => {
     user.id = (game.players.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1;
     user.room = code;
     user.points = game.settings.startingPoints;
-    user.pointsPerQuestion = game.settings.pointsPerQuestion;
-    user.pointsPerIncorrect = game.settings.pointsPerIncorrect;
+    user.powerups = structuredClone(game.settings.powerups);
     game.players.push(user);
     user = game.players.find((e) => e.id == user.id);
     socket.join(code);
@@ -652,14 +710,20 @@ io.on("connection", (socket) => {
     if (!question) return;
     const player = game.players.find((e) => e.id == user.id);
     if (!player) return;
+    const o = player.points;
     const correct = question.answers;
+    const { ppc, ppi, nppc, nppi } = getPoints(player);
+    user.pointsPerCorrect = ppc;
+    user.pointsPerIncorrect = ppi;
+    user.nextPointsPerCorrect = nppc;
+    user.nextPointsPerIncorrect = nppi;
     if (correct.includes(data.answer)) {
-      player.points += player.pointsPerQuestion;
-      game.totalPointsEarned += player.pointsPerQuestion;
+      player.points += user.pointsPerCorrect;
+      game.totalPointsEarned += player.points - o;
       io.to(user.room).emit("total earned", game.totalPointsEarned);
     } else {
-      player.points -= player.pointsPerIncorrect;
-      game.totalPointsLost += player.pointsPerIncorrect;
+      player.points -= user.pointsPerIncorrect;
+      game.totalPointsLost += player.points - o;
     }
     if (player.points < game.settings.minPoints)
       player.points = game.settings.minPoints;
@@ -669,6 +733,23 @@ io.on("connection", (socket) => {
       correct,
     });
     io.to(user.room).emit("player answered", player);
+  });
+  socket.on("buy item", (item, cb = () => {}) => {
+    const l = user.powerups[item];
+    if (!l) return cb({ success: false, error: "Item not found" });
+    if (l.level >= l.levels?.length)
+      return cb({ success: false, error: "Max level" });
+    if (user.points < l.prices[l.level])
+      return cb({ success: false, error: "Not enough points" });
+    l.level++;
+    user.points -= l.prices[l.level];
+    const { ppc, ppi, nppc, nppi } = getPoints(user);
+    user.pointsPerCorrect = ppc;
+    user.pointsPerIncorrect = ppi;
+    user.nextPointsPerCorrect = nppc;
+    user.nextPointsPerIncorrect = nppi;
+    cb({ success: true, player: user });
+    io.to(user.room).emit("powerup", { item, player: user });
   });
   socket.on("end game", (data) => {
     const game = games[data.room];

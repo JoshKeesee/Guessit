@@ -20,8 +20,7 @@
     (e) =>
       (e.onclick = () => {
         e.classList.toggle("active");
-        if (mute.classList.contains("active")) music.muted = true;
-        else music.muted = false;
+        mute.forEach((el) => (el.muted = e.classList.contains("active")));
       }),
   );
 
@@ -121,6 +120,18 @@
         );
     }
     updateLeaderboard();
+  });
+
+  socket.on("powerup", ({ item, player }) => {
+    const p = player.powerups[item];
+    addEvent(
+      `<span class="player">${player.name}</span> upgraded <span class="powerup">${item
+        .replace("mpq", "money per question")
+        .replace(/(^\w{1})|(\s+\w{1})/g, (l) =>
+          l.toUpperCase(),
+        )}</span> to level ${p.level}/${p.levels.length - 1}`,
+      "info",
+    );
   });
 
   socket.on("total earned", (s) => {

@@ -7,7 +7,7 @@ const mpItems = document.querySelectorAll("#market .market-item");
 let name = "",
   code = "",
   game = {},
-  prices = {};
+  powerups = {};
 
 socket.on("player joined", (player) => {
   if (player.name != name) return;
@@ -44,8 +44,8 @@ socket.on("player left", (player, reason) => {
 socket.on("game started", (data) => {
   game = data;
   document.querySelector("#play-lobby").classList.remove("active");
-  prices = game.settings.prices;
-  updatePrices(prices);
+  powerups = game.settings.powerups;
+  updatePowerups(powerups);
 });
 
 socket.on("question", (id) => {
@@ -59,38 +59,74 @@ socket.on("player answered", (player) => {
   if (p) game.players[game.players.findIndex((e) => e.name == name)] = player;
   document.querySelector("#stats #username").innerText = player.name;
   animateScore(player.points, document.querySelector("#stats #score"));
-  updatePrices(prices);
 });
 
-const updatePrices = (p) => {
+const updatePowerups = (p) => {
   mpItems.forEach((e) => {
     const item = e.dataset.item;
-    e.dataset.price = p[item];
-    animateScore(p[item], e.querySelector("#price"));
-    if (game.players.find((p) => p.name == name).points < p[item]) e.querySelector("#buy").classList.add("disabled");
+    const ps = p[item].prices || [],
+      ls = p[item].levels || [],
+      l = p[item].level + 1;
+    e.dataset.price = ps[l];
+    animateScore(ps[l], e.querySelector("#price"));
+    if (item != "stocks") {
+      const max = l == ls.length;
+      e.classList.toggle("max", max);
+      let c = ls[l - 1],
+        n = max ? c : ls[l];
+      if (item == "multiplier" || item == "insurance") {
+        const x = item == "insurance" ? "%" : "x";
+        c = item == "insurance" ? 100 - c : c;
+        n = item == "insurance" ? 100 - n : n;
+        e.querySelector("#current").innerText = c.toString().withCommas() + x;
+        e.querySelector("#next").innerText = n.toString().withCommas() + x;
+      } else {
+        animateScore(c, e.querySelector("#current"));
+        animateScore(n, e.querySelector("#next"));
+      }
+    }
+    if (
+      game.players.find((p) => p.name == name).points < ps[l] ||
+      l == ls.length
+    )
+      e.querySelector("#buy").classList.add("disabled");
     else e.querySelector("#buy").classList.remove("disabled");
   });
-}
-
-store.onclick = close.onclick = gameFade.onclick = (e) => {
-  if (e.target.id != "fade") market.classList.toggle("active");
-  else market.classList.remove("active");
-  playSound("whoosh");
 };
+
+store.onclick =
+  close.onclick =
+  gameFade.onclick =
+    (e) => {
+      updatePowerups(powerups);
+      if (e.target.id != "fade") market.classList.toggle("active");
+      else market.classList.remove("active");
+      playSound("whoosh");
+    };
 
 mpItems.forEach((e) => {
   e.querySelector("#buy").onclick = () => {
     const item = e.dataset.item;
     const price = e.dataset.price;
-    if (game.players.find((p) => p.name == name).points < price || e.querySelector("#buy").classList.contains("disabled"))
+    if (
+      game.players.find((p) => p.name == name).points < price ||
+      e.querySelector("#buy").classList.contains("disabled")
+    )
       return;
+    e.querySelector("#buy").classList.add("disabled");
     playSound("click2");
-    socket.emit("buy item", item, price, (data, error) => {
+    socket.emit("buy item", item, (data) => {
       if (data.success) {
         playSound("bought");
-        prices[item] *= game.settings.priceMultiplier;
-        updatePrices(prices);
-      } else alert(error);
+        powerups[item] = data.player.powerups[item];
+        game.players[game.players.findIndex((e) => e.name == name)] =
+          data.player;
+        updatePowerups(powerups);
+        animateScore(
+          data.player.points,
+          document.querySelector("#stats #score"),
+        );
+      }
     });
   };
 });

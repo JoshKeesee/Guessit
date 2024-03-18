@@ -252,6 +252,10 @@ html {
   font-weight: bold;
 }
 
+#content.game #host #events #event .powerup {
+  color: var(--white-color);
+}
+
 html:has(#content.game.active):root {
   --header-height: 60px !important;
 }
