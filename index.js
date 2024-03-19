@@ -313,24 +313,18 @@ app.get("/host/:id", async (req, res) => {
       powerups: {
         mpq: {
           prices: [
-            0, 10, 50, 500, 2000, 10000, 40000, 100000, 200000, 500000, 1000000,
-            20000000, 200000000, 1000000000, 20000000000, 10000000000000,
+            0, 10, 100, 1000, 10000, 75000, 300000, 1000000, 10000000,
+            100000000,
           ],
-          levels: [
-            1, 5, 20, 50, 100, 500, 1000, 10000, 20000, 50000, 100000, 1000000,
-            10000000, 100000000, 1000000000, 5000000000000,
-          ],
+          levels: [1, 5, 50, 100, 500, 2000, 5000, 10000, 250000, 1000000],
           level: 0,
         },
         multiplier: {
           prices: [
-            0, 20, 50, 100, 150, 200, 500, 1000, 2000, 10000, 10000000,
-            10000000000, 50000000000, 1000000000000,
+            0, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000,
+            200000000,
           ],
-          levels: [
-            1, 2, 5, 10, 15, 20, 50, 100, 200, 1000, 10000, 1000000, 100000000,
-            200000000000,
-          ],
+          levels: [1, 3, 10, 50, 250, 1200, 6500, 35000, 175000, 1000000],
           level: 0,
         },
         stocks: {
@@ -338,8 +332,11 @@ app.get("/host/:id", async (req, res) => {
           level: 0,
         },
         insurance: {
-          prices: [0, 20, 50, 100, 200, 300, 450, 600, 1000, 10000, 1500000],
-          levels: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+          prices: [
+            0, 10, 250, 1000, 25000, 100000, 1000000, 5000000, 25000000,
+            500000000,
+          ],
+          levels: [0, 10, 25, 40, 50, 70, 80, 90, 95, 99],
           level: 0,
         },
       },
@@ -552,7 +549,7 @@ app.use("*", async (req, res) => {
   res.render("components/layout", rd);
 });
 
-const getCorrectPoints = (pp, streak = 0) => {
+const getCorrectPoints = (pp, streak) => {
   return Math.floor(
     Math.max(
       1,
@@ -562,8 +559,8 @@ const getCorrectPoints = (pp, streak = 0) => {
   );
 };
 
-const getIncorrectPoints = (pp) => {
-  const ppc = getCorrectPoints(pp);
+const getIncorrectPoints = (pp, streak) => {
+  const ppc = getCorrectPoints(pp, streak);
   return Math.floor(
     Math.max(
       0,
@@ -574,15 +571,14 @@ const getIncorrectPoints = (pp) => {
 
 const getPoints = (p) => {
   const { powerups: pp, history: h } = p,
-    streak = h.reduce((i, a) => (a.correct ? i + 1 : 0), 0),
-    ppc = getCorrectPoints(pp, streak),
-    ppi = getIncorrectPoints(pp),
-    nppc = getCorrectPoints(pp, streak + 1),
+    ppc = getCorrectPoints(pp, p.streak),
+    ppi = getIncorrectPoints(pp, p.streak),
+    nppc = getCorrectPoints(pp, p.streak + 1),
     nppi = Math.floor(
       Math.max(
         0,
-        getCorrectPoints(pp) -
-          getCorrectPoints(pp) *
+        getCorrectPoints(pp, p.streak) -
+          getCorrectPoints(pp, p.streak) *
             (pp["insurance"].levels[pp["insurance"].level] / 100),
       ),
     );
@@ -597,6 +593,7 @@ io.on("connection", (socket) => {
     socketId: socket.id,
     points: 0,
     history: [],
+    streak: 0,
     isHost: false,
     powerups: {},
     pointsPerCorrect: 1,
@@ -672,6 +669,7 @@ io.on("connection", (socket) => {
       current: 0,
       totalPointsEarned: 0,
       totalPointsLost: 0,
+      streak: 0,
       ...data,
       players: [user],
     };
@@ -724,10 +722,12 @@ io.on("connection", (socket) => {
     user.nextPointsPerCorrect = nppc;
     user.nextPointsPerIncorrect = nppi;
     if (correct.includes(data.answer)) {
+      player.streak++;
       player.points += user.pointsPerCorrect;
       game.totalPointsEarned += player.points - o;
       io.to(user.room).emit("total earned", game.totalPointsEarned);
     } else {
+      player.streak = 0;
       player.points -= user.pointsPerIncorrect;
       game.totalPointsLost += player.points - o;
     }
@@ -738,7 +738,15 @@ io.on("connection", (socket) => {
       answer: data.answer,
       correct,
     });
-    io.to(user.room).emit("player answered", player);
+    io.to(user.room).emit("player answered", {
+      name: player.name,
+      points: player.points,
+      pointsPerCorrect: player.pointsPerCorrect,
+      pointsPerIncorrect: player.pointsPerIncorrect,
+      nextPointsPerCorrect: player.nextPointsPerCorrect,
+      nextPointsPerIncorrect: player.nextPointsPerIncorrect,
+      streak: player.streak,
+    });
   });
   socket.on("buy item", (item, cb = () => {}) => {
     const l = user.powerups[item];
@@ -749,13 +757,23 @@ io.on("connection", (socket) => {
       return cb({ success: false, error: "Not enough points" });
     l.level++;
     user.points -= l.prices[l.level];
-    const { ppc, ppi, nppc, nppi } = getPoints(user);
-    user.pointsPerCorrect = ppc;
-    user.pointsPerIncorrect = ppi;
-    user.nextPointsPerCorrect = nppc;
-    user.nextPointsPerIncorrect = nppi;
-    cb({ success: true, player: user });
-    io.to(user.room).emit("powerup", { item, player: user });
+    user.streak = 0;
+    const { ppc, ppi } = getPoints(user);
+    user.nextPointsPerCorrect = ppc;
+    user.nextPointsPerIncorrect = ppi;
+    const p = {
+      name: user.name,
+      points: user.points,
+      streak: user.streak,
+      powerups: user.powerups,
+      nextPointsPerCorrect: user.nextPointsPerCorrect,
+      nextPointsPerIncorrect: user.nextPointsPerIncorrect,
+    };
+    cb({ success: true, player: p });
+    io.to(user.room).emit("powerup", {
+      item,
+      player: p,
+    });
   });
   socket.on("end game", (data) => {
     const game = games[data.room];

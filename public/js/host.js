@@ -95,17 +95,17 @@
   });
 
   socket.on("player answered", (data) => {
-    const p = game.players.find((e) => e.id == data.id);
+    const p = game.players.find((e) => e.name == data.name);
     if (!p) return;
     const prevRank = game.players
       .filter((e) => !e.isHost)
       .sort((a, b) => b.points - a.points)
-      .findIndex((e) => e.id == p.id);
+      .findIndex((e) => e.name == p.name);
     p.points = data.points;
     const newRank = game.players
       .filter((e) => !e.isHost)
       .sort((a, b) => b.points - a.points)
-      .findIndex((e) => e.id == p.id);
+      .findIndex((e) => e.name == p.name);
     if (prevRank != newRank) {
       const d = newRank - prevRank;
       if (newRank == 0)
@@ -136,7 +136,7 @@
 
   socket.on("total earned", (s) => {
     const te = document.querySelector("#total-earned");
-    animateScore(s, te, 0.1);
+    animateScore(s, te, "$", 0.1);
   });
 
   socket.on("game started", (data) => {
@@ -199,7 +199,7 @@
           e.style.order = i;
           e.dataset.points = p.points;
           e.querySelector("#name").innerText = p.name;
-          animateScore(p.points, e.querySelector("#score"), 0.1);
+          animateScore(p.points, e.querySelector("#score"), "$", 0.1);
         });
       },
       {

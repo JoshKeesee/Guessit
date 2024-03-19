@@ -14,6 +14,11 @@ socket.on("player joined", (player) => {
   const p = game.players?.find((e) => e.name == name);
   if (p) game.players[game.players.findIndex((e) => e.name == name)] = player;
   document.querySelector("#stats #username").innerText = player.name;
+  animateScore(
+    player.streak,
+    document.querySelector("#stats #streak span"),
+    "",
+  );
   animateScore(player.points, document.querySelector("#stats #score"));
   setTimeout(() => {
     document.querySelector("#lobby").classList.remove("active");
@@ -25,7 +30,11 @@ socket.on("player joined", (player) => {
 socket.on("player left", (player, reason) => {
   if (player.name != name) return;
   const p = game.players?.find((e) => e.name == name);
-  if (p) game.players[game.players.findIndex((e) => e.name == name)] = player;
+  if (p)
+    game.players[game.players.findIndex((e) => e.name == name)] = updateObject(
+      p,
+      player,
+    );
   const url = new URL(location.href);
   url.searchParams.delete("code");
   history.replaceState(null, "", url);
@@ -56,9 +65,18 @@ socket.on("question", (id) => {
 socket.on("player answered", (player) => {
   if (player.name != name) return;
   const p = game.players?.find((e) => e.name == name);
-  if (p) game.players[game.players.findIndex((e) => e.name == name)] = player;
+  if (p)
+    game.players[game.players.findIndex((e) => e.name == name)] = updateObject(
+      p,
+      player,
+    );
   document.querySelector("#stats #username").innerText = player.name;
   animateScore(player.points, document.querySelector("#stats #score"));
+  animateScore(
+    player.streak,
+    document.querySelector("#stats #streak span"),
+    "",
+  );
 });
 
 const updatePowerups = (p) => {
@@ -74,16 +92,11 @@ const updatePowerups = (p) => {
       e.classList.toggle("max", max);
       let c = ls[l - 1],
         n = max ? c : ls[l];
-      if (item == "multiplier" || item == "insurance") {
-        const x = item == "insurance" ? "%" : "x";
-        c = item == "insurance" ? 100 - c : c;
-        n = item == "insurance" ? 100 - n : n;
-        e.querySelector("#current").innerText = c.toString().withCommas() + x;
-        e.querySelector("#next").innerText = n.toString().withCommas() + x;
-      } else {
-        animateScore(c, e.querySelector("#current"));
-        animateScore(n, e.querySelector("#next"));
-      }
+      const x = item == "insurance" ? "%" : item == "multiplier" ? "x" : "$";
+      c = item == "insurance" ? 100 - c : c;
+      n = item == "insurance" ? 100 - n : n;
+      animateScore(c, e.querySelector("#current"), x);
+      animateScore(n, e.querySelector("#next"), x);
     }
     if (
       game.players.find((p) => p.name == name).points < ps[l] ||
@@ -119,12 +132,18 @@ mpItems.forEach((e) => {
       if (data.success) {
         playSound("bought");
         powerups[item] = data.player.powerups[item];
+        const p = game.players.find((e) => e.name == name);
         game.players[game.players.findIndex((e) => e.name == name)] =
-          data.player;
+          updateObject(p, data.player);
         updatePowerups(powerups);
         animateScore(
           data.player.points,
           document.querySelector("#stats #score"),
+        );
+        animateScore(
+          data.player.streak,
+          document.querySelector("#stats #streak span"),
+          "",
         );
       }
     });

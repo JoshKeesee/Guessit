@@ -41,7 +41,7 @@ const rippleSetup = () => {
       r.style.left = e.clientX - left - rad + "px";
       r.style.top = e.clientY - top - rad + "px";
       el.appendChild(r);
-      // setTimeout(() => r.remove(), 1000);
+      setTimeout(() => r.remove(), 1000);
     };
   });
 };
@@ -51,7 +51,12 @@ const linkSetup = () => {
   document.querySelectorAll("a").forEach(
     (a) =>
       (a.onclick = async (e) => {
-        if (a.target == "_blank" || a.target == "_self" || a.href.includes("/host")) return;
+        if (
+          a.target == "_blank" ||
+          a.target == "_self" ||
+          a.href.includes("/host")
+        )
+          return;
         clearInterval(check);
         setLoader(0);
         e.preventDefault();
@@ -111,22 +116,28 @@ const linkSetup = () => {
   );
 };
 
+const updateObject = (c, n) => {
+  Object.keys(n).forEach((k) => (c[k] = n[k]));
+  return c;
+};
+
 String.prototype.withCommas = function () {
   "use strict";
   return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-String.prototype.toScore = function () {
+String.prototype.toScore = function (f) {
   "use strict";
-  return ("$" + this.withCommas()).replace("-", "-$").replace("$-", "-");
+  const n = this.withCommas();
+  return (f == "$" ? f + n : n + f).replace("-", "-" + f).replace(f + "-", "-");
 };
 
-const animateScore = (score, el, easing = 0.2) => {
-  let curr = parseInt(el.innerText.replace(/,/g, "").replace("$", "")) || 0;
+const animateScore = (score, el, t = "$", easing = 0.2) => {
+  let curr = parseInt(el.innerText.replace(/,/g, "").replace(t, "")) || 0;
   const update = () => {
     curr += (score - curr) * easing;
-    el.innerText = Math.round(curr).toString().toScore();
-    if (Math.abs(score - curr) < 1) el.innerText = score.toString().toScore();
+    el.innerText = Math.round(curr).toString().toScore(t);
+    if (Math.abs(score - curr) < 1) el.innerText = score.toString().toScore(t);
     else requestAnimationFrame(update);
   };
   update();

@@ -57,6 +57,7 @@
 }
 
 #game #stats {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,7 +65,8 @@
 }
 
 #game #score,
-#game #username {
+#game #username,
+#game #streak {
   background: var(--white-color);
   border-radius: 5px;
   padding: 10px;
@@ -76,15 +78,16 @@
 }
 
 #game #score,
+#game #streak,
 #game #store {
   transform: scale(0);
-  margin-left: -20px;
-  padding: 0;
   opacity: 0;
 }
 
-#game #store {
-  margin-left: -40px;
+#game #username {
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 #game #store {
@@ -134,11 +137,18 @@
 }
 
 #game:has(#play-lobby:not(.active)) #score,
-#game:has(#play-lobby:not(.active)) #store {
+#game:has(#play-lobby:not(.active)) #store,
+#game:has(#play-lobby:not(.active)) #streak {
   transform: scale(1);
   margin-left: 0;
   padding: 10px;
   opacity: 1;
+}
+
+#game:has(#play-lobby:not(.active)) #username {
+  position: absolute;
+  right: calc(100% + 5px);
+  top: 0;
 }
 
 #game #fade {
@@ -234,10 +244,8 @@
 }
 
 #game #market #market-items {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 20px;
 }
 
@@ -356,20 +364,6 @@
 
 #close .ripple-effect {
   background: rgba(0, 0, 0, 0.1);
-}
-
-@media screen and (min-width: 1830px) {
-  #game #market #insurance.market-item {
-    width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    text-align: left;
-  }
-
-  #game #market #insurance.market-item #description {
-    text-align: left !important;
-    margin-top: 0 !important;
-  }
 }
 
 @media screen and (max-width: 1420px) {
