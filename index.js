@@ -319,12 +319,19 @@ app.get("/host/:id", async (req, res) => {
           levels: [1, 5, 50, 100, 500, 2000, 5000, 10000, 250000, 1000000],
           level: 0,
         },
-        multiplier: {
+        streak: {
           prices: [
             0, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000,
-            200000000,
+            2000000000,
           ],
           levels: [1, 3, 10, 50, 250, 1200, 6500, 35000, 175000, 1000000],
+          level: 0,
+        },
+        multiplier: {
+          prices: [
+            0, 50, 300, 2000, 12000, 85000, 700000, 6500000, 65000000, 1000000000,
+          ],
+          levels: [1, 1.5, 2, 3, 5, 8, 12, 18, 30, 100],
           level: 0,
         },
         stocks: {
@@ -553,8 +560,9 @@ const getCorrectPoints = (pp, streak) => {
   return Math.floor(
     Math.max(
       1,
-      pp["mpq"].levels[pp["mpq"].level] +
-        pp["multiplier"].levels[pp["multiplier"].level] * streak,
+      (pp["mpq"].levels[pp["mpq"].level] +
+        pp["streak"].levels[pp["streak"].level] * streak) *
+        pp["multiplier"].levels[pp["multiplier"].level],
     ),
   );
 };

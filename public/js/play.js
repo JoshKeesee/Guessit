@@ -92,7 +92,7 @@ const updatePowerups = (p) => {
       e.classList.toggle("max", max);
       let c = ls[l - 1],
         n = max ? c : ls[l];
-      const x = item == "insurance" ? "%" : item == "multiplier" ? "x" : "$";
+      const x = item == "insurance" ? "%" : item == "streak" || item == "multiplier" ? "x" : "$";
       c = item == "insurance" ? 100 - c : c;
       n = item == "insurance" ? 100 - n : n;
       animateScore(c, e.querySelector("#current"), x);

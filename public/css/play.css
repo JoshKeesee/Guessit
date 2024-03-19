@@ -64,9 +64,9 @@
   gap: 5px;
 }
 
-#game #score,
-#game #username,
-#game #streak {
+#game #stats #score,
+#game #stats #username,
+#game #stats #streak {
   background: var(--white-color);
   border-radius: 5px;
   padding: 10px;
@@ -77,20 +77,20 @@
   transition: all 0.3s ease;
 }
 
-#game #score,
-#game #streak,
-#game #store {
+#game #stats #score,
+#game #stats #streak,
+#game #stats #store {
   transform: scale(0);
   opacity: 0;
 }
 
-#game #username {
+#game #stats #username {
   position: absolute;
   right: 0;
   top: 0;
 }
 
-#game #store {
+#game #stats #store {
   width: 40px;
   height: 40px;
   display: flex;
@@ -102,14 +102,14 @@
   transition: all 0.3s ease;
 }
 
-#game #store svg {
+#game #stats #store svg {
   width: 25px;
   height: 25px;
   fill: var(--white-color);
   transition: all 0.3s ease;
 }
 
-#game #store::before,
+#game #stats #store::before,
 #market #close::before {
   content: "";
   position: absolute;
@@ -122,15 +122,15 @@
   transition: all 0.3s ease;
 }
 
-#game #store:hover::before,
-#game #store.active::before,
+#game #stats #store:hover::before,
+#game #stats #store.active::before,
 #market #close:hover::before,
 #market #close.active::before {
   transform: scale(1);
   opacity: 1;
 }
 
-#game #store:active::before,
+#game #stats #store:active::before,
 #market #close:active::before {
   background: rgba(255, 255, 255, 0.3);
   transition: background 0.3s 0.1s ease;
@@ -268,6 +268,10 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+#game #market #market-items .market-item:last-child:nth-child(odd) {
+  grid-column: span 2;
+}
+
 #game #market #market-items .market-item #title {
   font-size: 30px;
   font-weight: 600;
@@ -359,6 +363,14 @@
     45deg,
     rgba(0, 255, 0, 0.5),
     rgba(0, 0, 255, 0.5)
+  );
+}
+
+.market-item.blue {
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 255, 0.5),
+    rgba(0, 255, 255, 0.5)
   );
 }
 
