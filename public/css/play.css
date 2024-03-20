@@ -398,10 +398,14 @@
   }
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 850px) {
   #game #market #market-items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: auto;
+  }
+  
+  #game #market #market-items .market-item:last-child:nth-child(odd) {
+    grid-column: span 1;
   }
 }
 

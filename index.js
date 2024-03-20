@@ -311,32 +311,6 @@ app.get("/host/:id", async (req, res) => {
       joinInLate: true,
       priceMultiplier: 2,
       powerups: {
-        mpq: {
-          name: "Money Per Question",
-          description: "Increase the amount of money you earn per question",
-          color: "purple",
-          prices: [
-            0, 10, 100, 1000, 10000, 75000, 300000, 1000000, 10000000,
-            100000000,
-          ],
-          levels: [1, 5, 50, 100, 500, 2000, 5000, 10000, 250000, 1000000],
-          level: 0,
-          x: "$",
-          after: " per question",
-        },
-        streak: {
-          name: "Streak Amper",
-          description: "Amp up your answer streak earnings",
-          color: "orange",
-          prices: [
-            0, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000,
-            2000000000,
-          ],
-          levels: [1, 3, 10, 50, 250, 1200, 6500, 35000, 175000, 1000000],
-          level: 0,
-          x: "x",
-          after: " bonus",
-        },
         multiplier: {
           name: "Multiplier",
           description: "Multiply your earnings",
@@ -349,11 +323,15 @@ app.get("/host/:id", async (req, res) => {
           x: "x",
           after: " money",
         },
-        stocks: {
-          name: "Stocks",
-          description: "Earn more money if the stocks are high",
-          color: "green",
-          price: 100,
+        mpq: {
+          name: "Money Per Question",
+          description: "Increase the amount of money you earn per question",
+          color: "purple",
+          prices: [
+            0, 10, 100, 1000, 10000, 75000, 300000, 1000000, 10000000,
+            100000000,
+          ],
+          levels: [1, 5, 50, 100, 500, 2000, 5000, 10000, 250000, 1000000],
           level: 0,
           x: "$",
           after: " per question",
@@ -370,6 +348,19 @@ app.get("/host/:id", async (req, res) => {
           level: 0,
           x: "%",
           after: " less loss",
+        },
+        streak: {
+          name: "Streak Amper",
+          description: "Amp up your answer streak earnings",
+          color: "orange",
+          prices: [
+            0, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000,
+            2000000000,
+          ],
+          levels: [1, 3, 10, 50, 250, 1200, 6500, 35000, 175000, 1000000],
+          level: 0,
+          x: "x",
+          after: " bonus",
         },
       },
     },
@@ -629,6 +620,7 @@ io.on("connection", (socket) => {
     streak: 0,
     isHost: false,
     powerups: {},
+    stocks: {},
     pointsPerCorrect: 1,
     pointsPerIncorrect: 1,
     nextPointsPerCorrect: 1,
@@ -657,6 +649,7 @@ io.on("connection", (socket) => {
     user.room = code;
     user.points = game.settings.startingPoints;
     user.powerups = structuredClone(game.settings.powerups);
+    user.stocks = structuredClone(game.stocks).map((e) => (e = { name: e.name, shares: 0, color: e.color }));
     game.players.push(user);
     user = game.players.find((e) => e.id == user.id);
     socket.join(code);
@@ -703,9 +696,24 @@ io.on("connection", (socket) => {
       totalPointsEarned: 0,
       totalPointsLost: 0,
       streak: 0,
+      stocks: [
+        { name: "Apple", price: 0, color: "#ff0000" },
+        { name: "Google", price: 0, color: "#00ff00" },
+        { name: "Amazon", price: 0, color: "#0000ff" },
+        { name: "Facebook", price: 0, color: "#ffff00" },
+        { name: "Microsoft", price: 0, color: "#ff00ff" },
+        { name: "Tesla", price: 0, color: "#00ffff" },
+        { name: "Netflix", price: 0, color: "#000000" },
+        { name: "X", price: 0, color: "#ff8000" },
+        { name: renderData.appName, price: 0 },
+      ],
       ...data,
       players: [user],
     };
+    for (let i = 0; i < games[data.room].stocks.length; i++) {
+      const stock = games[data.room].stocks[i];
+      stock.price = Math.floor(Math.random() * 1000);
+    }
     socket.join(data.room);
     socket.emit("host joined", data);
   });
@@ -758,7 +766,6 @@ io.on("connection", (socket) => {
       player.streak++;
       player.points += user.pointsPerCorrect;
       game.totalPointsEarned += player.points - o;
-      io.to(user.room).emit("total earned", game.totalPointsEarned);
     } else {
       player.streak = 0;
       player.points -= user.pointsPerIncorrect;
@@ -808,6 +815,32 @@ io.on("connection", (socket) => {
       player: p,
     });
   });
+  socket.on("buy stock", (name, num, cb = () => {}) => {
+    const stock = user.stocks[name];
+    const game = games[user.room];
+    if (!stock) return cb({ success: false, error: "Stock not found" });
+    if (user.points < stock.price * num)
+      return cb({ success: false, error: "Not enough points" });
+    stock.shares += num;
+    user.points -= game.stocks.find((e) => e.name == name).price * num;
+    user.streak = 0;
+    const { ppc, ppi } = getPoints(user);
+    user.nextPointsPerCorrect = ppc;
+    user.nextPointsPerIncorrect = ppi;
+    const p = {
+      name: user.name,
+      points: user.points,
+      streak: user.streak,
+      stocks: user.stocks,
+      nextPointsPerCorrect: user.nextPointsPerCorrect,
+      nextPointsPerIncorrect: user.nextPointsPerIncorrect,
+    };
+    cb({ success: true, player: p });
+    io.to(user.room).emit("stock", {
+      name,
+      player: p,
+    });
+  });
   socket.on("end game", (data) => {
     const game = games[data.room];
     if (!game) return socket.emit("error", "Game not found");
@@ -816,6 +849,25 @@ io.on("connection", (socket) => {
     delete games[data.room];
   });
 });
+
+setInterval(() => {
+  for (const code in games) {
+    const game = games[code];
+    if (!game.started || game.ended) continue;
+    io.to(code).emit("total earned", game.totalPointsEarned);
+    const stocks = game.stocks;
+    for (let i = 0; i < stocks.length; i++) {
+      const stock = stocks[i];
+      if (Math.random() > 0.5) {
+        const r = Math.random();
+        if (r > 0.5) stock.price += Math.floor(Math.random() * 100);
+        else stock.price -= Math.floor(Math.random() * 100);
+        if (stock.price < 0) stock.price = 0;
+      }
+    }
+    io.to(code).emit("stocks", game.stocks);
+  }
+}, 1000 * 10);
 
 server.listen(port, () => console.log(`Server listening on port ${port}`));
 
