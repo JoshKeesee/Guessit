@@ -126,18 +126,14 @@
     const p = player.powerups[item];
     const m = p.level == p.levels.length - 1;
     addEvent(
-      `<span class="player">${player.name}</span> ${m ? "maxed out" : "upgraded"} <span class="powerup">${item
-        .replace("mpq", "money per question")
-        .replace(/(^\w{1})|(\s+\w{1})/g, (l) =>
-          l.toUpperCase(),
-        )}</span>${m ? "!" : ` to level ${p.level + 1}/${p.levels.length}`}`,
+      `<span class="player">${player.name}</span> ${m ? "maxed out" : "upgraded"} <span class="powerup">${p.name}</span>${m ? "!" : ` to level ${p.level + 1}/${p.levels.length}`}`,
       m ? "success" : "info",
     );
   });
 
   socket.on("total earned", (s) => {
     const te = document.querySelector("#total-earned");
-    animateScore(s, te, "$", 0.1);
+    animateScore(s, te, "$");
   });
 
   socket.on("game started", (data) => {
@@ -201,7 +197,7 @@
           e.style.order = i;
           e.dataset.points = p.points;
           e.querySelector("#name").innerText = p.name;
-          animateScore(p.points, e.querySelector("#score"), "$", 0.1);
+          animateScore(p.points, e.querySelector("#score"), "$");
         });
       },
       {
