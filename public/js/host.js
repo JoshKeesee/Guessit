@@ -124,13 +124,14 @@
 
   socket.on("powerup", ({ item, player }) => {
     const p = player.powerups[item];
+    const m = p.level == p.levels.length - 1;
     addEvent(
-      `<span class="player">${player.name}</span> upgraded <span class="powerup">${item
+      `<span class="player">${player.name}</span> ${m ? "maxed out" : "upgraded"} <span class="powerup">${item
         .replace("mpq", "money per question")
         .replace(/(^\w{1})|(\s+\w{1})/g, (l) =>
           l.toUpperCase(),
-        )}</span> to level ${p.level}/${p.levels.length - 1}`,
-      "info",
+        )}</span>${m ? "!" : ` to level ${p.level + 1}/${p.levels.length}`}`,
+      m ? "success" : "info",
     );
   });
 
@@ -156,11 +157,12 @@
         p.id = "event";
         p.innerHTML = text;
         if (c) p.classList.add(c);
-        e.appendChild(p);
+        e.insertBefore(p, e.firstChild);
       },
       {
         duration: 500,
         easing: "ease-in-out",
+        reverse: true,
       },
     );
   };

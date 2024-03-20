@@ -1,9 +1,4 @@
-let resetI = null,
-  currGrid = null;
-
 const resetItems = (grid, r = true) => {
-  resetI = null;
-  if (currGrid != grid.id) return;
   const children = [...grid.children];
   children.forEach((c) => setItemPosition(null, c, null, r));
 };
@@ -68,11 +63,10 @@ const animateGridItem = (
 };
 
 const animateGrid = async (grid, after, opts = {}, afterAll = () => {}) => {
-  if (resetI) clearTimeout(resetI);
-  currGrid = grid.id;
   const prevFilePositions = [],
     nextFilePositions = [];
   let children = [...grid.children];
+  if (opts.reverse) children = children.reverse();
   const origNum = children.length;
   children.forEach((c, i) => {
     const n = c.getBoundingClientRect();
@@ -87,6 +81,7 @@ const animateGrid = async (grid, after, opts = {}, afterAll = () => {}) => {
   if (opts.sync) await after();
   else after();
   children = [...grid.children];
+  if (opts.reverse) children = children.reverse();
   if (children.length > origNum) {
     for (let i = origNum; i < children.length; i++) {
       const c = children[i];
@@ -115,7 +110,7 @@ const animateGrid = async (grid, after, opts = {}, afterAll = () => {}) => {
     const p = prevFilePositions[i];
     animateGridItem(g, c, n, p, i, opts);
   });
-  resetI = setTimeout(
+  setTimeout(
     () => resetItems(grid),
     (children.length - maxI) * (opts.stagger || 0) +
       (opts.duration || 500) +
