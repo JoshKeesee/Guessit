@@ -856,6 +856,20 @@ setInterval(() => {
     if (!game.started || game.ended) continue;
     io.to(code).emit("total earned", game.totalPointsEarned);
     const stocks = game.stocks;
+    const r = Math.random() * 100;
+    if (r == 100) {
+      for (let i = 0; i < stocks.length; i++) {
+        const stock = stocks[i];
+        stock.price += Math.floor(Math.random() * 1000);
+      }
+      io.to(code).emit("stock market spike", stocks);
+    } else if (r == 0) {
+      for (let i = 0; i < stocks.length; i++) {
+        const stock = stocks[i];
+        stock.price -= Math.floor(Math.random() * 1000);
+      }
+      io.to(code).emit("stock market crash", stocks);
+    }
     for (let i = 0; i < stocks.length; i++) {
       const stock = stocks[i];
       if (Math.random() > 0.5) {
@@ -864,6 +878,9 @@ setInterval(() => {
         if (sr == 100) {
           stock.price += Math.floor(Math.random() * 1000);
           io.to(code).emit("stock spike", stock);
+        } else if (sr == 0) {
+          stock.price -= Math.floor(Math.random() * 1000);
+          io.to(code).emit("stock crash", stock);
         } else if (r > 0.5) stock.price += Math.floor(Math.random() * 100);
         else stock.price -= Math.floor(Math.random() * 100);
         if (stock.price < 10) stock.price = 10;

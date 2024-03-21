@@ -190,6 +190,21 @@
     );
   });
 
+  socket.on("stock crash", (s) => {
+    addEvent(
+      `<span class="stock">${s.name}</span> has crashed to <span class="price">${s.price}</span>!`,
+      "danger",
+    );
+  });
+
+  socket.on("stock market spike", () => {
+    addEvent("The stock market has spiked!", "info");
+  });
+
+  socket.on("stock market crash", () => {
+    addEvent("The stock market has crashed!", "danger");
+  });
+
   socket.on("game started", (data) => {
     game = data;
     document.querySelector("#content.lobby").classList.remove("active");
