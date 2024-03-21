@@ -185,14 +185,14 @@
 
   socket.on("stock spike", (s) => {
     addEvent(
-      `<span class="stock">${s.name}</span> has spiked to <span class="price">${s.price}</span>!`,
+      `<span class="stock">${s.name}</span> has spiked to <span class="price">${s.price.toString().toScore("$")}</span>!`,
       "info",
     );
   });
 
   socket.on("stock crash", (s) => {
     addEvent(
-      `<span class="stock">${s.name}</span> has crashed to <span class="price">${s.price}</span>!`,
+      `<span class="stock">${s.name}</span> has crashed to <span class="price">${s.price.toString().toScore("$")}</span>!`,
       "danger",
     );
   });
