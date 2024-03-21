@@ -2,14 +2,15 @@ const socket = io();
 const store = document.querySelector("#store");
 const market = document.querySelector("#market");
 const close = market.querySelector("#close");
-const stocks = document.querySelector("#stocks");
+const stock = document.querySelector("#stocks");
 const stockMarket = document.querySelector("#stock-market");
 const stockClose = stockMarket.querySelector("#close");
 const gameFade = document.querySelector("#game #fade");
 let name = "",
   code = "",
   game = {},
-  powerups = {};
+  powerups = {},
+  stocks = {};
 
 socket.on("player joined", (player) => {
   if (player.name != name) return;
@@ -106,6 +107,13 @@ socket.on("game started", (data) => {
   });
   updateMpItems();
   updatePowerups(powerups);
+  stocks = game.players.find((e) => e.name == name).stocks;
+  createStocks(game.stocks, document.querySelector("#stocks.market-content"));
+});
+
+socket.on("stocks", (s) => {
+  game.stocks = s;
+  updateStocks(game.stocks, document.querySelector("#stocks.market-content"));
 });
 
 socket.on("question", (id) => {
@@ -139,22 +147,20 @@ const updatePowerups = (p) => {
       l = p[item].level + 1;
     e.dataset.price = ps[l];
     animateScore(ps[l], e.querySelector("#price"));
-    if (item != "stocks") {
-      const max = l == ls.length;
-      e.classList.toggle("max", max);
-      let c = ls[l - 1],
-        n = max ? c : ls[l];
-      const x =
-        item == "insurance"
-          ? "%"
-          : item == "streak" || item == "multiplier"
-            ? "x"
-            : "$";
-      c = item == "insurance" ? 100 - c : c;
-      n = item == "insurance" ? 100 - n : n;
-      animateScore(c, e.querySelector("#current"), x);
-      animateScore(n, e.querySelector("#next"), x);
-    }
+    const max = l == ls.length;
+    e.classList.toggle("max", max);
+    let c = ls[l - 1],
+      n = max ? c : ls[l];
+    const x =
+      item == "insurance"
+        ? "%"
+        : item == "streak" || item == "multiplier"
+          ? "x"
+          : "$";
+    c = item == "insurance" ? 100 - c : c;
+    n = item == "insurance" ? 100 - n : n;
+    animateScore(c, e.querySelector("#current"), x);
+    animateScore(n, e.querySelector("#next"), x);
     if (
       game.players.find((p) => p.name == name).points < ps[l] ||
       l == ls.length
@@ -179,7 +185,8 @@ store.onclick = () => {
   playSound("whoosh");
 };
 
-stocks.onclick = () => {
+stock.onclick = () => {
+  updateStocks(game.stocks, document.querySelector("#stocks.market-content"));
   stockMarket.classList.add("active");
   playSound("whoosh");
 };

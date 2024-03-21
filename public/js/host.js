@@ -139,48 +139,9 @@
     animateScore(s, te, "$", 0.1);
   });
 
-  const createStocks = (s) => {
-    const st = document.querySelector("#stocks");
-    st.querySelector("#graph").innerHTML = "";
-    const mh = Math.max(...s.map((e) => e.price));
-    s.forEach((e) => {
-      const g = document.createElement("div");
-      g.dataset.name = e.name;
-      g.dataset.price = e.price;
-      g.classList.add("stock");
-      g.style.height = `${(e.price / mh) * 100}%`;
-      if (e.color) g.style.backgroundColor = e.color;
-      const t = document.createElement("div");
-      t.id = "text";
-      const i = document.createElement("img");
-      i.src = `/images/stocks/${e.name.toLowerCase()}.png`;
-      t.appendChild(i);
-      const p = document.createElement("div");
-      p.id = "price";
-      g.appendChild(p);
-      g.appendChild(t);
-      st.querySelector("#graph").appendChild(g);
-      animateScore(e.price, p);
-    });
-  };
-    
-
   socket.on("stocks", (s) => {
     const st = document.querySelector("#stocks");
-    const g = st.querySelector("#graph");
-    const c = g.children;
-    if (c.length == 0) createStocks(s);
-    const mh = Math.max(...s.map((e) => e.price));
-    s.forEach((e, i) => {
-      const h = (e.price / mh) * 100;
-      const p = c[i];
-      p.style.height = `${h}%`;
-      if (e.price > p.dataset.price) p.classList.add("up");
-      else if (e.price < p.dataset.price) p.classList.add("down");
-      else p.classList.remove("up", "down");
-      p.dataset.price = e.price;
-      animateScore(e.price, p.querySelector("#price"));
-    });
+    updateStocks(s, st);
   });
 
   socket.on("stock spike", (s) => {
@@ -209,7 +170,7 @@
     game = data;
     document.querySelector("#content.lobby").classList.remove("active");
     document.querySelector("#content.game").classList.add("active");
-    createStocks(game.stocks);
+    createStocks(game.stocks, document.querySelector("#stocks"));
     updateLeaderboard();
     addEvent("The game has started", "info");
   });

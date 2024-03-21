@@ -316,7 +316,8 @@ app.get("/host/:id", async (req, res) => {
           description: "Multiply your earnings",
           color: "blue",
           prices: [
-            0, 50, 300, 2000, 12000, 85000, 700000, 6500000, 65000000, 1000000000,
+            0, 50, 300, 2000, 12000, 85000, 700000, 6500000, 65000000,
+            1000000000,
           ],
           levels: [1, 1.5, 2, 3, 5, 8, 12, 18, 30, 100],
           level: 0,
@@ -649,7 +650,9 @@ io.on("connection", (socket) => {
     user.room = code;
     user.points = game.settings.startingPoints;
     user.powerups = structuredClone(game.settings.powerups);
-    user.stocks = structuredClone(game.stocks).map((e) => (e = { name: e.name, shares: 0, color: e.color }));
+    user.stocks = structuredClone(game.stocks).map(
+      (e) => (e = { name: e.name, shares: 0, color: e.color }),
+    );
     game.players.push(user);
     user = game.players.find((e) => e.id == user.id);
     socket.join(code);
@@ -712,7 +715,7 @@ io.on("connection", (socket) => {
     };
     for (let i = 0; i < games[data.room].stocks.length; i++) {
       const stock = games[data.room].stocks[i];
-      stock.price = Math.floor(Math.random() * 1000);
+      stock.price = Math.floor(Math.random() * (1000 - 10) + 10);
     }
     socket.join(data.room);
     socket.emit("host joined", data);
@@ -860,13 +863,13 @@ setInterval(() => {
     if (r == 99) {
       for (let i = 0; i < stocks.length; i++) {
         const stock = stocks[i];
-        stock.price += Math.floor(Math.random() * 1000);
+        stock.price += Math.floor(Math.random() * (1000 - 500) + 500);
       }
       io.to(code).emit("stock market spike", stocks);
     } else if (r == 0) {
       for (let i = 0; i < stocks.length; i++) {
         const stock = stocks[i];
-        stock.price -= Math.floor(Math.random() * 1000);
+        stock.price -= Math.floor(Math.random() * (1000 - 500) + 500);
       }
       io.to(code).emit("stock market crash", stocks);
     }
@@ -876,10 +879,10 @@ setInterval(() => {
         const r = Math.random();
         const sr = Math.floor(Math.random() * 100);
         if (sr == 99) {
-          stock.price += Math.floor(Math.random() * 1000);
+          stock.price += Math.floor(Math.random() * (1000 - 500) + 500);
           io.to(code).emit("stock spike", stock);
         } else if (sr == 0) {
-          stock.price -= Math.floor(Math.random() * 1000);
+          stock.price -= Math.floor(Math.random() * (1000 - 500) + 500);
           io.to(code).emit("stock crash", stock);
         } else if (r > 0.5) stock.price += Math.floor(Math.random() * 100);
         else stock.price -= Math.floor(Math.random() * 100);

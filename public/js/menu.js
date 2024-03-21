@@ -143,6 +143,47 @@ const animateScore = (score, el, t = "$", easing = 0.2) => {
   update();
 };
 
+const createStocks = (s, st) => {
+  st.querySelector("#graph").innerHTML = "";
+  const mh = Math.max(...s.map((e) => e.price));
+  s.forEach((e) => {
+    const g = document.createElement("div");
+    g.dataset.name = e.name;
+    g.dataset.price = e.price;
+    g.classList.add("stock");
+    g.style.height = `${(e.price / mh) * 100}%`;
+    if (e.color) g.style.backgroundColor = e.color;
+    const t = document.createElement("div");
+    t.id = "text";
+    const i = document.createElement("img");
+    i.src = `/images/stocks/${e.name.toLowerCase()}.png`;
+    t.appendChild(i);
+    const p = document.createElement("div");
+    p.id = "price";
+    g.appendChild(p);
+    g.appendChild(t);
+    st.querySelector("#graph").appendChild(g);
+    animateScore(e.price, p);
+  });
+};
+
+const updateStocks = (s, st) => {
+  const g = st.querySelector("#graph");
+  const c = g.children;
+  if (c.length == 0) createStocks(s, document.querySelector("#stocks"));
+  const mh = Math.max(...s.map((e) => e.price));
+  s.forEach((e, i) => {
+    const h = (e.price / mh) * 100;
+    const p = c[i];
+    p.style.height = `${h}%`;
+    if (e.price > p.dataset.price) p.classList.add("up");
+    else if (e.price < p.dataset.price) p.classList.add("down");
+    else p.classList.remove("up", "down");
+    p.dataset.price = e.price;
+    animateScore(e.price, p.querySelector("#price"));
+  });
+};
+
 const playSound = (sound) => {
   const audio = new Audio(`/audio/${sound}.mp3`);
   audio.play();

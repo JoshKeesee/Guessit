@@ -386,6 +386,18 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
+#stock-market.game-popup {
+  height: 80%;
+}
+
+#stock-market.game-popup #stocks {
+  height: 100%;
+}
+
+#stock-market.game-popup #stocks #price {
+  color: var(--black-color);
+}
+
 @media screen and (max-width: 1420px) {
   #game .game-popup #market-items {
     display: grid;
@@ -411,7 +423,7 @@
     display: grid;
     grid-template-columns: auto;
   }
-  
+
   #game .game-popup #market-items .market-item:last-child:nth-child(odd) {
     grid-column: span 1;
   }
