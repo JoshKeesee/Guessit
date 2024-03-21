@@ -2,6 +2,9 @@ const socket = io();
 const store = document.querySelector("#store");
 const market = document.querySelector("#market");
 const close = market.querySelector("#close");
+const stocks = document.querySelector("#stocks");
+const stockMarket = document.querySelector("#stock-market");
+const stockClose = stockMarket.querySelector("#close");
 const gameFade = document.querySelector("#game #fade");
 let name = "",
   code = "",
@@ -161,15 +164,25 @@ const updatePowerups = (p) => {
   });
 };
 
-store.onclick =
-  close.onclick =
+close.onclick =
+  stockClose.onclick =
   gameFade.onclick =
     (e) => {
-      updatePowerups(powerups);
-      if (e.target.id != "fade") market.classList.toggle("active");
-      else market.classList.remove("active");
+      market.classList.remove("active");
+      stockMarket.classList.remove("active");
       playSound("whoosh");
     };
+
+store.onclick = () => {
+  updatePowerups(powerups);
+  market.classList.add("active");
+  playSound("whoosh");
+};
+
+stocks.onclick = () => {
+  stockMarket.classList.add("active");
+  playSound("whoosh");
+};
 
 const updateMpItems = () => {
   const mpItems = document.querySelectorAll("#market .market-item");

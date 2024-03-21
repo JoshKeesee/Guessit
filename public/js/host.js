@@ -94,7 +94,7 @@
     }
   });
 
-  socket.on("player answered", (data) => {
+  const pa = (data) => {
     const p = game.players.find((e) => e.name == data.name);
     if (!p) return;
     const prevRank = game.players
@@ -119,12 +119,15 @@
           d > 0 ? "danger" : "success",
         );
     }
-    updateLeaderboard();
-  });
+    updateLeaderboard(prevRank != newRank);
+  };
+
+  socket.on("player answered", pa);
 
   socket.on("powerup", ({ item, player }) => {
     const p = player.powerups[item];
     const m = p.level == p.levels.length - 1;
+    pa(player);
     addEvent(
       `<span class="player">${player.name}</span> ${m ? "maxed out" : "upgraded"} <span class="powerup">${p.name}</span>${m ? "!" : ` to level ${p.level + 1}/${p.levels.length}`}`,
       m ? "success" : "info",
@@ -133,7 +136,7 @@
 
   socket.on("total earned", (s) => {
     const te = document.querySelector("#total-earned");
-    animateScore(s, te, "$");
+    animateScore(s, te, "$", 0.1);
   });
 
   const createStocks = (s) => {
@@ -178,6 +181,13 @@
       p.dataset.price = e.price;
       animateScore(e.price, p.querySelector("#price"));
     });
+  });
+
+  socket.on("stock spike", (s) => {
+    addEvent(
+      `<span class="stock">${s.name}</span> has spiked to <span class="price">${s.price}</span>!`,
+      "info",
+    );
   });
 
   socket.on("game started", (data) => {
@@ -226,30 +236,25 @@
     return c;
   };
 
-  const updateLeaderboard = () => {
+  const updateLeaderboard = (animate = true) => {
     const l = document.querySelector("#leaderboard");
-    animateGrid(
-      l,
-      () => {
-        const players = game.players
-          .filter((e) => !e.isHost)
-          .sort((a, b) => b.points - a.points);
-        players.forEach((p, i) => {
-          const e =
-            l.querySelector(".player[data-name='" + p.name + "']") ||
-            createPlayer(p);
-          e.dataset.rank = i + 1;
-          e.style.order = i;
-          e.dataset.points = p.points;
-          e.querySelector("#name").innerText = p.name;
-          animateScore(p.points, e.querySelector("#score"), "$");
-        });
-      },
-      {
-        duration: 1000,
-        easing: "ease-in-out",
-      },
-    );
+    const a = () => {
+      const players = game.players
+        .filter((e) => !e.isHost)
+        .sort((a, b) => b.points - a.points);
+      players.forEach((p, i) => {
+        const e =
+          l.querySelector(".player[data-name='" + p.name + "']") ||
+          createPlayer(p);
+        e.dataset.rank = i + 1;
+        e.style.order = i;
+        e.dataset.points = p.points;
+        e.querySelector("#name").innerText = p.name;
+        animateScore(p.points, e.querySelector("#score"), "$");
+      });
+    };
+    if (animate) animateGrid(l, a, { duration: 1000, easing: "ease-in-out" });
+    else a();
   };
 
   startButton.onclick = () => {

@@ -63,6 +63,10 @@ const animateGridItem = (
 };
 
 const animateGrid = async (grid, after, opts = {}, afterAll = () => {}) => {
+  if (grid.dataset.t) {
+    clearTimeout(grid.dataset.t);
+    delete grid.dataset.t;
+  }
   const prevFilePositions = [],
     nextFilePositions = [];
   let children = [...grid.children];
@@ -110,7 +114,7 @@ const animateGrid = async (grid, after, opts = {}, afterAll = () => {}) => {
     const p = prevFilePositions[i];
     animateGridItem(g, c, n, p, i, opts);
   });
-  setTimeout(
+  grid.dataset.t = setTimeout(
     () => resetItems(grid),
     (children.length - maxI) * (opts.stagger || 0) +
       (opts.duration || 500) +

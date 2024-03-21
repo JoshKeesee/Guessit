@@ -336,6 +336,19 @@ app.get("/host/:id", async (req, res) => {
           x: "$",
           after: " per question",
         },
+        streak: {
+          name: "Streak Amper",
+          description: "Amp up your answer streak earnings",
+          color: "green",
+          prices: [
+            0, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000,
+            2000000000,
+          ],
+          levels: [1, 3, 10, 50, 250, 1200, 6500, 35000, 175000, 1000000],
+          level: 0,
+          x: "x",
+          after: " bonus",
+        },
         insurance: {
           name: "Insurance",
           description: "Lose less money on incorrect answers",
@@ -348,19 +361,6 @@ app.get("/host/:id", async (req, res) => {
           level: 0,
           x: "%",
           after: " less loss",
-        },
-        streak: {
-          name: "Streak Amper",
-          description: "Amp up your answer streak earnings",
-          color: "orange",
-          prices: [
-            0, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000,
-            2000000000,
-          ],
-          levels: [1, 3, 10, 50, 250, 1200, 6500, 35000, 175000, 1000000],
-          level: 0,
-          x: "x",
-          after: " bonus",
         },
       },
     },
@@ -644,7 +644,7 @@ io.on("connection", (socket) => {
     if (game.players.length >= game.maxPlayers) return cb(false, "Game full");
     if (game.players.find((e) => e.name == name))
       return cb(false, "Name already taken");
-    user.name = name.replace(/[^a-zA-Z0-9]/g, "").trim();
+    user.name = name.replaceAll("'", "").replaceAll('"', "").trim();
     user.id = (game.players.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1;
     user.room = code;
     user.points = game.settings.startingPoints;
@@ -860,9 +860,13 @@ setInterval(() => {
       const stock = stocks[i];
       if (Math.random() > 0.5) {
         const r = Math.random();
-        if (r > 0.5) stock.price += Math.floor(Math.random() * 100);
+        const sr = Math.floor(Math.random() * 100);
+        if (sr == 100) {
+          stock.price += Math.floor(Math.random() * 1000);
+          io.to(code).emit("stock spike", stock);
+        } else if (r > 0.5) stock.price += Math.floor(Math.random() * 100);
         else stock.price -= Math.floor(Math.random() * 100);
-        if (stock.price < 0) stock.price = 0;
+        if (stock.price < 10) stock.price = 10;
       }
     }
     io.to(code).emit("stocks", game.stocks);

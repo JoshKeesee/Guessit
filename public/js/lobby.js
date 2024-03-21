@@ -38,7 +38,7 @@ const checkCode = () => {
         joinBtn.onclick = () => {
           joinCode.disabled = true;
           joinCode.blur();
-          name = joinCode.value.replace(/[^a-zA-Z0-9]/g, "").trim();
+          name = joinCode.value.replaceAll("'", "").replaceAll('"', "").trim();
           if (name) {
             socket.emit("join", code, name, (valid, error) => {
               joinCode.disabled = false;
