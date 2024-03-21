@@ -857,7 +857,7 @@ setInterval(() => {
     io.to(code).emit("total earned", game.totalPointsEarned);
     const stocks = game.stocks;
     const r = Math.random() * 100;
-    if (r == 100) {
+    if (r == 99) {
       for (let i = 0; i < stocks.length; i++) {
         const stock = stocks[i];
         stock.price += Math.floor(Math.random() * 1000);
@@ -875,7 +875,7 @@ setInterval(() => {
       if (Math.random() > 0.5) {
         const r = Math.random();
         const sr = Math.floor(Math.random() * 100);
-        if (sr == 100) {
+        if (sr == 99) {
           stock.price += Math.floor(Math.random() * 1000);
           io.to(code).emit("stock spike", stock);
         } else if (sr == 0) {
