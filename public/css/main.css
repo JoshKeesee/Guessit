@@ -25,6 +25,12 @@ html:root {
   --white-color: #fff;
   --black-color: #000;
   --flash-w: 5px;
+  --gold-color: rgb(255, 215, 0);
+  --gold-color-dark: rgb(200, 170, 0);
+  --silver-color: rgb(192, 192, 192);
+  --silver-color-dark: rgb(160, 160, 160);
+  --bronze-color: rgb(205, 127, 50);
+  --bronze-color-dark: rgb(175, 97, 20);
   --a1: rgb(140, 15, 15);
   --a1-dark: rgb(110, 0, 0);
   --a2: rgb(30, 120, 15);
@@ -38,6 +44,12 @@ html:root {
 @property --progress {
   syntax: "<percentage>";
   inherits: false;
+  initial-value: 0%;
+}
+
+@property --correct {
+  syntax: "<percentage>";
+  inherits: true;
   initial-value: 0%;
 }
 
@@ -488,6 +500,10 @@ html:has(#header #bar):root {
     linear-gradient(#fff 0 0) padding-box,
     linear-gradient(#fff 0 0);
   mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
   transition: all 0.3s ease;
 }
 

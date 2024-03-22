@@ -774,7 +774,7 @@ io.on("connection", (socket) => {
     } else {
       player.streak = 0;
       player.points -= user.pointsPerIncorrect;
-      game.totalPointsLost += player.points - o;
+      game.totalPointsLost += o - player.points;
     }
     if (player.points < game.settings.minPoints)
       player.points = game.settings.minPoints;

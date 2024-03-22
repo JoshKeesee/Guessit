@@ -129,7 +129,7 @@ html {
   padding-bottom: 0;
 }
 
-#content.game #leaderboard {
+#leaderboard {
   position: relative;
   width: 40%;
   min-width: 350px;
@@ -143,13 +143,13 @@ html {
   padding-bottom: 10px;
 }
 
-#content.game #leaderboard::-webkit-scrollbar {
+#leaderboard::-webkit-scrollbar {
   display: none;
   width: 0;
   height: 0;
 }
 
-#content.game #leaderboard:empty::before {
+#leaderboard:empty::before {
   content: "No players have joined yet.";
   color: var(--white-color);
   font-size: 20px;
@@ -158,7 +158,7 @@ html {
   width: 100%;
 }
 
-#content.game #leaderboard .player {
+#leaderboard .player {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -173,11 +173,11 @@ html {
   font-family: "Exo 2", sans-serif;
 }
 
-#content.game #leaderboard .player::before {
+#leaderboard .player::before {
   content: attr(data-rank) ".";
 }
 
-#content.game #leaderboard .player #name {
+#leaderboard .player #name {
   width: 100%;
   display: block;
   overflow: hidden;
@@ -277,12 +277,12 @@ html {
   color: var(--white-color);
 }
 
-html:has(#content.game.active):root {
+html:has(#content:not(.lobby).active):root {
   --header-height: 60px !important;
 }
 
-html:has(#content.game.active) #host-controls,
-html:has(#content.game.active) #title {
+html:has(#content:not(.lobby).active) #host-controls,
+html:has(#content:not(.lobby).active) #title {
   margin-top: auto;
   margin-bottom: auto;
 }
@@ -389,6 +389,306 @@ html:has(#content.game.active) #title {
   opacity: 1;
   transform: translate(-50%, calc(-100% - 5px)) scale(1);
   transition: all 0.2s 0.5s ease;
+}
+
+#content.ended.active {
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+#content.ended #leaderboard-stats {
+  width: 100%;
+}
+
+#content.ended #game-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  width: 50%;
+  min-width: 350px;
+}
+
+#content.ended #game-stats #accuracy {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  --correct: 0%;
+  transition: --correct 1s ease;
+}
+
+#content.ended #game-stats #accuracy::before {
+  content: attr(data-correct) "%";
+  font-size: 100px;
+  font-weight: bold;
+  color: var(--white-color);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -60%);
+}
+
+#content.ended #game-stats #accuracy::after {
+  content: "Correct Average";
+  font-size: 30px;
+  font-weight: bold;
+  color: var(--white-color);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max-content;
+  z-index: 1;
+  transform: translate(-50%, 80%);
+}
+
+#content.ended #game-stats #accuracy .bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border: 60px solid transparent;
+  border-radius: inherit;
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  transition: all 0.3s ease;
+}
+
+#content.ended #game-stats #accuracy .bg::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200%;
+  height: 200%;
+  aspect-ratio: 1 / 1;
+  border-radius: inherit;
+  background: conic-gradient(
+    var(--success-color) 0% var(--correct),
+    var(--danger-color) var(--correct) 100%
+  ) border-box;
+}
+
+#content.ended #game-stats #cont {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: var(--white-color);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#content.ended #game-stats #cont::before {
+  content: "Game Stats";
+  color: var(--black-color);
+  font-size: 35px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#content.ended #game-stats #cont #questions,
+#content.ended #game-stats #cont #totals {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+#content.ended #game-stats #cont #totals {
+  flex-direction: column;
+  gap: 10px;
+}
+
+#content.ended #game-stats #cont #questions #questions-correct,
+#content.ended #game-stats #cont #questions #questions-incorrect,
+#content.ended #game-stats #cont #totals #total-earned,
+#content.ended #game-stats #cont #totals #total-lost {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#content.ended #game-stats #cont #questions .value {
+  font-size: 50px;
+  font-weight: bold;
+}
+
+#content.ended #game-stats #cont #totals .value {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+#content.ended #game-stats #cont .label {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#content.ended #game-stats #cont #questions #questions-correct .value,
+#content.ended #game-stats #cont #totals #total-earned .value {
+  color: var(--success-color);
+}
+
+#content.ended #game-stats #cont #questions #questions-incorrect .value,
+#content.ended #game-stats #cont #totals #total-lost .value {
+  color: var(--danger-color);
+}
+
+#content.ended #top-3 {
+  margin-top: calc(var(--header-height) + 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 75px;
+}
+
+#content.ended #top-3 .player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+  background: var(--white-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+#content.ended #top-3 .player .place {
+  font-size: 50px;
+  font-weight: bold;
+  color: var(--white-color);
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -100px;
+}
+
+#content.ended #top-3 .player .name {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+#content.ended #top-3 .player .score {
+  font-size: 20px;
+}
+
+#content.ended #top-3 .player#first {
+  transform: scale(1.2);
+}
+
+#content.ended #top-3 .player#first .place {
+  background: conic-gradient(
+    var(--gold-color),
+    var(--gold-color-dark),
+    var(--gold-color),
+    var(--gold-color-dark),
+    var(--gold-color),
+    var(--gold-color-dark),
+    var(--gold-color),
+    var(--gold-color-dark),
+    var(--gold-color),
+    var(--gold-color-dark),
+    var(--gold-color),
+    var(--gold-color-dark),
+    var(--gold-color)
+  );
+}
+
+#content.ended #top-3 .player#second .place {
+  background: conic-gradient(
+    var(--silver-color),
+    var(--silver-color-dark),
+    var(--silver-color),
+    var(--silver-color-dark),
+    var(--silver-color),
+    var(--silver-color-dark),
+    var(--silver-color),
+    var(--silver-color-dark),
+    var(--silver-color),
+    var(--silver-color-dark),
+    var(--silver-color),
+    var(--silver-color-dark),
+    var(--silver-color)
+  );
+}
+
+#content.ended #top-3 .player#third .place {
+  background: conic-gradient(
+    var(--bronze-color),
+    var(--bronze-color-dark),
+    var(--bronze-color),
+    var(--bronze-color-dark),
+    var(--bronze-color),
+    var(--bronze-color-dark),
+    var(--bronze-color),
+    var(--bronze-color-dark),
+    var(--bronze-color),
+    var(--bronze-color-dark),
+    var(--bronze-color),
+    var(--bronze-color-dark),
+    var(--bronze-color)
+  );
+}
+
+#content.ended #leaderboard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+#content.ended #leaderboard::before {
+  content: "Leaderboard";
+  color: var(--white-color);
+  font-size: 35px;
+  font-weight: bold;
+  text-align: center;
+}
+
+@media screen and (max-width: 1000px) {
+  #content.ended {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  #content.ended #game-stats {
+    width: 100%;
+  }
+
+  #content.ended #game-stats #accuracy {
+    max-width: 300px;
+    margin: auto;
+  }
+
+  #content.ended #game-stats #accuracy::before {
+    font-size: 50px;
+  }
+
+  #content.ended #game-stats #accuracy::after {
+    font-size: 20px;
+  }
+
+  #content.ended #game-stats #accuracy .bg {
+    border: 30px solid transparent;
+  }
 }
 
 @keyframes fade-in {
