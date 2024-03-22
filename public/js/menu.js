@@ -184,6 +184,28 @@ const updateStocks = (s, st) => {
   });
 };
 
+const createError = (e) => {
+  const err = document.createElement("div");
+  err.classList.add("error");
+  const i = document.createElement("img");
+  i.src = "/images/error.png";
+  const s = document.createElement("span");
+  s.innerText = e;
+  err.appendChild(i);
+  err.appendChild(s);
+  document.querySelector("#errors").appendChild(err);
+  const h = err.offsetHeight + 10;
+  err.animate([
+    { transform: "translateX(200%)", opacity: 0, marginTop: -h + "px", offset: 0, easing: "ease" },
+    { transform: "translateX(0)", opacity: 1, marginTop: 0, offset: 0.1, easing: "ease" },
+    { transform: "translateX(0)", opacity: 1, marginTop: 0, offset: 0.9, easing: "ease" },
+    { transform: "translateX(200%)", opacity: 0, marginTop: -h + "px", offset: 1, easing: "ease" },
+  ], {
+    duration: 5000,
+    easing: "ease",
+  }).onfinish = () => err.remove();
+};
+
 const playSound = (sound) => {
   const audio = new Audio(`/audio/${sound}.mp3`);
   audio.play();
@@ -206,3 +228,5 @@ window.addEventListener("popstate", (e) => {
   linkSetup();
   a.click();
 });
+
+window.addEventListener("error", (e) => createError(e.message));

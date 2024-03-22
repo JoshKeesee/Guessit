@@ -12,7 +12,6 @@ const checkCode = () => {
   joinCode.disabled = true;
 
   socket.emit("check code", code, (valid, error) => {
-    const e = document.querySelector(".error");
     if (valid) {
       joinCode.blur();
       history.pushState({}, "", url);
@@ -28,7 +27,6 @@ const checkCode = () => {
         duration: d,
         easing: "ease",
       }).onfinish = () => {
-        e.innerText = "";
         joinCode.value = "";
         joinCode.type = "text";
         joinCode.placeholder = "Enter name";
@@ -52,14 +50,14 @@ const checkCode = () => {
                   document.querySelector("#loading").classList.add("active");
                 };
               } else {
-                e.innerText = error;
+                createError(error);
                 joinCode.value = "";
                 joinCode.disabled = false;
                 joinCode.focus();
               }
             });
           } else {
-            e.innerText = "Name required";
+            createError("Name required");
             name = "";
             joinCode.value = "";
             joinCode.disabled = false;
@@ -74,7 +72,7 @@ const checkCode = () => {
         });
       };
     } else {
-      e.innerText = error;
+      createError(error);
       joinCode.value = "";
       joinCode.disabled = false;
       joinCode.focus();

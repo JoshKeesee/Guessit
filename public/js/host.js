@@ -181,12 +181,12 @@
 
   socket.on("game started", (data) => {
     game = data;
-    createStocks(game.stocks, document.querySelector("#stocks"));
-    updateLeaderboard();
-    addEvent("The game has started", "info");
     document.querySelector("#content.lobby").classList.remove("active");
     document.querySelector("#content.game").classList.add("active");
     document.querySelector("#content.ended").classList.remove("active");
+    createStocks(game.stocks, document.querySelector("#stocks"));
+    updateLeaderboard();
+    addEvent("The game has started", "info");
   });
 
   socket.on("game ended", (data) => {
@@ -195,6 +195,8 @@
     document.querySelector("#content.game").classList.remove("active");
     document.querySelector("#content.ended").classList.add("active");
   });
+
+  socket.on("error", (e) => createError(e));
 
   const addEvent = (text, c) => {
     const e = document.querySelector("#events");

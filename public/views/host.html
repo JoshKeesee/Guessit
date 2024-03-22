@@ -97,6 +97,32 @@
         </div>
     </div>
 </div>
+<div id="content" class="ended">
+    <div id="header">
+        <div id="title">
+            <span><%= appName %></span>
+            <div id="code">Join Code: <%= joinCode %></div>
+        </div>
+    </div>
+    <div id="top-3">
+        <div id="first" class="player">
+            <div class="place">1st</div>
+            <div class="name">-</div>
+            <div class="score">$0</div>
+        </div>
+        <div id="second" class="player">
+            <div class="place">2nd</div>
+            <div class="name">-</div>
+            <div class="score">$0</div>
+        </div>
+        <div id="third" class="player">
+            <div class="place">3rd</div>
+            <div class="name">-</div>
+            <div class="score">$0</div>
+        </div>
+    </div>
+    <div id="leaderboard"></div>
+</div>
 <script>
     let game = {
         id: <%= pack.id %>,

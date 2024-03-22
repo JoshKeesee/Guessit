@@ -138,6 +138,8 @@ socket.on("player answered", (player) => {
   );
 });
 
+socket.on("error", (e) => createError(e));
+
 const updatePowerups = (p) => {
   const mpItems = document.querySelectorAll("#market .market-item");
   mpItems.forEach((e) => {
