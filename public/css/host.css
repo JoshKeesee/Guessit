@@ -86,12 +86,26 @@ html {
   gap: 10px;
 }
 
+#header #time,
 #header #title #code {
-  font-size: 10px;
   color: var(--white-color);
-  padding: 0 5px;
   background: rgb(0, 0, 15);
-  border-radius: 2px;
+}
+
+#header #time {
+  font-size: 25px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0 10px;
+  height: fit-content;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#header #title #code {
+  font-size: 12px;
+  border-radius: 5px;
+  padding: 0 5px;
   font-family: sans-serif;
 }
 

@@ -730,6 +730,9 @@ io.on("connection", (socket) => {
     game.ended = false;
     game.started = true;
     game.current = 0;
+    const d = new Date();
+    d.setMinutes(d.getMinutes() + game.settings.time);
+    game.endTime = d;
     io.to(data.room).emit("game started", game);
     io.to(data.room).emit("question", game.current);
   });

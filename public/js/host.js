@@ -150,7 +150,9 @@
     addEvent(
       `<span class="stock">${s.name}</span> has spiked to 
       <span class="price">${s.price.toString().toScore("$")}</span> 
-      (<span class="success">+${Math.floor(((s.price - o) / o) * 100)}%</span>)!`,
+      (+${Math.floor(((s.price - o) / o) * 100)
+        .toString()
+        .withCommas()}%)!`,
       "info",
     );
   });
@@ -162,7 +164,9 @@
       `
         <span class="stock">${s.name}</span> has crashed to 
         <span class="price">${s.price.toString().toScore("$")}</span> 
-        (<span class="danger">-${Math.floor(((s.price - o) / o) * 100)}%</span>)!`,
+        (${Math.floor(((s.price - o) / o) * 100)
+          .toString()
+          .withCommas()}%)!`,
       "danger",
     );
   });
@@ -245,4 +249,19 @@
   startButton.onclick = () => {
     socket.emit("start game", game);
   };
+
+  const updateTime = () => {
+    requestAnimationFrame(updateTime);
+    if (!game.started || game.ended) return;
+    const t = document.querySelector("#header #time");
+    if (!t) return cancelAnimationFrame(updateTime);
+    const sd = new Date().getTime();
+    const ed = new Date(game.endTime).getTime();
+    const timeLeft = ed - sd;
+    const m = Math.floor(timeLeft / 1000 / 60);
+    const s = Math.floor((timeLeft / 1000) % 60);
+    t.innerText = `${m}:${s < 10 ? "0" + s : s}`;
+  };
+
+  updateTime();
 })();
