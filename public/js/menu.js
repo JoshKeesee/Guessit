@@ -196,6 +196,8 @@ window.addEventListener("load", () => {
 });
 
 window.addEventListener("popstate", (e) => {
+  if (location.href.includes("/host") || location.href.includes("/play"))
+    return;
   e.preventDefault();
   const a = document.createElement("a");
   a.href = location.href;

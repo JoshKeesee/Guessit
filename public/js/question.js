@@ -13,7 +13,7 @@ const nextQuestion = (i) => {
     q.style.background = "none";
     q.style.pointerEvents = "none";
     const d = 300;
-    q.animate(
+    const a = q.animate(
       {
         opacity: [1, 0],
         transform: ["translateY(0)", "translateY(100%)"],
@@ -22,7 +22,10 @@ const nextQuestion = (i) => {
         duration: d,
         easing: "ease-out",
       },
-    ).onfinish = () => q.remove();
+    );
+    a.onfinish = () => q.remove();
+    a.oncancel = () => q.remove();
+    setTimeout(() => q && q.remove(), d);
   }
   qns.appendChild(nq);
 };

@@ -148,11 +148,11 @@
     const o = document.querySelector(".stock[data-name='" + s.name + "']")
       .dataset.price;
     addEvent(
-      `<span class="stock">${s.name}</span> has spiked to 
+      `<span class="stock" style="color: ${s.color || "var(--primary-color)"}">${s.name}</span> has spiked to 
       <span class="price">${s.price.toString().toScore("$")}</span> 
-      (+${Math.floor(((s.price - o) / o) * 100)
+      (<span style="color: #00ff00">+${Math.floor(((s.price - o) / o) * 100)
         .toString()
-        .withCommas()}%)!`,
+        .withCommas()}%</span>)!`,
       "info",
     );
   });
@@ -162,11 +162,11 @@
       .dataset.price;
     addEvent(
       `
-        <span class="stock">${s.name}</span> has crashed to 
+        <span class="stock" style="color: ${s.color || "var(--primary-color)"}">${s.name}</span> has crashed to 
         <span class="price">${s.price.toString().toScore("$")}</span> 
-        (${Math.floor(((s.price - o) / o) * 100)
+        (<span style="color: #ff0000">${Math.floor(((s.price - o) / o) * 100)
           .toString()
-          .withCommas()}%)!`,
+          .withCommas()}%</span>)!`,
       "danger",
     );
   });
@@ -181,11 +181,19 @@
 
   socket.on("game started", (data) => {
     game = data;
-    document.querySelector("#content.lobby").classList.remove("active");
-    document.querySelector("#content.game").classList.add("active");
     createStocks(game.stocks, document.querySelector("#stocks"));
     updateLeaderboard();
     addEvent("The game has started", "info");
+    document.querySelector("#content.lobby").classList.remove("active");
+    document.querySelector("#content.game").classList.add("active");
+    document.querySelector("#content.ended").classList.remove("active");
+  });
+
+  socket.on("game ended", (data) => {
+    game = data;
+    document.querySelector("#content.lobby").classList.remove("active");
+    document.querySelector("#content.game").classList.remove("active");
+    document.querySelector("#content.ended").classList.add("active");
   });
 
   const addEvent = (text, c) => {
@@ -250,17 +258,26 @@
     socket.emit("start game", game);
   };
 
+  endButton.onclick = () => {
+    socket.emit("end game", game);
+    cancelAnimationFrame(updateTime);
+  };
+
   const updateTime = () => {
     requestAnimationFrame(updateTime);
     if (!game.started || game.ended) return;
     const t = document.querySelector("#header #time");
-    if (!t) return cancelAnimationFrame(updateTime);
+    if (!t) return;
     const sd = new Date().getTime();
     const ed = new Date(game.endTime).getTime();
     const timeLeft = ed - sd;
-    const m = Math.floor(timeLeft / 1000 / 60);
-    const s = Math.floor((timeLeft / 1000) % 60);
+    const m = Math.abs(Math.floor(timeLeft / 1000 / 60));
+    const s = Math.abs(Math.floor((timeLeft / 1000) % 60));
     t.innerText = `${m}:${s < 10 ? "0" + s : s}`;
+    if (timeLeft <= 0) {
+      socket.emit("end game", game);
+      return cancelAnimationFrame(updateTime);
+    }
   };
 
   updateTime();
