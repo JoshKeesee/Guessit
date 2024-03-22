@@ -703,7 +703,6 @@ io.on("connection", (socket) => {
         { name: "Apple", price: 0, color: "#ff0000" },
         { name: "Google", price: 0, color: "#00ff00" },
         { name: "Amazon", price: 0, color: "#0000ff" },
-        { name: "Facebook", price: 0, color: "#ffff00" },
         { name: "Microsoft", price: 0, color: "#ff00ff" },
         { name: "Tesla", price: 0, color: "#00ffff" },
         { name: "Netflix", price: 0, color: "#000000" },

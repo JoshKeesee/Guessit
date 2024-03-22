@@ -145,15 +145,24 @@
   });
 
   socket.on("stock spike", (s) => {
+    const o = document.querySelector(".stock[data-name='" + s.name + "']")
+      .dataset.price;
     addEvent(
-      `<span class="stock">${s.name}</span> has spiked to <span class="price">${s.price.toString().toScore("$")}</span>!`,
+      `<span class="stock">${s.name}</span> has spiked to 
+      <span class="price">${s.price.toString().toScore("$")}</span> 
+      (<span class="success">+${Math.floor(((s.price - o) / o) * 100)}%</span>)!`,
       "info",
     );
   });
 
   socket.on("stock crash", (s) => {
+    const o = document.querySelector(".stock[data-name='" + s.name + "']")
+      .dataset.price;
     addEvent(
-      `<span class="stock">${s.name}</span> has crashed to <span class="price">${s.price.toString().toScore("$")}</span>!`,
+      `
+        <span class="stock">${s.name}</span> has crashed to 
+        <span class="price">${s.price.toString().toScore("$")}</span> 
+        (<span class="danger">-${Math.floor(((s.price - o) / o) * 100)}%</span>)!`,
       "danger",
     );
   });
