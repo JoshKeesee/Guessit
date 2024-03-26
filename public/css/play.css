@@ -1,4 +1,4 @@
-#game, #game-over {
+#game {
   position: absolute;
   top: 0;
   left: 0;
@@ -10,7 +10,7 @@
   overflow: hidden;
 }
 
-#game #game-header {
+#game-header {
   height: var(--header-height);
   background: rgba(var(--primary-color-rgb), 0.5);
   color: var(--white-color);
@@ -20,7 +20,7 @@
   padding: 0 20px;
 }
 
-#game #game-header #title {
+#game-header #title {
   color: var(--white-color);
   font-size: 35px;
   font-weight: 800;
@@ -59,7 +59,7 @@
   font-weight: 800;
 }
 
-#game #stats {
+#game-header #stats {
   position: relative;
   display: flex;
   align-items: center;
@@ -67,9 +67,9 @@
   gap: 5px;
 }
 
-#game #stats #score,
-#game #stats #username,
-#game #stats #streak {
+#game-header #stats #score,
+#game-header #stats #username,
+#game-header #stats #streak {
   background: var(--white-color);
   border-radius: 5px;
   padding: 10px;
@@ -80,9 +80,9 @@
   transition: all 0.3s ease;
 }
 
-#game #stats #score,
-#game #stats #streak,
-#game #stats .ripple {
+#game-header #stats #score,
+#game-header #stats #streak,
+#game-header #stats .ripple {
   transform: scale(0);
   opacity: 0;
 }
@@ -94,7 +94,7 @@
   width: max-content;
 }
 
-#game #stats .ripple {
+#game-header #stats .ripple {
   width: 40px;
   height: 40px;
   display: flex;
@@ -106,14 +106,14 @@
   transition: all 0.3s ease;
 }
 
-#game #stats .ripple svg {
+#game-header #stats .ripple svg {
   width: 25px;
   height: 25px;
   fill: var(--white-color);
   transition: all 0.3s ease;
 }
 
-#game #stats .ripple::before,
+#game-header #stats .ripple::before,
 .game-popup #close::before {
   content: "";
   position: absolute;
@@ -126,15 +126,15 @@
   transition: all 0.3s ease;
 }
 
-#game #stats .ripple:hover::before,
-#game #stats .ripple.active::before,
+#game-header #stats .ripple:hover::before,
+#game-header #stats .ripple.active::before,
 .game-popup #close:hover::before,
 .game-popup #close.active::before {
   transform: scale(1);
   opacity: 1;
 }
 
-#game #stats .ripple:active::before,
+#game-header #stats .ripple:active::before,
 .game-popup #close:active::before {
   background: rgba(255, 255, 255, 0.3);
   transition: background 0.3s 0.1s ease;
@@ -401,6 +401,176 @@
   color: var(--black-color);
 }
 
+#game-over {
+  display: none;
+}
+
+#game-over.active {
+  padding-top: calc(var(--header-height) + 20px);
+  display: flex;
+  width: 100%;
+  font-family: "Exo 2", sans-serif;
+}
+
+#game-over #game-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+#game-over #leaderboard-stats {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+#game-over #leaderboard-stats #place {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--white-color);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#game-over #leaderboard-stats #place span {
+  opacity: 0;
+  font-size: 200px;
+  font-weight: 800;
+  font-family: "Exo 2", sans-serif;
+  color: var(--black-color);
+  user-select: none;
+  transition: opacity 1s ease;
+}
+
+#game-over #leaderboard-stats #place span.active {
+  opacity: 1;
+}
+
+#game-over #leaderboard-stats #place span::after {
+  content: "!";
+}
+
+#game-over #leaderboard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 !important;
+}
+
+#game-over #leaderboard::before {
+  content: "";
+}
+
+#game-over #game-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  width: 50%;
+  min-width: 350px;
+}
+
+#game-over #game-stats #cont {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: var(--white-color);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#game-over #game-stats #cont.history .question {
+  width: 100%;
+}
+
+#game-over #game-stats #cont.history .question .correct {
+  color: var(--success-color);
+}
+
+#game-over #game-stats #cont.history .question .incorrect {
+  color: var(--danger-color);
+}
+
+#game-over #game-stats #cont:not(.history)::before,
+#game-over #game-stats .title {
+  content: "Your Stats";
+  color: var(--black-color);
+  font-size: 35px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#game-over #game-stats #question-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#game-over #game-stats #question-history:empty::before {
+  content: "None";
+  color: var(--black-color);
+  text-align: center;
+  font-weight: bold;
+}
+
+#game-over #game-stats #cont #questions,
+#game-over #game-stats #cont #totals {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+#game-over #game-stats #cont #totals {
+  flex-direction: column;
+  gap: 10px;
+}
+
+#game-over #game-stats #cont #questions #questions-correct,
+#game-over #game-stats #cont #questions #questions-incorrect,
+#game-over #game-stats #cont #totals #total-earned,
+#game-over #game-stats #cont #totals #total-lost {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#game-over #game-stats #cont #questions .value {
+  font-size: 50px;
+  font-weight: bold;
+}
+
+#game-over #game-stats #cont #totals .value {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+#game-over #game-stats #cont .label {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#game-over #game-stats #cont #questions #questions-correct .value,
+#game-over #game-stats #cont #totals #total-earned .value {
+  color: var(--success-color);
+}
+
+#game-over #game-stats #cont #questions #questions-incorrect .value,
+#game-over #game-stats #cont #totals #total-lost .value {
+  color: var(--danger-color);
+}
+
 @media screen and (max-width: 1420px) {
   #game .game-popup #market-items {
     display: grid;
@@ -418,6 +588,36 @@
   #game .game-popup {
     width: 90%;
     min-width: 300px;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  #game-over {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  #game-over #game-stats,
+  #game-over #leaderboard-stats {
+    width: 100%;
+    padding: 20px;
+  }
+
+  #game-over #accuracy {
+    max-width: 300px;
+    margin: auto;
+  }
+
+  #game-over #accuracy::before {
+    font-size: 50px;
+  }
+
+  #game-over #accuracy::after {
+    font-size: 20px;
+  }
+
+  #game-over #accuracy .bg {
+    border: 30px solid transparent;
   }
 }
 

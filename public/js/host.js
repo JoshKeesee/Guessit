@@ -247,24 +247,6 @@
     );
   };
 
-  const createPlayer = (p, a = true) => {
-    const l = document.querySelector("#leaderboard");
-    const c = document.createElement("div");
-    c.classList.add("player");
-    c.dataset.name = p.name;
-    c.dataset.points = p.points;
-    const n = document.createElement("div");
-    n.id = "name";
-    n.innerText = p.name;
-    const s = document.createElement("div");
-    s.id = "score";
-    s.innerText = p.points.toString().toScore("$");
-    c.appendChild(n);
-    c.appendChild(s);
-    a && l.appendChild(c);
-    return c;
-  };
-
   const updateLeaderboard = (animate = true) => {
     const l = document.querySelector("#leaderboard");
     const a = () => {

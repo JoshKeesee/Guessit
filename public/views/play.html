@@ -90,16 +90,49 @@
     </div>
 </div>
 <div id="game-over" class="content">
-    <div id="game-over-content">
-        <div id="title">Game Over</div>
+    <div id="game-header">
+        <div id="title">
+            <span><%= appName %></span>
+        </div>
         <div id="stats">
-            <div id="score">Score: <span class="showy"></span></div>
-            <div id="streak">Streak: <span class="showy warm fast"></span></div>
+            <div id="username"></div>
         </div>
-        <div id="leaderboard">
-            <div id="leaderboard-title">Leaderboard</div>
-            <div id="leaderboard-content"></div>
+    </div>
+    <div id="leaderboard-stats">
+        <div id="place"><span></span></div>
+        <div id="leaderboard"></div>
+    </div>
+    <div id="game-stats">
+        <div id="accuracy" data-correct="0">
+            <div class="bg"></div>
         </div>
-        <button id="play-again">Play Again</button>
+        <div id="cont">
+            <div id="questions">
+                <div id="questions-correct">
+                    <div class="label">Total Correct</div>
+                    <div class="value">0</div>
+                </div>
+                <div id="divider"></div>
+                <div id="questions-incorrect">
+                    <div class="label">Total Incorrect</div>
+                    <div class="value">0</div>
+                </div>
+            </div>
+            <div id="totals">
+                <div id="total-earned">
+                    <div class="label">Total Earned</div>
+                    <div class="value">$0</div>
+                </div>
+                <div id="divider" class="h"></div>
+                <div id="total-lost">
+                    <div class="label">Total Lost</div>
+                    <div class="value">$0</div>
+                </div>
+            </div>
+        </div>
+        <div id="cont" class="history">
+            <div class="title">History</div>
+            <div id="question-history"></div>
+        </div>
     </div>
 </div>

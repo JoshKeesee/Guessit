@@ -16,7 +16,9 @@ socket.on("player joined", (player) => {
   if (player.name != name) return;
   const p = game.players?.find((e) => e.name == name);
   if (p) game.players[game.players.findIndex((e) => e.name == name)] = player;
-  document.querySelector("#stats #username").innerText = player.name;
+  document
+    .querySelectorAll("#stats #username")
+    .forEach((e) => (e.innerText = player.name));
   animateScore(
     player.streak,
     document.querySelector("#stats #streak span"),
@@ -112,12 +114,79 @@ socket.on("game started", (data) => {
   createStocks(game.stocks, document.querySelector("#stocks.market-content"));
 });
 
-socket.on("game ended", (data) => {
+socket.on("game ended", (data, reason) => {
   game = data;
+  if (reason) createError(reason);
+  const player = game.players.find((e) => e.name == name);
   document.querySelector("#lobby").classList.remove("active");
   document.querySelector("#game").classList.remove("active");
   document.querySelector("#game-over").classList.add("active");
-  createError("Game Ended");
+  const place = document.querySelector("#leaderboard-stats #place span");
+  const c = player.history.filter((e) => e.correct.includes(e.answer)).length;
+  const i = player.history.filter((e) => !e.correct.includes(e.answer)).length;
+  const a = (c / (c + i) || 0) * 100;
+  const ac = document.querySelector("#accuracy");
+  ac.dataset.correct = Math.floor(a);
+  setTimeout(() => {
+    ac.style.setProperty("--correct", Math.floor(a) + "%");
+    animateScore(
+      c,
+      document.querySelector("#questions-correct .value"),
+      "",
+      0.1,
+    );
+    animateScore(
+      i,
+      document.querySelector("#questions-incorrect .value"),
+      "",
+      0.1,
+    );
+    animateScore(
+      player.totalPointsEarned,
+      document.querySelector("#total-earned .value"),
+      "$",
+      0.1,
+    );
+    animateScore(
+      player.totalPointsLost,
+      document.querySelector("#total-lost .value"),
+      "$",
+      0.1,
+    );
+    place.classList.add("active");
+  }, 1000);
+  const leaderboard = game.players
+    .filter((e) => !e.isHost)
+    .sort((a, b) => b.points - a.points);
+  const p = leaderboard.findIndex((e) => e.name == name) + 1;
+  place.innerText = placeSuffix(p);
+  const l = document.querySelector("#leaderboard-stats #leaderboard");
+  l.innerHTML = "";
+  leaderboard.forEach((p, i) => {
+    const c = createPlayer(p, false);
+    c.dataset.rank = i + 1;
+    l.appendChild(c);
+  });
+  const qh = document.querySelector("#question-history");
+  const tq = [];
+  player.history.forEach(
+    (e) => !tq.includes(e.question) && tq.push(e.question),
+  );
+  tq.forEach((e) => {
+    const i = player.history.filter((h) => h.question == e);
+    const c = i.map((e) => e.correct.includes(e.answer));
+    const tc = c.filter((e) => e);
+    const per = Math.floor((tc.length / c.length) * 100);
+    const q = document.createElement("div");
+    q.classList.add("question");
+    const h2 = document.createElement("h2");
+    h2.innerHTML = e;
+    const ans = document.createElement("div");
+    ans.innerHTML = `${per}% Average: <span class="correct">${tc.length} Correct</span> and <span class="incorrect">${c.length - tc.length} Incorrect</span>`;
+    q.appendChild(h2);
+    q.appendChild(ans);
+    qh.appendChild(q);
+  });
 });
 
 socket.on("stocks", (s) => {
@@ -138,7 +207,9 @@ socket.on("player answered", (player) => {
       p,
       player,
     );
-  document.querySelector("#stats #username").innerText = player.name;
+  document
+    .querySelectorAll("#stats #username")
+    .forEach((e) => (e.innerText = player.name));
   animateScore(player.points, document.querySelector("#stats #score"));
   animateScore(
     player.streak,

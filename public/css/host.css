@@ -129,62 +129,6 @@ html {
   padding-bottom: 0;
 }
 
-#leaderboard {
-  position: relative;
-  width: 40%;
-  min-width: 350px;
-  max-height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  color: var(--white-color);
-  overflow-y: scroll;
-  padding-right: 10px;
-  padding-bottom: 10px;
-}
-
-#leaderboard::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-#leaderboard:empty::before {
-  content: "No players have joined yet.";
-  color: var(--white-color);
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  width: 100%;
-}
-
-#leaderboard .player {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 20px;
-  background: var(--white-color);
-  padding: 10px;
-  border-radius: 10px;
-  color: var(--black-color);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  user-select: none;
-  font-weight: 600;
-  font-family: "Exo 2", sans-serif;
-}
-
-#leaderboard .player::before {
-  content: attr(data-rank) ".";
-}
-
-#leaderboard .player #name {
-  width: 100%;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 #content.game #host {
   width: calc(100% - 10px);
   max-height: 100%;
@@ -408,75 +352,6 @@ html:has(#content:not(.lobby).active) #title {
   padding: 20px;
   width: 50%;
   min-width: 350px;
-}
-
-#content.ended #game-stats #accuracy {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  --correct: 0%;
-  transition: --correct 1s ease;
-}
-
-#content.ended #game-stats #accuracy::before {
-  content: attr(data-correct) "%";
-  font-size: 100px;
-  font-weight: bold;
-  color: var(--white-color);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 1;
-  transform: translate(-50%, -60%);
-}
-
-#content.ended #game-stats #accuracy::after {
-  content: "Correct Average";
-  font-size: 30px;
-  font-weight: bold;
-  color: var(--white-color);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: max-content;
-  z-index: 1;
-  transform: translate(-50%, 80%);
-}
-
-#content.ended #game-stats #accuracy .bg {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border: 60px solid transparent;
-  border-radius: inherit;
-  mask:
-    linear-gradient(#fff 0 0) padding-box,
-    linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) padding-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
-  transition: all 0.3s ease;
-}
-
-#content.ended #game-stats #accuracy .bg::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 200%;
-  height: 200%;
-  aspect-ratio: 1 / 1;
-  border-radius: inherit;
-  background: conic-gradient(
-    var(--success-color) 0% var(--correct),
-    var(--danger-color) var(--correct) 100%
-  ) border-box;
 }
 
 #content.ended #game-stats #cont {

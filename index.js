@@ -595,7 +595,7 @@ const getIncorrectPoints = (pp, streak) => {
 };
 
 const getPoints = (p) => {
-  const { powerups: pp, history: h } = p,
+  const { powerups: pp } = p,
     ppc = getCorrectPoints(pp, p.streak),
     ppi = getIncorrectPoints(pp, p.streak),
     nppc = getCorrectPoints(pp, p.streak + 1),
@@ -617,6 +617,8 @@ io.on("connection", (socket) => {
     id: null,
     socketId: socket.id,
     points: 0,
+    totalPointsEarned: 0,
+    totalPointsLost: 0,
     history: [],
     streak: 0,
     isHost: false,
@@ -673,8 +675,12 @@ io.on("connection", (socket) => {
       );
       io.to(user.room).emit("player left", user, "disconnected from the game");
     } else {
-      io.to(user.room).emit("end game", game);
-      delete games[user.room];
+      game.players.splice(
+        game.players.findIndex((player) => player.isHost),
+        1,
+      );
+      game.ended = true;
+      io.to(user.room).emit("game ended", game, "Host disconnected from game");
     }
   });
   socket.on("remove player", (data) => {
@@ -771,10 +777,12 @@ io.on("connection", (socket) => {
       player.streak++;
       player.points += user.pointsPerCorrect;
       game.totalPointsEarned += player.points - o;
+      user.totalPointsEarned += player.points - o;
     } else {
       player.streak = 0;
       player.points -= user.pointsPerIncorrect;
       game.totalPointsLost += o - player.points;
+      user.totalPointsLost += o - player.points;
     }
     if (player.points < game.settings.minPoints)
       player.points = game.settings.minPoints;
@@ -782,6 +790,7 @@ io.on("connection", (socket) => {
       question: question.question,
       answer: data.answer,
       correct,
+      answer_choices: question.answer_choices,
     });
     io.to(user.room).emit("player answered", {
       name: player.name,
@@ -850,8 +859,8 @@ io.on("connection", (socket) => {
     const game = games[data.room];
     if (!game) return socket.emit("error", "Game not found");
     if (!user.isHost) return socket.emit("error", "You are not the host");
+    game.ended = true;
     io.to(data.room).emit("game ended", game);
-    delete games[data.room];
   });
 });
 
@@ -859,7 +868,8 @@ setInterval(() => {
   let min = 10;
   for (const code in games) {
     const game = games[code];
-    if (game.players.length == 0) {
+    const host = game.players.find((e) => e.isHost);
+    if (game.players.length == 0 || !host) {
       delete games[code];
       continue;
     }

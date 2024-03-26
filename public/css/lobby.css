@@ -4,6 +4,7 @@
     rgba(var(--primary-color-rgb), 0.4),
     rgba(var(--primary-color-rgb), 0.8)
   );
+  overflow: hidden;
 }
 
 #container:has(#lobby:not(.active)) {

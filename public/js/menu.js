@@ -132,6 +132,15 @@ String.prototype.toScore = function (f) {
   return (f == "$" ? f + n : n + f).replace("-", "-" + f).replace(f + "-", "-");
 };
 
+const placeSuffix = (i) => {
+  let j = i % 10,
+    k = i % 100;
+  if (j == 1 && k != 11) return i + "st";
+  if (j == 2 && k != 12) return i + "nd";
+  if (j == 3 && k != 13) return i + "rd";
+  return i + "th";
+};
+
 const animateScore = (score, el, t = "$", easing = 0.2) => {
   let curr = parseInt(el.innerText.replace(/,/g, "").replace(t, "")) || 0;
   const update = () => {
@@ -184,6 +193,24 @@ const updateStocks = (s, st) => {
   });
 };
 
+const createPlayer = (p, a = true) => {
+  const l = document.querySelector("#leaderboard");
+  const c = document.createElement("div");
+  c.classList.add("player");
+  c.dataset.name = p.name;
+  c.dataset.points = p.points;
+  const n = document.createElement("div");
+  n.id = "name";
+  n.innerText = p.name;
+  const s = document.createElement("div");
+  s.id = "score";
+  s.innerText = p.points.toString().toScore("$");
+  c.appendChild(n);
+  c.appendChild(s);
+  a && l.appendChild(c);
+  return c;
+};
+
 const createError = (e) => {
   const err = document.createElement("div");
   err.classList.add("error");
@@ -195,15 +222,42 @@ const createError = (e) => {
   err.appendChild(s);
   document.querySelector("#errors").appendChild(err);
   const h = err.offsetHeight + 10;
-  err.animate([
-    { transform: "translateX(200%)", opacity: 0, marginTop: -h + "px", offset: 0, easing: "ease" },
-    { transform: "translateX(0)", opacity: 1, marginTop: 0, offset: 0.1, easing: "ease" },
-    { transform: "translateX(0)", opacity: 1, marginTop: 0, offset: 0.9, easing: "ease" },
-    { transform: "translateX(200%)", opacity: 0, marginTop: -h + "px", offset: 1, easing: "ease" },
-  ], {
-    duration: 5000,
-    easing: "ease",
-  }).onfinish = () => err.remove();
+  err.animate(
+    [
+      {
+        transform: "translateX(200%)",
+        opacity: 0,
+        marginTop: -h + "px",
+        offset: 0,
+        easing: "ease",
+      },
+      {
+        transform: "translateX(0)",
+        opacity: 1,
+        marginTop: 0,
+        offset: 0.1,
+        easing: "ease",
+      },
+      {
+        transform: "translateX(0)",
+        opacity: 1,
+        marginTop: 0,
+        offset: 0.9,
+        easing: "ease",
+      },
+      {
+        transform: "translateX(200%)",
+        opacity: 0,
+        marginTop: -h + "px",
+        offset: 1,
+        easing: "ease",
+      },
+    ],
+    {
+      duration: 5000,
+      easing: "ease",
+    },
+  ).onfinish = () => err.remove();
 };
 
 const playSound = (sound) => {
