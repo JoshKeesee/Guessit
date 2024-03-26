@@ -30,6 +30,7 @@ socket.on("player joined", (player) => {
     document.querySelector("#loading").classList.remove("active");
     document.querySelector("#fade").classList.remove("active");
     document.querySelector("#game").classList.add("active");
+    document.querySelector("#game-over").classList.remove("active");
   }, 2000);
 });
 
@@ -45,8 +46,10 @@ socket.on("player left", (player, reason) => {
   url.searchParams.delete("code");
   history.replaceState(null, "", url);
   document.querySelector("#lobby").classList.add("active");
+  document.querySelector("#game").classList.remove("active");
   document.querySelector("#loading").classList.remove("active");
   document.querySelector("#fade").classList.remove("active");
+  document.querySelector("#game-over").classList.remove("active");
   joinPopup.style = "";
   joinBtn.onclick = checkCode;
   joinCode.type = "number";

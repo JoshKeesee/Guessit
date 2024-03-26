@@ -778,7 +778,7 @@ io.on("connection", (socket) => {
     const player = game.players.find((player) => player.id == data.id);
     if (!player) return socket.emit("error", "Player not found");
     game.players.splice(game.players.indexOf(player), 1);
-    io.to(data.room).emit("player left", player, "removed by host");
+    io.to(data.room).emit("player left", player, "removed by the host");
   });
   socket.on("host join", (data) => {
     const game = games[data.room];
