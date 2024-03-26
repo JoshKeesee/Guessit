@@ -288,6 +288,41 @@ app.get("/dashboard", async (req, res) => {
     });
   res.render("components/layout", rd);
 });
+app.get("/search", async (req, res) => {
+  const query = req.query.q.trim().split(" ");
+  const users = db.get("users");
+  const packs = db
+    .get("packs")
+    .filter((pack) => pack.public &&
+      pack.name.split(" ").some((e) => query.includes(e.toLowerCase())))
+    .map((pack) => {
+      const user = users.find((user) => user.id == pack.author);
+      return {
+        ...pack,
+        user,
+      };
+    })
+    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+  const rd = {
+    ...renderData,
+    template: "search",
+    title: "Search",
+    user: req.session.user,
+    bar: true,
+    search: true,
+    packs,
+    styles: [...renderData.styles, "/css/search.css"],
+  };
+  if (req.query.api)
+    return res.json({
+      html: await ejs.renderFile(
+        __dirname + "/public/views/" + rd.template + ".html",
+        rd,
+      ),
+      rd,
+    });
+  res.render("components/layout", rd);
+});
 app.get("/host/:id", async (req, res) => {
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
   if (!pack || (pack.author != req.session.user.id && !pack.public))

@@ -1,0 +1,32 @@
+<%- include('./components/header.html') %>
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h3>Search</h3>
+    </div>
+    <div class="sidebar-content">
+        <form id="search-form">
+            <input type="text" id="search-input" name="search" placeholder="Search...">
+            <button type="submit" id="search-button">Search</button>
+        </form>
+    </div>
+</div>
+<div id="content">
+    <div id="search-results">
+        <div id="search-header">
+            <h2>Search Results</h2>
+            <p>Showing <%= results.length %> result<%= results.length == 1 ? "" : "s" %></p>
+        </div>
+        <div id="search-container">
+            <% for (let i = 0; i < results.length; i++) { %>
+                <div class="search-result" data-id="<%= results[i].id %>">
+                    <h3><%= results[i].name %></h3>
+                    <p><%= results[i].description %></p>
+                    <div class="tags">
+                        <span class="tag date">Created on <b><%= new Date(results[i].created_at).toLocaleDateString() %></b></span>
+                        <span class="tag"><%= results[i].questions.length %> Question<%= results[i].questions.length == 1 ? "" : "s" %></span>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
