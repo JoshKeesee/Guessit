@@ -269,6 +269,13 @@ window.addEventListener("load", () => {
   menuSetup();
   linkSetup();
   rippleSetup();
+  const url = new URL(location.href);
+  const error = url.searchParams.get("error");
+  if (error) {
+    createError(error);
+    url.searchParams.delete("error");
+    history.replaceState({}, "", url.href);
+  }
 });
 
 window.addEventListener("popstate", (e) => {

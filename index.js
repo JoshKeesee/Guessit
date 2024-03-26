@@ -31,7 +31,9 @@ const renderData = {
   buttons: true,
   homepage: false,
   bar: false,
+  tabs: false,
   search: false,
+  query: "",
   styles: [],
   scripts: [],
 };
@@ -229,7 +231,7 @@ app.post("/signup", (req, res) => {
         email,
         profile: null,
         gender,
-        id: parseInt(users.sort((a, b) => b.id - a.id)[0] || 0) + 1,
+        id: parseInt(users.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1,
       };
       db.set("users", [
         ...users,
@@ -239,7 +241,7 @@ app.post("/signup", (req, res) => {
           password: hash,
           profile: null,
           gender,
-          id: parseInt(users.sort((a, b) => b.id - a.id)[0] || 0) + 1,
+          id: parseInt(users.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1,
         },
       ]);
       res.json({ success: true });
@@ -273,10 +275,11 @@ app.get("/dashboard", async (req, res) => {
     title: "Dashboard",
     user: req.session.user,
     bar: true,
+    tabs: true,
     search: true,
     packs,
     styles: [...renderData.styles, "/css/dashboard.css"],
-    scripts: ["/js/dashboard.js"],
+    scripts: ["/js/dashboard.js", "/js/search.js"],
   };
   if (req.query.api)
     return res.json({
@@ -289,12 +292,22 @@ app.get("/dashboard", async (req, res) => {
   res.render("components/layout", rd);
 });
 app.get("/search", async (req, res) => {
-  const query = req.query.q.trim().split(" ");
+  const query = (req.query.q || "").trim();
   const users = db.get("users");
   const packs = db
     .get("packs")
-    .filter((pack) => pack.public &&
-      pack.name.split(" ").some((e) => query.includes(e.toLowerCase())))
+    .filter(
+      (pack) =>
+        pack.public &&
+        (query == "" ||
+          pack.name.split(" ").some((e) => query.includes(e.toLowerCase())) ||
+          pack.description
+            .split(" ")
+            .some((e) => query.includes(e.toLowerCase())) ||
+          query.includes(
+            users.find((user) => user.id == pack.author).username.toLowerCase(),
+          )),
+    )
     .map((pack) => {
       const user = users.find((user) => user.id == pack.author);
       return {
@@ -310,8 +323,10 @@ app.get("/search", async (req, res) => {
     user: req.session.user,
     bar: true,
     search: true,
+    query,
     packs,
-    styles: [...renderData.styles, "/css/search.css"],
+    styles: [...renderData.styles, "/css/search.css", "/css/dashboard.css"],
+    scripts: ["/js/search.js"],
   };
   if (req.query.api)
     return res.json({
@@ -326,8 +341,23 @@ app.get("/search", async (req, res) => {
 app.get("/host/:id", async (req, res) => {
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
   if (!pack || (pack.author != req.session.user.id && !pack.public))
-    return res.redirect("/dashboard");
-  if (pack.questions.length == 0) return res.redirect("/dashboard");
+    return res.redirect(
+      url.format({
+        pathname: "/dashboard",
+        query: {
+          error: "Pack is not public or was not created by you.",
+        },
+      }),
+    );
+  if (pack.questions.length == 0)
+    return res.redirect(
+      url.format({
+        pathname: "/dashboard",
+        query: {
+          error: "Pack doesn't have any questions.",
+        },
+      }),
+    );
   const joinCode = generateJoinCode(6);
   const rd = {
     ...renderData,
@@ -417,7 +447,14 @@ app.get("/pack/:id", async (req, res) => {
   const users = db.get("users");
   const pack = db.get("packs").find((pack) => pack.id == req.params.id);
   if (!pack || (!pack.public && pack.author != req.session.user.id))
-    return res.redirect("/dashboard");
+    return res.redirect(
+      url.format({
+        pathname: "/dashboard",
+        query: {
+          error: "Pack is not public or was not created by you.",
+        },
+      }),
+    );
   const user = users.find((user) => user.id == pack.author);
   pack.user = user;
   const rd = {
@@ -426,7 +463,6 @@ app.get("/pack/:id", async (req, res) => {
     title: pack.name,
     user: req.session.user,
     pack,
-    user,
     styles: [...renderData.styles, "/css/pack.css"],
   };
   if (req.query.api)
@@ -444,8 +480,11 @@ app.get("/pack/:id/edit", async (req, res) => {
   if (!pack || pack.author != req.session.user.id)
     return res.redirect(
       url.format({
-        pathname: "/",
-        query: req.query,
+        pathname: "/dashboard",
+        query: {
+          ...req.query,
+          error: "Pack was not created by you.",
+        },
       }),
     );
   const rd = {
@@ -472,7 +511,14 @@ app.post("/pack/:id/edit", (req, res) => {
   const packs = db.get("packs");
   const pack = packs.find((pack) => pack.id == req.params.id);
   if (!pack || pack.author != req.session.user.id)
-    return res.redirect("/dashboard");
+    return res.redirect(
+      url.format({
+        pathname: "/dashboard",
+        query: {
+          error: "Pack was not created by you.",
+        },
+      }),
+    );
   pack.name = name;
   pack.description = description;
   pack.public = public;
@@ -537,7 +583,14 @@ app.get("/pack/:id/delete", (req, res) => {
   const packs = db.get("packs");
   const pack = packs.find((pack) => pack.id == req.params.id);
   if (!pack || pack.author != req.session.user.id)
-    return res.redirect("/dashboard");
+    return res.redirect(
+      url.format({
+        pathname: "/dashboard",
+        query: {
+          error: "Pack was not created by you.",
+        },
+      }),
+    );
   if (pack.image && fs.existsSync(__dirname + "/public" + pack.image))
     fs.unlinkSync(__dirname + "/public" + pack.image);
   packs.splice(packs.indexOf(pack), 1);

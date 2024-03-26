@@ -1,9 +1,14 @@
-#dashboard {
+#dashboard,
+#search-results {
   padding: 0 100px;
   display: flex;
   width: 100%;
   margin: 0 auto;
   max-width: 1400px;
+}
+
+#search-results {
+  flex-direction: column;
 }
 
 .content {
