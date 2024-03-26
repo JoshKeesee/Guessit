@@ -503,7 +503,7 @@ html:has(#header #bar):root {
   -webkit-mask:
     linear-gradient(#fff 0 0) padding-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
+  -webkit-mask-composite: exclude;
   transition: all 0.3s ease;
 }
 
@@ -897,7 +897,7 @@ html:has(#header #bar):root {
   -webkit-mask:
     linear-gradient(#fff 0 0) padding-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
+  -webkit-mask-composite: exclude;
   transition: all 0.3s ease;
 }
 
