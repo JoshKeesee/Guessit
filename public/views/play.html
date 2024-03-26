@@ -1,4 +1,4 @@
-<div id="lobby" class="active">
+<div id="lobby" class="content active">
     <div id="fade"></div>
     <div id="loading">
         <div id="dots">
@@ -25,7 +25,7 @@
         <button id="join">Join</button>
     </div>
 </div>
-<div id="game">
+<div id="game" class="content">
     <div id="game-header">
         <div id="title">
             <span><%= appName %></span>
@@ -87,5 +87,19 @@
                 <div id="graph"></div>
             </div>
         </div>
+    </div>
+</div>
+<div id="game-over" class="content">
+    <div id="game-over-content">
+        <div id="title">Game Over</div>
+        <div id="stats">
+            <div id="score">Score: <span class="showy"></span></div>
+            <div id="streak">Streak: <span class="showy warm fast"></span></div>
+        </div>
+        <div id="leaderboard">
+            <div id="leaderboard-title">Leaderboard</div>
+            <div id="leaderboard-content"></div>
+        </div>
+        <button id="play-again">Play Again</button>
     </div>
 </div>

@@ -13,15 +13,13 @@
   );
 }
 
-#lobby,
-#game {
+.content {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease;
 }
 
-#lobby.active,
-#lobby:not(.active) + #game {
+.content.active {
   opacity: 1;
   pointer-events: all;
 }
@@ -108,13 +106,6 @@
   text-align: center;
   padding: 30px 40px;
   z-index: 100;
-}
-
-#join-popup .error {
-  color: var(--danger-color);
-  font-size: 20px;
-  font-weight: 600;
-  margin-top: 10px;
 }
 
 #join-popup #title {

@@ -27,7 +27,8 @@ socket.on("player joined", (player) => {
     document.querySelector("#lobby").classList.remove("active");
     document.querySelector("#loading").classList.remove("active");
     document.querySelector("#fade").classList.remove("active");
-  }, 3000);
+    document.querySelector("#game").classList.add("active");
+  }, 2000);
 });
 
 socket.on("player left", (player, reason) => {
@@ -50,7 +51,7 @@ socket.on("player left", (player, reason) => {
   joinCode.placeholder = "Join Code";
   joinCode.disabled = false;
   joinCode.focus();
-  document.querySelector(".error").innerText = "You were " + reason;
+  createError("You were " + reason);
 });
 
 socket.on("game started", (data) => {
@@ -109,6 +110,14 @@ socket.on("game started", (data) => {
   updatePowerups(powerups);
   stocks = game.players.find((e) => e.name == name).stocks;
   createStocks(game.stocks, document.querySelector("#stocks.market-content"));
+});
+
+socket.on("game ended", (data) => {
+  game = data;
+  document.querySelector("#lobby").classList.remove("active");
+  document.querySelector("#game").classList.remove("active");
+  document.querySelector("#game-over").classList.add("active");
+  createError("Game Ended");
 });
 
 socket.on("stocks", (s) => {
