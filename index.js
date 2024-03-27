@@ -346,6 +346,7 @@ app.get("/host/:id", async (req, res) => {
       url.format({
         pathname: "/dashboard",
         query: {
+          ...req.query,
           error: "Pack is not public or was not created by you.",
         },
       }),
@@ -355,6 +356,7 @@ app.get("/host/:id", async (req, res) => {
       url.format({
         pathname: "/dashboard",
         query: {
+          ...req.query,
           error: "Pack doesn't have any questions.",
         },
       }),
@@ -385,6 +387,7 @@ app.get("/pack/:id", async (req, res) => {
       url.format({
         pathname: "/dashboard",
         query: {
+          ...req.query,
           error: "Pack is not public or was not created by you.",
         },
       }),
@@ -449,6 +452,7 @@ app.post("/pack/:id/edit", (req, res) => {
       url.format({
         pathname: "/dashboard",
         query: {
+          ...req.query,
           error: "Pack was not created by you.",
         },
       }),
@@ -521,6 +525,7 @@ app.get("/pack/:id/delete", (req, res) => {
       url.format({
         pathname: "/dashboard",
         query: {
+          ...req.query,
           error: "Pack was not created by you.",
         },
       }),

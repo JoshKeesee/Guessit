@@ -51,6 +51,7 @@ const linkSetup = () => {
   document.querySelectorAll("a").forEach(
     (a) =>
       (a.onclick = async (e) => {
+        console.log(a.href);
         if (a.target == "_blank" || a.target == "_self") return;
         clearInterval(check);
         setLoader(0);
@@ -70,6 +71,7 @@ const linkSetup = () => {
             Accept: "application/json",
           },
         });
+        console.log(data);
         const json = await data.json();
         clearInterval(check);
         setLoader(90);
