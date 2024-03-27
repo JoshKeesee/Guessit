@@ -292,7 +292,7 @@ app.get("/dashboard", async (req, res) => {
   res.render("components/layout", rd);
 });
 app.get("/search", async (req, res) => {
-  const query = (req.query.q || "").trim();
+  const query = (req.query.q || "").trim().split(" ");
   const users = db.get("users");
   const packs = db
     .get("packs")
