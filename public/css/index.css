@@ -141,7 +141,6 @@ svg.shape {
   margin-left: auto;
   width: 300px;
   height: 300px;
-  opacity: 0.15;
 }
 
 .flex.reverse svg.shape {
@@ -158,6 +157,7 @@ svg.shape circle {
   stroke-width: 40;
   stroke-linejoin: round;
   stroke-linecap: round;
+  opacity: 0.15;
 }
 
 .flex {
@@ -337,10 +337,10 @@ svg.shape circle {
 @keyframes shape {
   0% {
     transform: translate(0, -50%) rotate(10deg);
-    opacity: 0.15;
+    opacity: 1;
   }
   40% {
-    opacity: 0.15;
+    opacity: 1;
   }
   80% {
     opacity: 0;
@@ -354,10 +354,10 @@ svg.shape circle {
 @keyframes shape-reverse {
   0% {
     transform: translate(0, -50%) rotate(-10deg);
-    opacity: 0.15;
+    opacity: 1;
   }
   40% {
-    opacity: 0.15;
+    opacity: 1;
   }
   80% {
     opacity: 0;
