@@ -277,11 +277,13 @@
     padding: 10px 20px;
   }
 
+  #question-container .answers :nth-last-child(1),
   #question-container .answers :nth-last-child(2) {
     border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
 
-  #question-container .answers :nth-last-child(1) {
+  #question-container .answers :last-child {
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
   }
