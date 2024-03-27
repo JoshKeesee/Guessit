@@ -50,14 +50,14 @@ window.checkCode = () => {
                   document.querySelector("#loading").classList.add("active");
                 };
               } else {
-                createError(error);
+                createStatus(error, "error");
                 joinCode.value = "";
                 joinCode.disabled = false;
                 joinCode.focus();
               }
             });
           } else {
-            createError("Name required");
+            createStatus("Name required", "error");
             name = "";
             joinCode.value = "";
             joinCode.disabled = false;
@@ -72,7 +72,7 @@ window.checkCode = () => {
         });
       };
     } else {
-      createError(error);
+      createStatus(error, "error");
       joinCode.value = "";
       joinCode.disabled = false;
       joinCode.focus();

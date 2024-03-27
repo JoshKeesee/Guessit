@@ -658,12 +658,12 @@ html:has(#header #bar):root {
   font-weight: 1000;
 }
 
-.error {
+.status {
   color: var(--danger-color);
   font-weight: 600;
 }
 
-.error:empty {
+.status:empty {
   display: none;
 }
 
@@ -757,7 +757,7 @@ html:has(#header #bar):root {
   height: 20px;
 }
 
-#errors {
+#status {
   position: fixed;
   bottom: 0;
   right: 0;
@@ -768,7 +768,7 @@ html:has(#header #bar):root {
   padding: 20px;
 }
 
-#errors .error {
+#status .status {
   padding: 10px;
   border-radius: 10px;
   background: var(--white-color);
@@ -784,7 +784,7 @@ html:has(#header #bar):root {
   max-width: 300px;
 }
 
-#errors .error img {
+#status .status img {
   width: 20px;
   height: 20px;
 }

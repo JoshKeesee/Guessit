@@ -216,18 +216,18 @@ const createPlayer = (p, a = true) => {
   return c;
 };
 
-const createError = (e) => {
-  const err = document.createElement("div");
-  err.classList.add("error");
+const createStatus = (e, c) => {
+  const status = document.createElement("div");
+  status.classList.add("status");
   const i = document.createElement("img");
-  i.src = "/images/error.png";
+  i.src = "/images/" + c + ".png";
   const s = document.createElement("span");
   s.innerText = e;
-  err.appendChild(i);
-  err.appendChild(s);
-  document.querySelector("#errors").appendChild(err);
-  const h = err.offsetHeight + 10;
-  err.animate(
+  status.appendChild(i);
+  status.appendChild(s);
+  document.querySelector("#status").appendChild(status);
+  const h = status.offsetHeight + 10;
+  status.animate(
     [
       {
         transform: "translateX(200%)",
@@ -262,7 +262,7 @@ const createError = (e) => {
       duration: 5000,
       easing: "ease",
     },
-  ).onfinish = () => err.remove();
+  ).onfinish = () => status.remove();
 };
 
 const playSound = (sound) => {
@@ -277,7 +277,7 @@ window.addEventListener("load", () => {
   const url = new URL(location.href);
   const error = url.searchParams.get("error");
   if (error) {
-    createError(error);
+    createStatus(error, "error");
     url.searchParams.delete("error");
     history.replaceState({}, "", url.href);
   }
@@ -293,4 +293,4 @@ window.addEventListener("popstate", (e) => {
   a.click();
 });
 
-window.addEventListener("error", (e) => createError(e.message));
+window.addEventListener("error", (e) => createStatus(e.message, "error"));

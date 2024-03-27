@@ -56,7 +56,7 @@ socket.on("player left", (player, reason) => {
   joinCode.placeholder = "Join Code";
   joinCode.disabled = false;
   joinCode.focus();
-  createError("You were " + reason);
+  createStatus("You were " + reason, "error");
 });
 
 socket.on("game started", (data) => {
@@ -119,7 +119,7 @@ socket.on("game started", (data) => {
 
 socket.on("game ended", (data, reason) => {
   game = data;
-  if (reason) createError(reason);
+  if (reason) createStatus(reason, "error");
   const player = game.players.find((e) => e.name == name);
   document.querySelector("#lobby").classList.remove("active");
   document.querySelector("#game").classList.remove("active");
@@ -221,7 +221,7 @@ socket.on("player answered", (player) => {
   );
 });
 
-socket.on("error", (e) => createError(e));
+socket.on("error", (e) => createStatus(e, "error"));
 
 window.updatePowerups = (p) => {
   const mpItems = document.querySelectorAll("#market .market-item");

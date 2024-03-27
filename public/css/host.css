@@ -33,6 +33,37 @@ html {
   border-image-slice: 1;
 }
 
+#header #join-code:not(.active) {
+  display: none;
+}
+
+#header .spinner {
+  width: 60px;
+  height: 60px;
+  color: var(--white-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#header .spinner > circle {
+  fill: none;
+  stroke: currentColor;
+  cx: 50%;
+  cy: 50%;
+  r: 50%;
+  stroke-width: 6px;
+  stroke-linecap: round;
+  transform-origin: center;
+}
+
+#header #join-code.active + .spinner {
+  display: none;
+}
+
 #header #join-code {
   background: var(--white-color);
   color: #555;
@@ -51,6 +82,7 @@ html {
   text-align: center;
   flex-direction: column;
   transition: all 0.3s ease;
+  animation: fade-in 0.3s ease;
 }
 
 #header #join-code:hover {
@@ -67,8 +99,6 @@ html {
   font-size: 60px;
   font-weight: bold;
   font-family: "Exo 2", sans-serif;
-  cursor: text;
-  user-select: all;
 }
 
 #header #host-controls {
@@ -572,5 +602,14 @@ html:has(#content:not(.lobby).active) #title {
   }
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

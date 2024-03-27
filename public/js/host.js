@@ -43,12 +43,21 @@
     game = data;
     document
       .querySelectorAll("#code")
-      .forEach((e) => (e.innerText += game.joinCode));
+      .forEach(
+        (e, i) => (e.innerText = (i != 0 ? "Join Code: " : "") + game.joinCode),
+      );
     const jl = document.querySelector("#join-link");
     const h = new URL("play", location.origin);
     jl.innerText = h;
     h.searchParams.set("code", game.joinCode);
     jl.href = h;
+    const jc = document.querySelector("#join-code");
+    jc.classList.add("active");
+    jc.onclick = (e) => {
+      if (e.target == jl) return;
+      navigator.clipboard.writeText(h);
+      createStatus("Game link copied to clipboard!", "success");
+    };
   });
 
   socket.on("player joined", (player) => {
@@ -206,6 +215,7 @@
 
   socket.on("game ended", (data) => {
     game = data;
+    cancelAnimationFrame(req);
     document.querySelector("#content.lobby").classList.remove("active");
     document.querySelector("#content.game").classList.remove("active");
     document.querySelector("#content.ended").classList.add("active");
@@ -264,7 +274,7 @@
     });
   });
 
-  socket.on("error", (e) => createError(e));
+  socket.on("error", (e) => createStatus(e, "error"));
 
   const addEvent = (text, c) => {
     const e = document.querySelector("#events");
@@ -316,7 +326,13 @@
   };
 
   replayButton.onclick = () => {
-    window.location.reload();
+    const a = document.createElement("a");
+    a.href = window.location.href;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    linkSetup();
+    a.click();
+    a.remove();
   };
 
   const updateTime = () => {
