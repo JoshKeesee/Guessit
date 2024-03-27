@@ -1,4 +1,5 @@
 (() => {
+  let game = {};
   const socket = io();
   const playerList = document.querySelector("#player-list");
   const playerCount = document.querySelector("#player-count");
@@ -32,10 +33,22 @@
     );
   };
 
-  document.querySelector("#join-link").innerText = location.host + "/play";
-
   socket.on("connect", () => {
-    socket.emit("host join", game);
+    if (Object.keys(game).length) return;
+    const packId = location.href.split("/host/")[1];
+    socket.emit("host join", packId);
+  });
+
+  socket.on("host joined", (data) => {
+    game = data;
+    document
+      .querySelectorAll("#code")
+      .forEach((e) => (e.innerText += game.joinCode));
+    const jl = document.querySelector("#join-link");
+    const h = new URL("play", location.origin);
+    jl.innerText = h;
+    h.searchParams.set("code", game.joinCode);
+    jl.href = h;
   });
 
   socket.on("player joined", (player) => {
@@ -196,20 +209,45 @@
     document.querySelector("#content.lobby").classList.remove("active");
     document.querySelector("#content.game").classList.remove("active");
     document.querySelector("#content.ended").classList.add("active");
-    const average = game.players.filter((e) => !e.isHost).map((e) => e.history).flat();
+    const average = game.players
+      .filter((e) => !e.isHost)
+      .map((e) => e.history)
+      .flat();
     const c = average.filter((e) => e.correct.includes(e.answer)).length;
     const i = average.filter((e) => !e.correct.includes(e.answer)).length;
-    const a = ((c / (c + i)) || 0) * 100;
+    const a = (c / (c + i) || 0) * 100;
     const ac = document.querySelector("#accuracy");
     ac.dataset.correct = Math.floor(a);
     setTimeout(() => {
       ac.style.setProperty("--correct", Math.floor(a) + "%");
-      animateScore(c, document.querySelector("#questions-correct .value"), "", 0.1);
-      animateScore(i, document.querySelector("#questions-incorrect .value"), "", 0.1);
-      animateScore(game.totalPointsEarned, document.querySelector("#total-earned .value"), "$", 0.1);
-      animateScore(game.totalPointsLost, document.querySelector("#total-lost .value"), "$", 0.1);
+      animateScore(
+        c,
+        document.querySelector("#questions-correct .value"),
+        "",
+        0.1,
+      );
+      animateScore(
+        i,
+        document.querySelector("#questions-incorrect .value"),
+        "",
+        0.1,
+      );
+      animateScore(
+        game.totalPointsEarned,
+        document.querySelector("#total-earned .value"),
+        "$",
+        0.1,
+      );
+      animateScore(
+        game.totalPointsLost,
+        document.querySelector("#total-lost .value"),
+        "$",
+        0.1,
+      );
     }, 1000);
-    const leaderboard = game.players.filter((e) => !e.isHost).sort((a, b) => b.points - a.points);
+    const leaderboard = game.players
+      .filter((e) => !e.isHost)
+      .sort((a, b) => b.points - a.points);
     const l = document.querySelector("#leaderboard-stats #leaderboard");
     l.innerHTML = "";
     leaderboard.forEach((p, i) => {
@@ -269,11 +307,11 @@
   };
 
   startButton.onclick = () => {
-    socket.emit("start game", game);
+    socket.emit("start game", game.joinCode);
   };
 
   endButton.onclick = () => {
-    socket.emit("end game", game);
+    socket.emit("end game", game.joinCode);
     cancelAnimationFrame(req);
   };
 
@@ -283,6 +321,7 @@
 
   const updateTime = () => {
     req = requestAnimationFrame(updateTime);
+    if (typeof game == "undefined") return cancelAnimationFrame(req);
     if (!game.started || game.ended) return;
     const t = document.querySelector("#header #time");
     if (!t) return;

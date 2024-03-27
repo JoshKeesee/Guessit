@@ -1,16 +1,16 @@
-const socket = io();
-const store = document.querySelector("#store");
-const market = document.querySelector("#market");
-const close = market.querySelector("#close");
-const stock = document.querySelector("#stocks");
-const stockMarket = document.querySelector("#stock-market");
-const stockClose = stockMarket.querySelector("#close");
-const gameFade = document.querySelector("#game #fade");
-let name = "",
-  code = "",
-  game = {},
-  powerups = {},
-  stocks = {};
+window.socket = io();
+window.store = document.querySelector("#store");
+window.market = document.querySelector("#market");
+window.close = market.querySelector("#close");
+window.stock = document.querySelector("#stocks");
+window.stockMarket = document.querySelector("#stock-market");
+window.stockClose = stockMarket.querySelector("#close");
+window.gameFade = document.querySelector("#game #fade");
+window.name = "";
+window.code = "";
+window.game = {};
+window.powerups = {};
+window.stocks = {};
 
 socket.on("player joined", (player) => {
   if (player.name != name) return;
@@ -223,7 +223,7 @@ socket.on("player answered", (player) => {
 
 socket.on("error", (e) => createError(e));
 
-const updatePowerups = (p) => {
+window.updatePowerups = (p) => {
   const mpItems = document.querySelectorAll("#market .market-item");
   mpItems.forEach((e) => {
     const item = e.dataset.item;
@@ -276,7 +276,7 @@ stock.onclick = () => {
   playSound("whoosh");
 };
 
-const updateMpItems = () => {
+window.updateMpItems = () => {
   const mpItems = document.querySelectorAll("#market .market-item");
   mpItems.forEach((e) => {
     e.querySelector("#buy").onclick = () => {

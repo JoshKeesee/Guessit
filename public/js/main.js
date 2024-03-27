@@ -51,12 +51,7 @@ const linkSetup = () => {
   document.querySelectorAll("a").forEach(
     (a) =>
       (a.onclick = async (e) => {
-        if (
-          a.target == "_blank" ||
-          a.target == "_self" ||
-          a.href.includes("/host")
-        )
-          return;
+        if (a.target == "_blank" || a.target == "_self") return;
         clearInterval(check);
         setLoader(0);
         e.preventDefault();
@@ -81,6 +76,7 @@ const linkSetup = () => {
         url = new URL(data.url);
         url.searchParams.delete("api");
         history.pushState({}, "", url.href);
+        delete window.game;
         document.title = json.rd.appName + " - " + json.rd.title;
         const ignore = ["main", "socket.io", "menu", "time"];
         document.body.querySelectorAll("script").forEach((s) => {
@@ -130,6 +126,15 @@ String.prototype.toScore = function (f) {
   "use strict";
   const n = this.withCommas();
   return (f == "$" ? f + n : n + f).replace("-", "-" + f).replace(f + "-", "-");
+};
+
+const shuffle = (arr) => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 };
 
 const placeSuffix = (i) => {
@@ -279,8 +284,6 @@ window.addEventListener("load", () => {
 });
 
 window.addEventListener("popstate", (e) => {
-  if (location.href.includes("/host") || location.href.includes("/play"))
-    return;
   e.preventDefault();
   const a = document.createElement("a");
   a.href = location.href;

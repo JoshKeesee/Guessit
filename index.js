@@ -100,7 +100,8 @@ app.get("/", async (req, res) => {
     title: "An online quiz game show",
     homepage: true,
     user: req.session.user,
-    styles: [...renderData.styles, "/css/index.css"],
+    styles: [...renderData.styles, "/css/index.css", "/css/question.css"],
+    scripts: ["/js/question.js", "/js/index.js"],
   };
   if (req.query.api)
     return res.json({
@@ -358,78 +359,11 @@ app.get("/host/:id", async (req, res) => {
         },
       }),
     );
-  const joinCode = generateJoinCode(6);
   const rd = {
     ...renderData,
     template: "host",
     title: "Host",
     user: req.session.user,
-    pack,
-    joinCode,
-    settings: {
-      time: 10,
-      startingPoints: 0,
-      minPoints: -100,
-      maxPlayers: Infinity,
-      minPlayers: 1,
-      randomizeAnswers: true,
-      joinInLate: true,
-      priceMultiplier: 2,
-      powerups: {
-        multiplier: {
-          name: "Multiplier",
-          description: "Multiply your earnings",
-          color: "blue",
-          prices: [
-            0, 50, 300, 2000, 12000, 85000, 700000, 6500000, 65000000,
-            1000000000,
-          ],
-          levels: [1, 1.5, 2, 3, 5, 8, 12, 18, 30, 100],
-          level: 0,
-          x: "x",
-          after: " money",
-        },
-        mpq: {
-          name: "Money Per Question",
-          description: "Increase the amount of money you earn per question",
-          color: "purple",
-          prices: [
-            0, 10, 100, 1000, 10000, 75000, 300000, 1000000, 10000000,
-            100000000,
-          ],
-          levels: [1, 5, 50, 100, 500, 2000, 5000, 10000, 250000, 1000000],
-          level: 0,
-          x: "$",
-          after: " per question",
-        },
-        streak: {
-          name: "Streak Amper",
-          description: "Amp up your answer streak earnings",
-          color: "green",
-          prices: [
-            0, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000,
-            2000000000,
-          ],
-          levels: [1, 3, 10, 50, 250, 1200, 6500, 35000, 175000, 1000000],
-          level: 0,
-          x: "x",
-          after: " bonus",
-        },
-        insurance: {
-          name: "Insurance",
-          description: "Lose less money on incorrect answers",
-          color: "red",
-          prices: [
-            0, 10, 250, 1000, 25000, 100000, 1000000, 5000000, 25000000,
-            500000000,
-          ],
-          levels: [0, 10, 25, 40, 50, 70, 80, 90, 95, 99],
-          level: 0,
-          x: "%",
-          after: " less loss",
-        },
-      },
-    },
     styles: [...renderData.styles, "/css/host.css"],
     scripts: ["/js/host.js"],
   };
@@ -780,12 +714,10 @@ io.on("connection", (socket) => {
     game.players.splice(game.players.indexOf(player), 1);
     io.to(data.room).emit("player left", player, "removed by the host");
   });
-  socket.on("host join", (data) => {
-    const game = games[data.room];
-    if (game) return socket.emit("error", "Game already exists");
-    user.isHost = true;
-    user.room = data.room;
-    games[data.room] = {
+  socket.on("host join", (packId) => {
+    const joinCode = generateJoinCode(6);
+    const pack = db.get("packs").find((pack) => pack.id == packId);
+    games[joinCode] = {
       lobby: true,
       started: false,
       ended: false,
@@ -803,32 +735,99 @@ io.on("connection", (socket) => {
         { name: "X", price: 0, color: "#ff8000" },
         { name: renderData.appName, price: 0 },
       ],
-      ...data,
+      pack,
+      joinCode,
+      settings: {
+        time: 10,
+        startingPoints: 0,
+        minPoints: -100,
+        maxPlayers: Infinity,
+        minPlayers: 1,
+        randomizeAnswers: true,
+        joinInLate: true,
+        priceMultiplier: 2,
+        powerups: {
+          multiplier: {
+            name: "Multiplier",
+            description: "Multiply your earnings",
+            color: "blue",
+            prices: [
+              0, 50, 300, 2000, 12000, 85000, 700000, 6500000, 65000000,
+              1000000000,
+            ],
+            levels: [1, 1.5, 2, 3, 5, 8, 12, 18, 30, 100],
+            level: 0,
+            x: "x",
+            after: " money",
+          },
+          mpq: {
+            name: "Money Per Question",
+            description: "Increase the amount of money you earn per question",
+            color: "purple",
+            prices: [
+              0, 10, 100, 1000, 10000, 75000, 300000, 1000000, 10000000,
+              100000000,
+            ],
+            levels: [1, 5, 50, 100, 500, 2000, 5000, 10000, 250000, 1000000],
+            level: 0,
+            x: "$",
+            after: " per question",
+          },
+          streak: {
+            name: "Streak Amper",
+            description: "Amp up your answer streak earnings",
+            color: "green",
+            prices: [
+              0, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000,
+              2000000000,
+            ],
+            levels: [1, 3, 10, 50, 250, 1200, 6500, 35000, 175000, 1000000],
+            level: 0,
+            x: "x",
+            after: " bonus",
+          },
+          insurance: {
+            name: "Insurance",
+            description: "Lose less money on incorrect answers",
+            color: "red",
+            prices: [
+              0, 10, 250, 1000, 25000, 100000, 1000000, 5000000, 25000000,
+              500000000,
+            ],
+            levels: [0, 10, 25, 40, 50, 70, 80, 90, 95, 99],
+            level: 0,
+            x: "%",
+            after: " less loss",
+          },
+        },
+      },
       players: [user],
     };
-    for (let i = 0; i < games[data.room].stocks.length; i++) {
-      const stock = games[data.room].stocks[i];
+    for (let i = 0; i < games[joinCode].stocks.length; i++) {
+      const stock = games[joinCode].stocks[i];
       stock.price = Math.floor(Math.random() * (1000 - 10) + 10);
     }
-    socket.join(data.room);
-    socket.emit("host joined", data);
+    user.isHost = true;
+    user.room = joinCode;
+    socket.join(joinCode);
+    socket.emit("host joined", games[joinCode]);
   });
-  socket.on("start game", (data) => {
-    const game = games[data.room];
+  socket.on("start game", (joinCode) => {
+    const game = games[joinCode];
     if (!game) return;
     if (!user.isHost) return;
     if (game.ended) return;
     if (game.started) return;
     if (game.players.filter((e) => !e.isHost).length < game.settings.minPlayers)
-      return io.to(data.room).emit("error", "Not enough players");
+      return io.to(joinCode).emit("error", "Not enough players");
     game.ended = false;
     game.started = true;
     game.current = 0;
     const d = new Date();
     d.setMinutes(d.getMinutes() + game.settings.time);
     game.endTime = d;
-    io.to(data.room).emit("game started", game);
-    io.to(data.room).emit("question", game.current);
+    io.to(joinCode).emit("game started", game);
+    io.to(joinCode).emit("question", game.current);
   });
   socket.on("player join", (data) => {
     const game = games[data.room];
@@ -943,12 +942,12 @@ io.on("connection", (socket) => {
       player: p,
     });
   });
-  socket.on("end game", (data) => {
-    const game = games[data.room];
+  socket.on("end game", (joinCode) => {
+    const game = games[joinCode];
     if (!game) return socket.emit("error", "Game not found");
     if (!user.isHost) return socket.emit("error", "You are not the host");
     game.ended = true;
-    io.to(data.room).emit("game ended", game);
+    io.to(joinCode).emit("game ended", game);
   });
 });
 

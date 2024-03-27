@@ -8,6 +8,7 @@
   user-select: none;
   overflow: hidden;
   opacity: 0;
+  border-radius: inherit;
   animation: fade-in 0.5s ease forwards;
   transition: all 0.2s ease;
 }
@@ -145,7 +146,6 @@
   font-weight: 400;
 }
 
-
 #question-container.correct .question .feedback p #money {
   animation: correct 1s 0.1s ease;
 }
@@ -160,6 +160,8 @@
   display: flex;
   flex-wrap: wrap;
   overflow: hidden;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
   transition: all 0.2s ease;
 }
 
@@ -215,6 +217,14 @@
   border: 8px solid var(--a4-dark);
 }
 
+#question-container .answers :nth-last-child(2) {
+  border-bottom-left-radius: inherit;
+}
+
+#question-container .answers :nth-last-child(1) {
+  border-bottom-right-radius: inherit;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -266,18 +276,53 @@
     height: 100px;
     padding: 10px 20px;
   }
+
+  #question-container .answers :nth-last-child(2) {
+    border-bottom-left-radius: 0;
+  }
+
+  #question-container .answers :nth-last-child(1) {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+  }
 }
 
 @keyframes correct {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  25% { transform: scale(0.8) rotate(0deg); }
-  40%, 60%, 80% { transform: scale(2) rotate(10deg); }
-  50%, 70% { transform: scale(2) rotate(-10deg); }
-  90% { transform: scale(2) rotate(0deg); }
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.8) rotate(0deg);
+  }
+  40%,
+  60%,
+  80% {
+    transform: scale(2) rotate(10deg);
+  }
+  50%,
+  70% {
+    transform: scale(2) rotate(-10deg);
+  }
+  90% {
+    transform: scale(2) rotate(0deg);
+  }
 }
 
 @keyframes incorrect {
-  0%, 100% { transform: rotate(0deg) translateX(0); }
-  12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(10deg) translateX(10px); }
-  25%, 50%, 75% { transform: rotate(-10deg) translateX(-10px); }
+  0%,
+  100% {
+    transform: rotate(0deg) translateX(0);
+  }
+  12.5%,
+  37.5%,
+  62.5%,
+  87.5% {
+    transform: rotate(10deg) translateX(10px);
+  }
+  25%,
+  50%,
+  75% {
+    transform: rotate(-10deg) translateX(-10px);
+  }
 }

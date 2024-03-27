@@ -36,6 +36,9 @@
   flex-direction: column;
   gap: 20px;
   padding: 20px 0;
+}
+
+#main #box {
   max-width: 550px;
 }
 
@@ -73,25 +76,91 @@
   );
 }
 
-#box h1,
-#box p {
+#section.red {
+  color: #fff;
+  background: var(--danger-color);
+}
+
+#section.yellow {
+  color: #fff;
+  background: var(--warning-color);
+}
+
+#section.green {
+  color: #fff;
+  background: var(--success-color);
+}
+
+#section.red p,
+#section.yellow p,
+#section.green p {
+  color: inherit;
+}
+
+h1,
+p {
   opacity: 0;
+  text-align: inherit;
   animation: text-fadein 1s ease;
   animation-delay: 0.4s;
   animation-fill-mode: forwards;
 }
 
-#box h1 {
+h1 {
   font-size: 40px;
   font-weight: 600;
   animation-delay: 0.2s;
 }
 
-#box p {
+p {
   font-size: 20px;
   color: rgb(125, 125, 125);
   font-weight: 600;
   line-height: 1.8;
+}
+
+h1.lg {
+  font-size: 200px;
+  font-weight: 1000;
+}
+
+svg.lg {
+  fill: currentColor;
+  width: 100px;
+  height: 100px;
+  opacity: 0;
+}
+
+.flex {
+  display: flex;
+  gap: 40px;
+}
+
+.flex.centered {
+  align-items: center;
+}
+
+.flex.reverse {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+#questions {
+  position: sticky;
+  bottom: 5vh;
+  margin-top: 400px;
+  align-self: flex-end;
+  border-radius: 20px;
+  overflow: hidden;
+  width: 100%;
+  height: 90vh;
+  min-height: 90vh;
+  color: var(--white-color);
+  background-color: #000;
+  background-image: linear-gradient(
+    rgba(var(--primary-color-rgb), 0.5),
+    rgba(var(--primary-color-rgb), 0.5)
+  );
 }
 
 @supports (animation-timeline: inherit) {
@@ -101,12 +170,25 @@
     animation-range-start: 70%;
   }
 
-  #box:not(.main) h1,
-  #box:not(.main) p {
+  #section:not(:has(#box.main)) h1,
+  #section:not(:has(#box.main)) p,
+  svg.lg {
     animation: text 1ms;
     animation-timeline: view(y);
     animation-range-start: 10%;
     animation-range-end: 100%;
+  }
+
+  svg.lg {
+    animation-name: svg;
+  }
+
+  .flex.reverse svg.lg {
+    animation-name: svg-reverse;
+  }
+
+  #section:not(:has(#box.main)) h1.lg {
+    animation-name: go;
   }
 }
 
@@ -125,6 +207,14 @@
 
   #section {
     padding: 100px 20px;
+  }
+
+  #questions {
+    min-height: calc(90vh - var(--header-height));
+    height: calc(90vh - var(--header-height));
+    bottom: calc(
+      ((100vh - var(--header-height)) - (90vh - var(--header-height))) / 2
+    );
   }
 }
 
@@ -151,6 +241,54 @@
   }
   100% {
     transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes svg {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  40%,
+  60% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes svg-reverse {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  40%,
+  60% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes go {
+  0% {
+    transform: translateY(100%) scale(1);
+    opacity: 0;
+  }
+  40%,
+  60% {
+    transform: translateY(0) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px) scale(1.5);
     opacity: 0;
   }
 }

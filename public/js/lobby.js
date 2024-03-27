@@ -1,9 +1,9 @@
-const joinPopup = document.querySelector("#join-popup");
-const joinBtn = document.querySelector("#join");
-const joinCode = document.querySelector("#join-code");
-const fade = document.querySelector("#lobby #fade");
+window.joinPopup = document.querySelector("#join-popup");
+window.joinBtn = document.querySelector("#join");
+window.joinCode = document.querySelector("#join-code");
+window.fade = document.querySelector("#lobby #fade");
 
-const checkCode = () => {
+window.checkCode = () => {
   if (joinCode.disabled) return;
   code = joinCode.value;
   if (!code) return (code = "");
@@ -86,7 +86,7 @@ joinCode.onkeyup = (e) => {
   if (e.key == "Enter") joinBtn.click();
 };
 
-const url = new URL(window.location.href);
+window.url = new URL(window.location.href);
 code = url.searchParams.get("code");
 if (code) {
   joinCode.value = code;

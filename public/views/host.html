@@ -7,11 +7,10 @@
         <div id="join-code">
             <span>Go to <a
                 id="join-link"
-                href="/play?code=<%= joinCode %>"
                 class="max-bold"
                 target="_blank"
             ></a> and enter code:</span>
-            <span id="code" class="showy"><%= joinCode %></span>
+            <span id="code" class="showy"></span>
         </div>
         <div id="host-controls">
             <div id="start">
@@ -53,7 +52,7 @@
     <div id="header">
         <div id="title">
             <span><%= appName %></span>
-            <div id="code">Join Code: <%= joinCode %></div>
+            <div id="code">Join Code: </div>
         </div>
         <div id="time">0:00</div>
         <div id="host-controls">
@@ -101,7 +100,7 @@
     <div id="header">
         <div id="title">
             <span><%= appName %></span>
-            <div id="code">Join Code: <%= joinCode %></div>
+            <div id="code">Join Code: </div>
         </div>
         <div id="host-controls">
             <div id="replay">
@@ -181,11 +180,3 @@
         </div>
     </div>
 </div>
-<script>
-    let game = {
-        id: <%= pack.id %>,
-        room: "<%= joinCode %>",
-        pack: <%- JSON.stringify(pack) %>,
-        settings: <%- JSON.stringify(settings) %>,
-    };
-</script>

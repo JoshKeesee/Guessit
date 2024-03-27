@@ -1,7 +1,7 @@
-const qns = document.querySelector("#questions");
-let currQuestion = 0;
+window.qns = document.querySelector("#questions");
+window.currQuestion = 0;
 
-const nextQuestion = (i) => {
+window.nextQuestion = (i) => {
   const id = i || shuffle([...Array(game.pack.questions.length).keys()])[0];
   const nq = createQuestion(game.pack.questions[id]);
   const q = qns.querySelector("#question-container");
@@ -30,7 +30,7 @@ const nextQuestion = (i) => {
   qns.appendChild(nq);
 };
 
-const checkAnswer = (a) => {
+window.checkAnswer = (a) => {
   playSound("click");
   const q = a.parentElement.parentElement;
   const ans = q.querySelectorAll(".answer");
@@ -70,16 +70,7 @@ const checkAnswer = (a) => {
   }, 300);
 };
 
-const shuffle = (arr) => {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-};
-
-const createQuestion = (question) => {
+window.createQuestion = (question) => {
   const c = document.createElement("div");
   c.id = "question-container";
   c.dataset.id = question.id;
