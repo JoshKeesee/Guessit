@@ -48,8 +48,8 @@
       );
     const jl = document.querySelector("#join-link");
     const h = new URL("play", location.origin);
-    jl.innerText = h;
     h.searchParams.set("code", game.joinCode);
+    jl.innerText = h.host + h.pathname;
     jl.href = h;
     const jc = document.querySelector("#join-code");
     jc.classList.add("active");
