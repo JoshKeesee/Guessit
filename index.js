@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 const session = require("express-session");
 const url = require("url");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -36,6 +38,43 @@ const renderData = {
   query: "",
   styles: [],
   scripts: [],
+};
+
+const formatGeneratedQuestions = (questions, startId = 1) => {
+  return questions.split("||").map((q, i) => {
+    const [question, ...answers] = q.trim().split("|");
+    answers.forEach((e) => (e = e.trim()));
+    return {
+      question: question.trim(),
+      answers: [answers[0]],
+      answer_choices: answers.slice(0, 4),
+      type: answers[0] == "True" || answers[0] == "False" ? "tof" : "multiple",
+      id: startId + i,
+    };
+  });
+};
+
+const generateQuestions = async (
+  {
+    numQuestions = 1,
+    numAnswers = 4,
+    difficulty = "easy",
+    topic,
+    type = "multiple",
+  },
+  startId = 1,
+) => {
+  const prompt = `
+    Generate exactly ${Math.max(0, Math.min(20, numQuestions))} ${difficulty} ${type == "multiple" ? "multiple choice" : "true/false"} question${numQuestions == 1 ? "" : "s"} about "${topic}"${type == "multiple" ? " with" + numAnswers + " answers" : ""} in this format:
+    "question | correct answer | ${[...Array(type == "multiple" ? numAnswers - 1 : 1)].map((_, i) => "incorrect answer " + (i + 1)).join(" | ")}".
+    Separate new questions with a "||", don't number the questions, don't add multiple lines, don't add markup, and don't use incorrect grammar.
+  `;
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  const questions = formatGeneratedQuestions(text.replace(/\n/g, " "), startId);
+  return questions;
 };
 
 const games = {};
@@ -515,6 +554,22 @@ app.post("/pack/:id/delete-question", (req, res) => {
   res.json({
     success: true,
     id: req.body.id,
+  });
+});
+app.post("/pack/:id/generate-questions", async (req, res) => {
+  const packs = db.get("packs");
+  const pack = packs.find((pack) => pack.id == req.params.id);
+  if (!pack || pack.author != req.session.user.id)
+    return res.json({ success: false });
+  const id =
+    parseInt(pack.questions.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1;
+  const questions = await generateQuestions(req.body, id);
+  pack.questions.push(...questions);
+  pack.updated_at = new Date();
+  db.set("packs", packs);
+  res.json({
+    success: true,
+    questions,
   });
 });
 app.get("/pack/:id/delete", (req, res) => {

@@ -32,6 +32,9 @@
             <div id="profile">
                 <b id="username"><%= user.username %></b>
                 <img src="<%= user.profile || '/images/' + user.gender + '.jpeg' %>" />
+                <div class="dropdown">
+                    <div class="item">Settings</div>
+                </div>
             </div>
         <% } else if (buttons) { %>
             <a id="login" class="btn default" href="/login">

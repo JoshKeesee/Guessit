@@ -51,7 +51,6 @@ const linkSetup = () => {
   document.querySelectorAll("a").forEach(
     (a) =>
       (a.onclick = async (e) => {
-        console.log(a.href);
         if (a.target == "_blank" || a.target == "_self") return;
         clearInterval(check);
         setLoader(0);
@@ -71,7 +70,6 @@ const linkSetup = () => {
             Accept: "application/json",
           },
         });
-        console.log(data);
         const json = await data.json();
         clearInterval(check);
         setLoader(90);
@@ -224,7 +222,7 @@ const createStatus = (e, c) => {
   const i = document.createElement("img");
   i.src = "/images/" + c + ".png";
   const s = document.createElement("span");
-  s.innerText = e;
+  s.innerHTML = e;
   status.appendChild(i);
   status.appendChild(s);
   document.querySelector("#status").appendChild(status);
@@ -283,6 +281,12 @@ window.addEventListener("load", () => {
     url.searchParams.delete("error");
     history.replaceState({}, "", url.href);
   }
+  const profile = document.querySelector("#profile");
+  if (!profile) return;
+  profile.onclick = () => {
+    const d = profile.querySelector(".dropdown");
+    d.classList.toggle("active");
+  };
 });
 
 window.addEventListener("popstate", (e) => {

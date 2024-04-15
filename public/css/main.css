@@ -151,6 +151,7 @@ input[type="radio"] {
 }
 
 #header #profile {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,6 +175,39 @@ input[type="radio"] {
   height: 40px;
   object-fit: cover;
   border-radius: 50%;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  width: fit-content;
+  background: var(--white-color);
+  overflow: hidden;
+  border: 2px solid #f3f3f3;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  padding: 10px 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: all 0.2s ease;
+}
+
+.dropdown.active {
+  transform: scaleY(1);
+}
+
+.dropdown .item {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.dropdown .item:hover {
+  background: rgba(0, 0, 0, 0.1);
 }
 
 html:has(#header #bar):root {

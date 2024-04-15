@@ -1,7 +1,11 @@
 (() => {
   const addQuestion = document.querySelector("#add-question");
-  const cancelPopup = document.querySelector(".popup #cancel");
+  const magicreateButton = document.querySelector("#magicreate-button");
+  const cancelPopup = document.querySelector("#question-popup #cancel");
+  const cancelMagicreate = document.querySelector("#magicreate-popup #cancel");
   const popup = document.querySelector("#question-popup");
+  const magicreate = document.querySelector("#magicreate-popup");
+  const generateQuestions = document.querySelector("#generate-questions");
   const qc = document.querySelector("#question-container");
 
   addQuestion.onclick = cancelPopup.onclick = () => {
@@ -13,6 +17,55 @@
     popup
       .querySelectorAll("#task")
       .forEach((e, i) => (e.innerText = i == 0 ? "New" : "Add"));
+  };
+
+  magicreateButton.onclick = cancelMagicreate.onclick = () => {
+    magicreate.classList.toggle("active");
+    magicreate.classList.remove("editing");
+    magicreate.reset();
+  };
+
+  generateQuestions.onclick = async (e) => {
+    e.preventDefault();
+    if (generateQuestions.classList.contains("disabled")) return;
+    const params = {
+      numQuestions: null,
+      numAnswers: null,
+      topic: null,
+      difficulty: null,
+    };
+    Object.keys(params).forEach((k) => {
+      params[k] = magicreate.querySelector("#" + k).value;
+    });
+    if (Object.values(params).some((e) => !e)) return;
+    generateQuestions.classList.add("disabled");
+    const data = await (
+      await fetch("generate-questions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(params),
+      })
+    ).json();
+    if (data.success) {
+      const questions = data.questions;
+      for (let i = 0; i < questions.length; i++)
+        qc.appendChild(createQuestion(questions[i]));
+      const qnum = document.querySelectorAll(".question").length;
+      document
+        .querySelectorAll("#question-num span")
+        .forEach(
+          (e) => (e.innerText = qnum + " question" + (qnum == 1 ? "" : "s")),
+        );
+      createStatus(
+        `Magicreate&trade; created ${questions.length} question${questions.length == 1 ? "" : "s"} successfully`,
+        "success",
+      );
+    }
+    generateQuestions.classList.remove("disabled");
+    cancelMagicreate.click();
   };
 
   const t = popup.querySelector("#type");
