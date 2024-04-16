@@ -1,4 +1,8 @@
 (() => {
+  window.socket = io();
+  const magicreateProgress = document.querySelector(
+    "#magicreate-popup #progress",
+  );
   const addQuestion = document.querySelector("#add-question");
   const magicreateButton = document.querySelector("#magicreate-button");
   const cancelPopup = document.querySelector("#question-popup #cancel");
@@ -33,12 +37,16 @@
       numAnswers: null,
       topic: null,
       difficulty: null,
+      socketId: socket.id,
     };
-    Object.keys(params).forEach((k) => {
-      params[k] = magicreate.querySelector("#" + k).value;
-    });
+    Object.keys(params).forEach(
+      (k) =>
+        k != "socketId" &&
+        (params[k] = magicreate.querySelector("#" + k).value),
+    );
     if (Object.values(params).some((e) => !e)) return;
     generateQuestions.classList.add("disabled");
+    document.querySelector("#generate-questions span.toggled").dataset.progress = 0;
     const data = await (
       await fetch("generate-questions", {
         method: "POST",
@@ -60,13 +68,26 @@
         .forEach(
           (e) => (e.innerText = qnum + " question" + (qnum == 1 ? "" : "s")),
         );
-      cancelMagicreate.click();
       createStatus(
         `Magicreate&trade; created ${questions.length} question${questions.length == 1 ? "" : "s"} successfully`,
         "success",
       );
+      setTimeout(() => cancelMagicreate.click(), 500);
     } else createStatus(data.error || "An error occurred", "error");
   };
+
+  socket.on("magicreate progress", (pr) => {
+    magicreateProgress.style.setProperty(
+      "--progress",
+      Math.floor(pr * 100) + "%",
+    );
+    document.querySelector("#generate-questions span.toggled").dataset.progress = Math.floor(pr * 100);
+    if (pr >= 0) magicreateProgress.style.opacity = 1;
+    if (pr == 1) {
+      magicreateProgress.style.opacity = 0;
+      setTimeout(() => magicreateProgress.style.setProperty("--progress", 0), 300);
+    }
+  });
 
   const t = popup.querySelector("#type");
   t.onchange = () => {
@@ -269,18 +290,27 @@
     ).json();
     if (data.success) {
       const q = qc.querySelector(".question[data-id='" + data.id + "']");
-      q.remove();
-      const qs = qc.querySelectorAll(".question");
-      qs.forEach((e, i) => {
-        const h = e.querySelector("h3");
-        h.innerText = i + 1 + ") " + h.innerText.split(") ")[1];
-      });
-      const qnum = qs.length;
-      document
-        .querySelectorAll("#question-num span")
-        .forEach(
-          (e) => (e.innerText = qnum + " question" + (qnum == 1 ? "" : "s")),
-        );
+      const { height } = q.getBoundingClientRect();
+      q.animate({
+        "transform": ["scale(1)", "scale(0)"],
+        "marginBottom": ["0", "-" + height + "px"],
+      }, {
+        easing: "ease",
+        duration: 500,
+      }).onfinish = () => {
+        q.remove();
+        const qs = qc.querySelectorAll(".question");
+        qs.forEach((e, i) => {
+          const h = e.querySelector("h3");
+          h.innerText = i + 1 + ") " + h.innerText.split(") ")[1];
+        });
+        const qnum = qs.length;
+        document
+          .querySelectorAll("#question-num span")
+          .forEach(
+            (e) => (e.innerText = qnum + " question" + (qnum == 1 ? "" : "s")),
+          );
+        }
     }
   };
 })();

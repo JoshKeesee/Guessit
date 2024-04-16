@@ -97,11 +97,6 @@
                         <option value="hard">Hard</option>
                         <option value="extremely hard">Extremely Hard</option>
                     </select>
-                    <label for="type">Question Type:</label>
-                    <select id="type" name="type" required>
-                        <option value="multiple">Multiple Choice</option>
-                        <option value="tof">True or False</option>
-                    </select>
                     <div class="error"></div>
                     <div class="btns">
                         <em>Content generated with AI may be inaccurate or misleading</em>
@@ -110,6 +105,7 @@
                         </div>
                         <button id="generate-questions" type="submit" class="btn primary bold">
                             <span>Generate</span>
+                            <span class="toggled">Generating</span>
                             <svg class="spinner">
                                 <circle>
                                     <animateTransform attributeName="transform" type="rotate" values="-90; 810" keyTimes="0; 1" dur="2s" repeatCount="indefinite"></animateTransform>
@@ -119,6 +115,7 @@
                             </svg>
                         </button>
                     </div>
+                    <div id="progress"></div>
                 </form>
                 <div id="question-container">
                     <% for (let i = 0; i < pack.questions.length; i++) { %>

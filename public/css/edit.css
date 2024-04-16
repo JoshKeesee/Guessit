@@ -26,7 +26,7 @@
 }
 
 #generate-questions:not(.disabled) .spinner {
-  margin-left: -30px;
+  margin-left: -20px;
   transform: scale(0);
   opacity: 0;
 }
@@ -109,6 +109,7 @@
   opacity: 0;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
   gap: 10px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
   transition: all 0.3s ease;
@@ -124,6 +125,31 @@
   color: #aaa;
   font-style: italic;
   margin-top: -20px;
+}
+
+#generate-questions {
+  gap: 0 !important;
+}
+
+#generate-questions span {
+  width: 80px;
+  overflow: hidden;
+  transition: width 0.5s ease;
+}
+
+#generate-questions span.toggled {
+  width: 165px;
+  white-space: nowrap;
+  text-align: left;
+}
+
+#generate-questions span.toggled::after {
+  content: " (" attr(data-progress) "%)";
+}
+
+#generate-questions.disabled span:not(.toggled),
+#generate-questions:not(.disabled) span.toggled {
+  width: 0;
 }
 
 .btns em {
@@ -149,7 +175,27 @@
   display: none;
 }
 
+.popup #progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: var(--progress);
+  height: 3px;
+  background: linear-gradient(
+    35deg,
+    var(--primary-color),
+    var(--primary-color),
+    var(--primary-accent-color),
+    var(--primary-color)
+  );
+  pointer-events: none;
+  --progress: 0%;
+  transition: all 0.3s ease;
+}
+
 #question-container {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(minmax(300px, 1fr));
 }

@@ -50,7 +50,8 @@ class ConsoleProgressBar {
   update(progress, time = Date.now() - this.startTime) {
     const progressString = "█".repeat(progress * this.barLength);
     const emptyString = " ".repeat(this.barLength - progress * this.barLength);
-    const timeString = time < 1000 ? `${time}ms` : `${(time / 1000).toFixed(2)}s`;
+    const timeString =
+      time < 1000 ? `${time}ms` : `${(time / 1000).toFixed(2)}s`;
     process.stdout.write(
       `\r[${progressString}${emptyString}] ${Math.floor(progress * 100)}% ${this.name} (${timeString})`,
     );
@@ -69,19 +70,19 @@ const generateQuestions = async (
     numAnswers = 4,
     difficulty = "easy",
     topic,
-    type = "multiple",
+    socketId = null,
   },
   startId = 1,
 ) => {
   try {
     const p = new ConsoleProgressBar("questions generated");
     const prompt = `
-      Generate exactly ${Math.max(0, Math.min(20, numQuestions))} ${difficulty} ${type == "multiple" ? "multiple choice" : "true/false"} question${numQuestions == 1 ? "" : "s"} about "${topic}"${type == "multiple" ? " with" + numAnswers + " answers" : ""} in this JSON array format:
+      Generate exactly ${Math.max(1, Math.min(20, numQuestions))} ${difficulty} question${numQuestions == 1 ? "" : "s"} about "${topic}" with ${Math.max(2, Math.min(4, numAnswers))} answers each in this JSON array format:
       [{
         "question" // replace with the question,
-        "answers": [] // only include the correct answer(s) from "answer_choices",
-        "answer_choices": [] // include all answer choices,
-        "type": // question type is multiple choice then "multiple" or "tof",
+        "answers": [] // only include the exact correct answers from "answer_choices",
+        "answer_choices": [] // include all answer choices including those from "answers" (maximum 4),
+        "type" // "multiple" for multiple choice and "tof" for true/false question type,
         "id" // ${startId} + question number,
       }]
     `;
@@ -92,12 +93,18 @@ const generateQuestions = async (
     for await (const chunk of result.stream) {
       const chunkText = chunk.text();
       text += chunkText;
-      p.update(text.replace(/\n/g, "").split("},").length / numQuestions);
+      const pr = text.replace(/\n/g, "").split("},").length / numQuestions;
+      p.update(pr);
+      if (socketId) io.to(socketId).emit("magicreate progress", pr);
     }
     p.finish();
-    const questions = text.replace(/```/g, "").replace(/(JSON|json|javascript|JavaScript)/g, "").trim();
+    const qs = text.indexOf("["),
+      qe = text.lastIndexOf("]") + 1;
+    const questions = text.slice(qs, qe);
     return JSON.parse(questions);
   } catch (e) {
+    console.error(e);
+    if (socketId) io.to(socketId).emit("magicreate progress", 0);
     return { error: "An error occurred while generating questions" };
   }
 };
@@ -589,7 +596,8 @@ app.post("/pack/:id/generate-questions", async (req, res) => {
   const id =
     parseInt(pack.questions.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1;
   const questions = await generateQuestions(req.body, id);
-  if (questions.error) return res.json({ success: false, error: questions.error });
+  if (questions.error)
+    return res.json({ success: false, error: questions.error });
   pack.questions.push(...questions);
   pack.updated_at = new Date();
   db.set("packs", packs);
