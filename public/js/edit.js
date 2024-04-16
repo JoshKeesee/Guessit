@@ -49,6 +49,7 @@
         body: JSON.stringify(params),
       })
     ).json();
+    generateQuestions.classList.remove("disabled");
     if (data.success) {
       const questions = data.questions;
       for (let i = 0; i < questions.length; i++)
@@ -59,13 +60,12 @@
         .forEach(
           (e) => (e.innerText = qnum + " question" + (qnum == 1 ? "" : "s")),
         );
+      cancelMagicreate.click();
       createStatus(
         `Magicreate&trade; created ${questions.length} question${questions.length == 1 ? "" : "s"} successfully`,
         "success",
       );
-    }
-    generateQuestions.classList.remove("disabled");
-    cancelMagicreate.click();
+    } else createStatus(data.error || "An error occurred", "error");
   };
 
   const t = popup.querySelector("#type");

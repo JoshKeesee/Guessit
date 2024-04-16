@@ -1,3 +1,4 @@
+require("dotenv").config();
 const ejs = require("ejs");
 const express = require("express");
 const app = express();
@@ -40,19 +41,27 @@ const renderData = {
   scripts: [],
 };
 
-const formatGeneratedQuestions = (questions, startId = 1) => {
-  return questions.split("||").map((q, i) => {
-    const [question, ...answers] = q.trim().split("|");
-    answers.forEach((e) => (e = e.trim()));
-    return {
-      question: question.trim(),
-      answers: [answers[0]],
-      answer_choices: answers.slice(0, 4),
-      type: answers[0] == "True" || answers[0] == "False" ? "tof" : "multiple",
-      id: startId + i,
-    };
-  });
-};
+class ConsoleProgressBar {
+  constructor(name = "Done") {
+    this.barLength = 20;
+    this.name = name;
+    this.startTime = Date.now();
+  }
+  update(progress, time = Date.now() - this.startTime) {
+    const progressString = "█".repeat(progress * this.barLength);
+    const emptyString = " ".repeat(this.barLength - progress * this.barLength);
+    const timeString = time < 1000 ? `${time}ms` : `${(time / 1000).toFixed(2)}s`;
+    process.stdout.write(
+      `\r[${progressString}${emptyString}] ${Math.floor(progress * 100)}% ${this.name} (${timeString})`,
+    );
+  }
+  finish() {
+    this.endTime = Date.now();
+    this.time = this.endTime - this.startTime;
+    this.update(1, this.time);
+    process.stdout.write("\n");
+  }
+}
 
 const generateQuestions = async (
   {
@@ -64,17 +73,33 @@ const generateQuestions = async (
   },
   startId = 1,
 ) => {
-  const prompt = `
-    Generate exactly ${Math.max(0, Math.min(20, numQuestions))} ${difficulty} ${type == "multiple" ? "multiple choice" : "true/false"} question${numQuestions == 1 ? "" : "s"} about "${topic}"${type == "multiple" ? " with" + numAnswers + " answers" : ""} in this format:
-    "question | correct answer | ${[...Array(type == "multiple" ? numAnswers - 1 : 1)].map((_, i) => "incorrect answer " + (i + 1)).join(" | ")}".
-    Separate new questions with a "||", don't number the questions, don't add multiple lines, don't add markup, and don't use incorrect grammar.
-  `;
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
-  const questions = formatGeneratedQuestions(text.replace(/\n/g, " "), startId);
-  return questions;
+  try {
+    const p = new ConsoleProgressBar("questions generated");
+    const prompt = `
+      Generate exactly ${Math.max(0, Math.min(20, numQuestions))} ${difficulty} ${type == "multiple" ? "multiple choice" : "true/false"} question${numQuestions == 1 ? "" : "s"} about "${topic}"${type == "multiple" ? " with" + numAnswers + " answers" : ""} in this JSON array format:
+      [{
+        "question" // replace with the question,
+        "answers": [] // only include the correct answer(s) from "answer_choices",
+        "answer_choices": [] // include all answer choices,
+        "type": // question type is multiple choice then "multiple" or "tof",
+        "id" // ${startId} + question number,
+      }]
+    `;
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const result = await model.generateContentStream(prompt);
+    p.update(0);
+    let text = "";
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      text += chunkText;
+      p.update(text.replace(/\n/g, "").split("},").length / numQuestions);
+    }
+    p.finish();
+    const questions = text.replace(/```/g, "").replace(/(JSON|json|javascript|JavaScript)/g, "").trim();
+    return JSON.parse(questions);
+  } catch (e) {
+    return { error: "An error occurred while generating questions" };
+  }
 };
 
 const games = {};
@@ -564,6 +589,7 @@ app.post("/pack/:id/generate-questions", async (req, res) => {
   const id =
     parseInt(pack.questions.sort((a, b) => b.id - a.id)[0]?.id || 0) + 1;
   const questions = await generateQuestions(req.body, id);
+  if (questions.error) return res.json({ success: false, error: questions.error });
   pack.questions.push(...questions);
   pack.updated_at = new Date();
   db.set("packs", packs);
