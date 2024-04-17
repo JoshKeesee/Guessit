@@ -77,13 +77,13 @@ const generateQuestions = async (
   try {
     const p = new ConsoleProgressBar("questions generated");
     const prompt = `
-      Generate exactly ${Math.max(1, Math.min(20, numQuestions))} ${difficulty} question${numQuestions == 1 ? "" : "s"} about "${topic}" with ${Math.max(2, Math.min(4, numAnswers))} answers each in this JSON array format:
+      Generate exactly ${Math.max(1, Math.min(20, numQuestions))} ${difficulty} question${numQuestions == 1 ? "" : "s"} about "${topic}" with exactly ${Math.max(2, Math.min(4, numAnswers))} answers each in this JSON array format:
       [{
-        "question" // replace with the question,
-        "answers": [] // only include the exact correct answers from "answer_choices",
-        "answer_choices": [] // include all answer choices including those from "answers" (maximum 4),
-        "type" // "multiple" for multiple choice and "tof" for true/false question type,
-        "id" // ${startId} + question number,
+        "question", // the question text
+        "answers": [], // only include the exact correct answers from "answer_choices"
+        "answer_choices": [], // include all answer choices including those from "answers" (maximum ${Math.max(2, Math.min(4, numAnswers))} choices)
+        "type", // "multiple" for multiple choice and "tof" for true/false question types
+        "id", // ${startId} + question number
       }]
     `;
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -98,10 +98,21 @@ const generateQuestions = async (
       if (socketId) io.to(socketId).emit("magicreate progress", pr);
     }
     p.finish();
-    const qs = text.indexOf("["),
-      qe = text.lastIndexOf("]") + 1;
-    const questions = text.slice(qs, qe);
-    return JSON.parse(questions);
+    let qs, qe, questions = [];
+    while ((qs = text.indexOf("{")) != -1) {
+      qe = text.indexOf("}", qs) + 1;
+      const q = text.slice(qs, qe).replace(/"[^"]*"/g, (match) =>
+        match.replace(/['"]/g, (match) => "\\" + match),
+      );
+      try {
+        const question = JSON.parse(text.slice(qs, qe));
+        questions.push(question);
+      } catch (error) {
+        console.error("Error parsing question:", error, text.slice(qs, qe));
+      }
+      text = text.slice(qe + 1);
+    }
+    return questions;
   } catch (e) {
     console.error(e);
     if (socketId) io.to(socketId).emit("magicreate progress", 0);
