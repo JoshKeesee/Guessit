@@ -1059,16 +1059,10 @@ io.on("connection", (socket) => {
       return cb({ success: false, error: "Not enough shares to sell" });
     stock.shares -= num;
     user.points += game.stocks.find((e) => e.name == name).price * num;
-    const { ppc, ppi } = getPoints(user);
-    user.nextPointsPerCorrect = ppc;
-    user.nextPointsPerIncorrect = ppi;
     const p = {
       name: user.name,
       points: user.points,
-      streak: user.streak,
       stocks: user.stocks,
-      nextPointsPerCorrect: user.nextPointsPerCorrect,
-      nextPointsPerIncorrect: user.nextPointsPerIncorrect,
     };
     cb({ success: true, player: p, stock: name });
     io.to(user.room).emit("stock", {
