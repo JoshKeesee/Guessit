@@ -50,6 +50,8 @@ socket.on("player left", (player, reason) => {
   document.querySelector("#loading").classList.remove("active");
   document.querySelector("#fade").classList.remove("active");
   document.querySelector("#game-over").classList.remove("active");
+  market.classList.remove("active");
+  stockMarket.classList.remove("active");
   joinPopup.style = "";
   joinBtn.onclick = checkCode;
   joinCode.type = "number";
@@ -128,6 +130,8 @@ socket.on("game ended", (data, reason) => {
   document.querySelector("#lobby").classList.remove("active");
   document.querySelector("#game").classList.remove("active");
   document.querySelector("#game-over").classList.add("active");
+  market.classList.remove("active");
+  stockMarket.classList.remove("active");
   const place = document.querySelector("#leaderboard-stats #place span");
   const c = player.history.filter((e) => e.correct.includes(e.answer)).length;
   const i = player.history.filter((e) => !e.correct.includes(e.answer)).length;

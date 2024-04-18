@@ -215,6 +215,7 @@ const createStocks = (s, st, invest = false) => {
       );
       sub.id = "sub";
       sub.classList.add("disabled");
+      sub.oncontextmenu = (e) => e.preventDefault();
       sub.onclick = () => {
         if (
           typeof game == "undefined" ||
@@ -241,6 +242,7 @@ const createStocks = (s, st, invest = false) => {
       );
       add.id = "add";
       add.classList.add("disabled");
+      add.oncontextmenu = (e) => e.preventDefault();
       add.onclick = () => {
         if (
           typeof game == "undefined" ||
