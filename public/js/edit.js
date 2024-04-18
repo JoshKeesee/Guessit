@@ -46,7 +46,9 @@
     );
     if (Object.values(params).some((e) => !e)) return;
     generateQuestions.classList.add("disabled");
-    document.querySelector("#generate-questions span.toggled").dataset.progress = 0;
+    document.querySelector(
+      "#generate-questions span.toggled",
+    ).dataset.progress = 0;
     const data = await (
       await fetch("generate-questions", {
         method: "POST",
@@ -81,11 +83,16 @@
       "--progress",
       Math.floor(pr * 100) + "%",
     );
-    document.querySelector("#generate-questions span.toggled").dataset.progress = Math.floor(pr * 100);
+    document.querySelector(
+      "#generate-questions span.toggled",
+    ).dataset.progress = Math.floor(pr * 100);
     if (pr >= 0) magicreateProgress.style.opacity = 1;
     if (pr == 1) {
       magicreateProgress.style.opacity = 0;
-      setTimeout(() => magicreateProgress.style.setProperty("--progress", 0), 300);
+      setTimeout(
+        () => magicreateProgress.style.setProperty("--progress", 0),
+        300,
+      );
     }
   });
 
@@ -94,16 +101,6 @@
     popup
       .querySelector("#multiple-choice")
       .classList.toggle("active", t.value == "multiple");
-  };
-
-  const svg = (path, viewBox) => {
-    const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    s.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    s.setAttribute("viewBox", viewBox);
-    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    p.setAttribute("d", path);
-    s.appendChild(p);
-    return s;
   };
 
   const btn = (text, s, type, fn = () => {}) => {
@@ -291,13 +288,16 @@
     if (data.success) {
       const q = qc.querySelector(".question[data-id='" + data.id + "']");
       const { height } = q.getBoundingClientRect();
-      q.animate({
-        "transform": ["scale(1)", "scale(0)"],
-        "marginBottom": ["0", "-" + height + "px"],
-      }, {
-        easing: "ease",
-        duration: 500,
-      }).onfinish = () => {
+      q.animate(
+        {
+          transform: ["scale(1)", "scale(0)"],
+          marginBottom: ["0", "-" + height + "px"],
+        },
+        {
+          easing: "ease",
+          duration: 500,
+        },
+      ).onfinish = () => {
         q.remove();
         const qs = qc.querySelectorAll(".question");
         qs.forEach((e, i) => {
@@ -310,7 +310,7 @@
           .forEach(
             (e) => (e.innerText = qnum + " question" + (qnum == 1 ? "" : "s")),
           );
-        }
+      };
     }
   };
 })();

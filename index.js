@@ -98,12 +98,16 @@ const generateQuestions = async (
       if (socketId) io.to(socketId).emit("magicreate progress", pr);
     }
     p.finish();
-    let qs, qe, questions = [];
+    let qs,
+      qe,
+      questions = [];
     while ((qs = text.indexOf("{")) != -1) {
       qe = text.indexOf("}", qs) + 1;
-      const q = text.slice(qs, qe).replace(/"[^"]*"/g, (match) =>
-        match.replace(/['"]/g, (match) => "\\" + match),
-      );
+      const q = text
+        .slice(qs, qe)
+        .replace(/"[^"]*"/g, (match) =>
+          match.replace(/['"]/g, (match) => "\\" + match),
+        );
       try {
         const question = JSON.parse(text.slice(qs, qe));
         questions.push(question);
@@ -1021,11 +1025,11 @@ io.on("connection", (socket) => {
       player: p,
     });
   });
-  socket.on("buy stock", (name, num, cb = () => {}) => {
-    const stock = user.stocks[name];
+  socket.on("buy stock", (name, num = 1, cb = () => {}) => {
+    const stock = user.stocks.find((e) => e.name == name);
     const game = games[user.room];
     if (!stock) return cb({ success: false, error: "Stock not found" });
-    if (user.points < stock.price * num)
+    if (user.points < game.stocks.find((e) => e.name == name).price * num)
       return cb({ success: false, error: "Not enough points" });
     stock.shares += num;
     user.points -= game.stocks.find((e) => e.name == name).price * num;
@@ -1041,7 +1045,32 @@ io.on("connection", (socket) => {
       nextPointsPerCorrect: user.nextPointsPerCorrect,
       nextPointsPerIncorrect: user.nextPointsPerIncorrect,
     };
-    cb({ success: true, player: p });
+    cb({ success: true, player: p, stock: name });
+    io.to(user.room).emit("stock", {
+      name,
+      player: p,
+    });
+  });
+  socket.on("sell stock", (name, num = 1, cb = () => {}) => {
+    const stock = user.stocks.find((e) => e.name == name);
+    const game = games[user.room];
+    if (!stock) return cb({ success: false, error: "Stock not found" });
+    if (stock.shares - num < 0)
+      return cb({ success: false, error: "Not enough shares to sell" });
+    stock.shares -= num;
+    user.points += game.stocks.find((e) => e.name == name).price * num;
+    const { ppc, ppi } = getPoints(user);
+    user.nextPointsPerCorrect = ppc;
+    user.nextPointsPerIncorrect = ppi;
+    const p = {
+      name: user.name,
+      points: user.points,
+      streak: user.streak,
+      stocks: user.stocks,
+      nextPointsPerCorrect: user.nextPointsPerCorrect,
+      nextPointsPerIncorrect: user.nextPointsPerIncorrect,
+    };
+    cb({ success: true, player: p, stock: name });
     io.to(user.room).emit("stock", {
       name,
       player: p,

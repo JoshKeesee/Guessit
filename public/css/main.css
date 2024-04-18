@@ -767,6 +767,7 @@ html:has(#header #bar):root {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  user-select: none;
   transition: all 0.5s ease;
 }
 
@@ -796,6 +797,50 @@ html:has(#header #bar):root {
 #stocks .stock #text img {
   width: 20px;
   height: 20px;
+}
+
+#stocks .stock #invest {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+}
+
+#stocks .stock #invest svg {
+  width: 14px;
+  min-width: 14px;
+  transition: all 0.3s ease;
+}
+
+#stocks .stock #invest svg:not(.disabled):hover {
+  filter: brightness(120%);
+  cursor: pointer;
+}
+
+#stocks .stock #invest #sub {
+  fill: var(--danger-color);
+}
+
+#stocks .stock #invest #curr {
+  padding: 5px;
+  border-radius: 5px;
+  background: white;
+  border: #ccc 2px solid;
+  width: 100%;
+  text-align: center;
+  user-select: none;
+}
+
+#stocks .stock #invest #add {
+  fill: var(--success-color);
+}
+
+#stocks .stock #invest svg.disabled {
+  fill: #ccc !important;
 }
 
 #status {

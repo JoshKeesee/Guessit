@@ -128,6 +128,16 @@ String.prototype.toScore = function (f) {
   return (f == "$" ? f + n : n + f).replace("-", "-" + f).replace(f + "-", "-");
 };
 
+const svg = (path, viewBox) => {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  s.setAttribute("viewBox", viewBox);
+  const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  p.setAttribute("d", path);
+  s.appendChild(p);
+  return s;
+};
+
 const shuffle = (arr) => {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -157,7 +167,27 @@ const animateScore = (score, el, t = "$", easing = 0.2) => {
   update();
 };
 
-const createStocks = (s, st) => {
+const updateShares = (data) => {
+  if (
+    typeof game == "undefined" ||
+    typeof name == "undefined" ||
+    typeof socket == "undefined"
+  )
+    return;
+  if (!data.success) return createStatus(data.error, "error");
+  const p = game.players.find((e) => data.player.name == name);
+  Object.keys(data.player).forEach((k) => (p[k] = data.player[k]));
+  curr.innerText = p.stocks.find((s) => s.name == data.stock).shares;
+  updateStocks(
+    game.stocks,
+    document.querySelector("#stocks.market-content"),
+    true,
+  );
+  animateScore(p.points, document.querySelector("#stats #score"));
+  animateScore(p.streak, document.querySelector("#stats #streak span"), "");
+};
+
+const createStocks = (s, st, invest = false) => {
   st.querySelector("#graph").innerHTML = "";
   const mh = Math.max(...s.map((e) => e.price));
   s.forEach((e) => {
@@ -176,12 +206,65 @@ const createStocks = (s, st) => {
     p.id = "price";
     g.appendChild(p);
     g.appendChild(t);
+    if (invest) {
+      const c = document.createElement("div");
+      c.id = "invest";
+      const sub = svg(
+        "M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z",
+        "0 0 448 512",
+      );
+      sub.id = "sub";
+      sub.classList.add("disabled");
+      sub.onclick = () => {
+        if (
+          typeof game == "undefined" ||
+          typeof name == "undefined" ||
+          typeof socket == "undefined" ||
+          sub.classList.contains("disabled")
+        )
+          return;
+        let c = parseInt(curr.innerText);
+        const p = game.players.find((e) => e.name == name);
+        if (p.stocks.find((s) => s.name == e.name).shares < c)
+          return sub.classList.add("disabled");
+        c = parseInt(curr.innerText);
+        if (p.stocks.find((s) => s.name == e.name).shares < c)
+          sub.classList.add("disabled");
+        socket.emit("sell stock", e.name, 1, updateShares);
+      };
+      const curr = document.createElement("div");
+      curr.id = "curr";
+      curr.innerText = "0";
+      const add = svg(
+        "M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z",
+        "0 0 448 512",
+      );
+      add.id = "add";
+      add.classList.add("disabled");
+      add.onclick = () => {
+        if (
+          typeof game == "undefined" ||
+          typeof name == "undefined" ||
+          typeof socket == "undefined" ||
+          add.classList.contains("disabled")
+        )
+          return;
+        const c = game.stocks.find((s) => s.name == e.name).price;
+        const p = game.players.find((e) => e.name == name);
+        if (p.points < c) return add.classList.add("disabled");
+        socket.emit("buy stock", e.name, 1, updateShares);
+      };
+      c.appendChild(sub);
+      c.appendChild(curr);
+      c.appendChild(add);
+      g.appendChild(c);
+    }
     st.querySelector("#graph").appendChild(g);
     animateScore(e.price, p);
   });
 };
 
-const updateStocks = (s, st) => {
+const updateStocks = (s, st, invest = false) => {
   const g = st.querySelector("#graph");
   const c = g.children;
   if (c.length == 0) createStocks(s, document.querySelector("#stocks"));
@@ -195,6 +278,24 @@ const updateStocks = (s, st) => {
     else p.classList.remove("up", "down");
     p.dataset.price = e.price;
     animateScore(e.price, p.querySelector("#price"));
+    if (invest) {
+      if (
+        typeof game == "undefined" ||
+        typeof name == "undefined" ||
+        typeof socket == "undefined"
+      )
+        return;
+      const player = game.players.find((pl) => pl.name == name);
+      const sub = p.querySelector("#sub");
+      const curr = p.querySelector("#curr");
+      const c = player.stocks.find((s) => s.name == e.name).shares;
+      curr.innerText = c;
+      const add = p.querySelector("#add");
+      if (c - 1 < 0) sub.classList.add("disabled");
+      else sub.classList.remove("disabled");
+      if (player.points < e.price) add.classList.add("disabled");
+      else add.classList.remove("disabled");
+    }
   });
 };
 

@@ -394,7 +394,7 @@
 }
 
 #stock-market.game-popup #stocks {
-  height: 100%;
+  height: calc(100% - 100px);
 }
 
 #stock-market.game-popup #stocks #price {

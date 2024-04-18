@@ -114,7 +114,11 @@ socket.on("game started", (data) => {
   updateMpItems();
   updatePowerups(powerups);
   stocks = game.players.find((e) => e.name == name).stocks;
-  createStocks(game.stocks, document.querySelector("#stocks.market-content"));
+  createStocks(
+    game.stocks,
+    document.querySelector("#stocks.market-content"),
+    true,
+  );
 });
 
 socket.on("game ended", (data, reason) => {
@@ -194,7 +198,11 @@ socket.on("game ended", (data, reason) => {
 
 socket.on("stocks", (s) => {
   game.stocks = s;
-  updateStocks(game.stocks, document.querySelector("#stocks.market-content"));
+  updateStocks(
+    game.stocks,
+    document.querySelector("#stocks.market-content"),
+    true,
+  );
 });
 
 socket.on("question", (id) => {
@@ -271,7 +279,11 @@ store.onclick = () => {
 };
 
 stock.onclick = () => {
-  updateStocks(game.stocks, document.querySelector("#stocks.market-content"));
+  updateStocks(
+    game.stocks,
+    document.querySelector("#stocks.market-content"),
+    true,
+  );
   stockMarket.classList.add("active");
   playSound("whoosh");
 };
