@@ -1,34 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <meta
-            name="description"
-            content="An online quiz game show"
-        />
-        <meta name="keywords" content="" />
-        <meta name="author" content="Joshua Keesee" />
-        <title><%= appName %> - <%= title %></title>
-        <link rel="stylesheet" href="/css/main.css" />
-        <% styles.forEach(style => { %>
-            <link rel="stylesheet" href="<%= style %>" />
-        <% }) %>
-        <link rel="icon" href="/icon.png" />
-    </head>
-    <body>
-        <div id="loader"></div>
-        <div id="container">
-            <%- include('../' + template + '.html') %>
-        </div>
-        <div id="status"></div>
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="/js/main.js"></script>
-        <script src="/js/time.js"></script>
-        <script src="/js/animateGrid.js"></script>
-        <% scripts.forEach(s => { %>
-            <script src="<%= s %>"></script>
-        <% }) %>
-    </body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="An online quiz game show" />
+    <meta
+      name="keywords"
+      content="online, quiz app, game show, Guessit, guess, guess it, pack creation, powerups, JoshKeesee, Joshua Keesee"
+    />
+    <meta name="author" content="Joshua Keesee" />
+    <title><%= appName %> - <%= title %></title>
+    <link rel="stylesheet" href="/css/main.css" />
+    <% styles.forEach(style => { %>
+    <link rel="stylesheet" href="<%= style %>" />
+    <% }) %>
+    <link rel="icon" href="/icon.png" />
+  </head>
+  <body>
+    <div id="loader"></div>
+    <div id="container"><%- include('../' + template + '.html') %></div>
+    <div id="status"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/time.js"></script>
+    <script src="/js/animateGrid.js"></script>
+    <% scripts.forEach(s => { %>
+    <script src="<%= s %>"></script>
+    <% }) %>
+  </body>
 </html>

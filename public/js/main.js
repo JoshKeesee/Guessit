@@ -177,7 +177,7 @@ const updateShares = (data) => {
   if (!data.success) return createStatus(data.error, "error");
   const p = game.players.find((e) => data.player.name == name);
   Object.keys(data.player).forEach((k) => (p[k] = data.player[k]));
-  curr.innerText = p.stocks.find((s) => s.name == data.stock).shares;
+  animateScore(p.stocks.find((s) => s.name == data.stock).shares, curr, "");
   updateStocks(
     game.stocks,
     document.querySelector("#stocks.market-content"),
@@ -235,7 +235,7 @@ const createStocks = (s, st, invest = false) => {
       };
       const curr = document.createElement("div");
       curr.id = "curr";
-      curr.innerText = "0";
+      animateScore(0, curr, "");
       const add = svg(
         "M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z",
         "0 0 448 512",
@@ -291,7 +291,7 @@ const updateStocks = (s, st, invest = false) => {
       const sub = p.querySelector("#sub");
       const curr = p.querySelector("#curr");
       const c = player.stocks.find((s) => s.name == e.name).shares;
-      curr.innerText = c;
+      animateScore(c, curr, "");
       const add = p.querySelector("#add");
       if (c - 1 < 0) sub.classList.add("disabled");
       else sub.classList.remove("disabled");
@@ -312,7 +312,7 @@ const createPlayer = (p, a = true) => {
   n.innerText = p.name;
   const s = document.createElement("div");
   s.id = "score";
-  s.innerText = p.points.toString().toScore("$");
+  animateScore(p.points, s);
   c.appendChild(n);
   c.appendChild(s);
   a && l.appendChild(c);
