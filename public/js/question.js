@@ -21,7 +21,7 @@ window.nextQuestion = (i) => {
       {
         duration: d,
         easing: "ease-out",
-      },
+      }
     );
     a.onfinish = () => q.remove();
     a.oncancel = () => q.remove();
@@ -46,7 +46,7 @@ window.checkAnswer = (a) => {
     else playSound("incorrect");
     const p = game.players.find((e) => e.name == name);
     const ca = [...q.querySelectorAll(".answer[data-correct='true']")].map(
-      (e) => e.innerText,
+      (e) => e.innerText
     );
     const f = q.querySelector(".feedback");
     f.querySelector("h1").innerText = c ? "Correct!" : "Incorrect";

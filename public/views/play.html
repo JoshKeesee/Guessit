@@ -1,138 +1,146 @@
 <div id="lobby" class="content active">
-    <div id="fade"></div>
-    <div id="loading">
-        <div id="dots">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-        <div id="text">Loading you in</div>
+  <div id="fade"></div>
+  <div id="loading">
+    <div id="dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
     </div>
-    <div id="join-popup" class="popup">
-        <div id="title" class="showy bold">
-            <span><%= appName %></span>
-        </div>
-        <div id="input">
-            <input
-                id="join-code"
-                type="number"
-                placeholder="Join Code"
-                autocomplete="off"
-                maxlength="15"
-                autofocus
-            >
-        </div>
-        <button id="join">Join</button>
+    <div id="text">Loading you in</div>
+  </div>
+  <div id="join-popup" class="popup">
+    <div id="title" class="showy bold">
+      <span><%= appName %></span>
     </div>
+    <div id="input">
+      <input
+        id="join-code"
+        type="number"
+        placeholder="Join Code"
+        autocomplete="off"
+        maxlength="15"
+        autofocus
+      />
+    </div>
+    <button id="join">Join</button>
+  </div>
 </div>
 <div id="game" class="content">
-    <div id="game-header">
-        <div id="title">
-            <span><%= appName %></span>
-        </div>
-        <div id="stats">
-            <div id="username"></div>
-            <div id="score"></div>
-            <div id="streak">Streak: <span class="showy warm fast"></span></div>
-            <div id="store" class="ripple">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                    <path d="M36.8 192H603.2c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0H121.7c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224V384v80c0 26.5 21.5 48 48 48H336c26.5 0 48-21.5 48-48V384 224H320V384H128V224H64zm448 0V480c0 17.7 14.3 32 32 32s32-14.3 32-32V224H512z"/>
-                </svg>
-            </div>
-            <div id="stocks" class="ripple">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                    <path d="M470.7 9.4c3 3.1 5.3 6.6 6.9 10.3s2.4 7.8 2.4 12.2l0 .1v0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32V109.3L310.6 214.6c-11.8 11.8-30.8 12.6-43.5 1.7L176 138.1 84.8 216.3c-13.4 11.5-33.6 9.9-45.1-3.5s-9.9-33.6 3.5-45.1l112-96c12-10.3 29.7-10.3 41.7 0l89.5 76.7L370.7 64H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h96 0c8.8 0 16.8 3.6 22.6 9.3l.1 .1zM0 304c0-26.5 21.5-48 48-48H464c26.5 0 48 21.5 48 48V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V304zM48 416v48H96c0-26.5-21.5-48-48-48zM96 304H48v48c26.5 0 48-21.5 48-48zM464 416c-26.5 0-48 21.5-48 48h48V416zM416 304c0 26.5 21.5 48 48 48V304H416zm-96 80a64 64 0 1 0 -128 0 64 64 0 1 0 128 0z"/>
-                </svg>
-            </div>
-        </div>
+  <div id="game-header">
+    <div id="title">
+      <span><%= appName %></span>
     </div>
-    <div id="content">
-        <div id="fade"></div>
-        <div id="play-lobby" class="active">
-            <h1>You're in!</h1>
-            <h3>See your name on the board?</h3>
-            <div id="loading" class="normal">
-                <div id="dots">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </div>
-                <div id="text">Waiting for the host to start the game</div>
-            </div>
-        </div>
-        <div id="questions"></div>
-        <div id="market" class="game-popup">
-            <div id="market-header">
-                <div id="title">Market</div>
-                <div id="close" class="ripple">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                        <path d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z"/>
-                    </svg>
-                </div>
-            </div>
-            <div id="market-content">
-                <div id="market-items"></div>
-            </div>
-        </div>
-        <div id="stock-market" class="game-popup">
-            <div id="market-header">
-                <div id="title">Stock Market</div>
-                <div id="close" class="ripple">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                        <path d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z"/>
-                    </svg>
-                </div>
-            </div>
-            <div id="stocks" class="market-content">
-                <div id="graph"></div>
-            </div>
-        </div>
+    <div id="stats">
+      <div id="username"></div>
+      <div id="score"></div>
+      <div id="streak">Streak: <span class="showy warm fast"></span></div>
+      <div id="store" class="ripple">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+          <path
+            d="M36.8 192H603.2c20.3 0 36.8-16.5 36.8-36.8c0-7.3-2.2-14.4-6.2-20.4L558.2 21.4C549.3 8 534.4 0 518.3 0H121.7c-16 0-31 8-39.9 21.4L6.2 134.7c-4 6.1-6.2 13.2-6.2 20.4C0 175.5 16.5 192 36.8 192zM64 224V384v80c0 26.5 21.5 48 48 48H336c26.5 0 48-21.5 48-48V384 224H320V384H128V224H64zm448 0V480c0 17.7 14.3 32 32 32s32-14.3 32-32V224H512z"
+          />
+        </svg>
+      </div>
+      <div id="stocks" class="ripple">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <path
+            d="M470.7 9.4c3 3.1 5.3 6.6 6.9 10.3s2.4 7.8 2.4 12.2l0 .1v0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32V109.3L310.6 214.6c-11.8 11.8-30.8 12.6-43.5 1.7L176 138.1 84.8 216.3c-13.4 11.5-33.6 9.9-45.1-3.5s-9.9-33.6 3.5-45.1l112-96c12-10.3 29.7-10.3 41.7 0l89.5 76.7L370.7 64H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h96 0c8.8 0 16.8 3.6 22.6 9.3l.1 .1zM0 304c0-26.5 21.5-48 48-48H464c26.5 0 48 21.5 48 48V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V304zM48 416v48H96c0-26.5-21.5-48-48-48zM96 304H48v48c26.5 0 48-21.5 48-48zM464 416c-26.5 0-48 21.5-48 48h48V416zM416 304c0 26.5 21.5 48 48 48V304H416zm-96 80a64 64 0 1 0 -128 0 64 64 0 1 0 128 0z"
+          />
+        </svg>
+      </div>
     </div>
+  </div>
+  <div id="content">
+    <div id="fade"></div>
+    <div id="play-lobby" class="active">
+      <h1>You're in!</h1>
+      <h3>See your name on the board?</h3>
+      <div id="loading" class="normal">
+        <div id="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div id="text">Waiting for the host to start the game</div>
+      </div>
+    </div>
+    <div id="questions"></div>
+    <div id="market" class="game-popup">
+      <div id="market-header">
+        <div id="title">Market</div>
+        <div id="close" class="ripple">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+            <path
+              d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div id="market-content">
+        <div id="market-items"></div>
+      </div>
+    </div>
+    <div id="stock-market" class="game-popup">
+      <div id="market-header">
+        <div id="title">Stock Market</div>
+        <div id="close" class="ripple">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+            <path
+              d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div id="stocks" class="market-content">
+        <div id="graph"></div>
+      </div>
+    </div>
+  </div>
 </div>
 <div id="game-over" class="content">
-    <div id="game-header">
-        <div id="title">
-            <span><%= appName %></span>
-        </div>
-        <div id="stats">
-            <div id="username"></div>
-        </div>
+  <div id="game-header">
+    <div id="title">
+      <span><%= appName %></span>
     </div>
-    <div id="leaderboard-stats">
-        <div id="place"><span></span></div>
-        <div id="leaderboard"></div>
+    <div id="stats">
+      <div id="username"></div>
     </div>
-    <div id="game-stats">
-        <div id="accuracy" data-correct="0">
-            <div class="bg"></div>
-        </div>
-        <div id="cont">
-            <div id="questions">
-                <div id="questions-correct">
-                    <div class="label">Total Correct</div>
-                    <div class="value">0</div>
-                </div>
-                <div id="divider"></div>
-                <div id="questions-incorrect">
-                    <div class="label">Total Incorrect</div>
-                    <div class="value">0</div>
-                </div>
-            </div>
-            <div id="totals">
-                <div id="total-earned">
-                    <div class="label">Total Earned</div>
-                    <div class="value">$0</div>
-                </div>
-                <div id="divider" class="h"></div>
-                <div id="total-lost">
-                    <div class="label">Total Lost</div>
-                    <div class="value">$0</div>
-                </div>
-            </div>
-        </div>
-        <div id="cont" class="history">
-            <div class="title">History</div>
-            <div id="question-history"></div>
-        </div>
+  </div>
+  <div id="leaderboard-stats">
+    <div id="place"><span></span></div>
+    <div id="leaderboard"></div>
+  </div>
+  <div id="game-stats">
+    <div id="accuracy" data-correct="0">
+      <div class="bg"></div>
     </div>
+    <div id="cont">
+      <div id="questions">
+        <div id="questions-correct">
+          <div class="label">Total Correct</div>
+          <div class="value">0</div>
+        </div>
+        <div id="divider"></div>
+        <div id="questions-incorrect">
+          <div class="label">Total Incorrect</div>
+          <div class="value">0</div>
+        </div>
+      </div>
+      <div id="totals">
+        <div id="total-earned">
+          <div class="label">Total Earned</div>
+          <div class="value">$0</div>
+        </div>
+        <div id="divider" class="h"></div>
+        <div id="total-lost">
+          <div class="label">Total Lost</div>
+          <div class="value">$0</div>
+        </div>
+      </div>
+    </div>
+    <div id="cont" class="history">
+      <div class="title">History</div>
+      <div id="question-history"></div>
+    </div>
+  </div>
 </div>

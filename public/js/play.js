@@ -22,7 +22,7 @@ socket.on("player joined", (player) => {
   animateScore(
     player.streak,
     document.querySelector("#stats #streak span"),
-    "",
+    ""
   );
   animateScore(player.points, document.querySelector("#stats #score"));
   setTimeout(() => {
@@ -40,7 +40,7 @@ socket.on("player left", (player, reason) => {
   if (p)
     game.players[game.players.findIndex((e) => e.name == name)] = updateObject(
       p,
-      player,
+      player
     );
   const url = new URL(location.href);
   url.searchParams.delete("code");
@@ -119,7 +119,7 @@ socket.on("game started", (data) => {
   createStocks(
     game.stocks,
     document.querySelector("#stocks.market-content"),
-    true,
+    true
   );
 });
 
@@ -144,25 +144,25 @@ socket.on("game ended", (data, reason) => {
       c,
       document.querySelector("#questions-correct .value"),
       "",
-      0.1,
+      0.1
     );
     animateScore(
       i,
       document.querySelector("#questions-incorrect .value"),
       "",
-      0.1,
+      0.1
     );
     animateScore(
       player.totalPointsEarned,
       document.querySelector("#total-earned .value"),
       "$",
-      0.1,
+      0.1
     );
     animateScore(
       player.totalPointsLost,
       document.querySelector("#total-lost .value"),
       "$",
-      0.1,
+      0.1
     );
     place.classList.add("active");
   }, 1000);
@@ -181,7 +181,7 @@ socket.on("game ended", (data, reason) => {
   const qh = document.querySelector("#question-history");
   const tq = [];
   player.history.forEach(
-    (e) => !tq.includes(e.question) && tq.push(e.question),
+    (e) => !tq.includes(e.question) && tq.push(e.question)
   );
   tq.forEach((e) => {
     const i = player.history.filter((h) => h.question == e);
@@ -193,7 +193,11 @@ socket.on("game ended", (data, reason) => {
     const h2 = document.createElement("h2");
     h2.innerHTML = e;
     const ans = document.createElement("div");
-    ans.innerHTML = `${per}% Average: <span class="correct">${tc.length} Correct</span> and <span class="incorrect">${c.length - tc.length} Incorrect</span>`;
+    ans.innerHTML = `${per}% Average: <span class="correct">${
+      tc.length
+    } Correct</span> and <span class="incorrect">${
+      c.length - tc.length
+    } Incorrect</span>`;
     q.appendChild(h2);
     q.appendChild(ans);
     qh.appendChild(q);
@@ -205,7 +209,7 @@ socket.on("stocks", (s) => {
   updateStocks(
     game.stocks,
     document.querySelector("#stocks.market-content"),
-    true,
+    true
   );
 });
 
@@ -220,7 +224,7 @@ socket.on("player answered", (player) => {
   if (p)
     game.players[game.players.findIndex((e) => e.name == name)] = updateObject(
       p,
-      player,
+      player
     );
   document
     .querySelectorAll("#stats #username")
@@ -229,7 +233,7 @@ socket.on("player answered", (player) => {
   animateScore(
     player.streak,
     document.querySelector("#stats #streak span"),
-    "",
+    ""
   );
 });
 
@@ -252,8 +256,8 @@ window.updatePowerups = (p) => {
       item == "insurance"
         ? "%"
         : item == "streak" || item == "multiplier"
-          ? "x"
-          : "$";
+        ? "x"
+        : "$";
     c = item == "insurance" ? 100 - c : c;
     n = item == "insurance" ? 100 - n : n;
     animateScore(c, e.querySelector("#current"), x);
@@ -286,7 +290,7 @@ stock.onclick = () => {
   updateStocks(
     game.stocks,
     document.querySelector("#stocks.market-content"),
-    true,
+    true
   );
   stockMarket.classList.add("active");
   playSound("whoosh");
@@ -315,12 +319,12 @@ window.updateMpItems = () => {
           updatePowerups(powerups);
           animateScore(
             data.player.points,
-            document.querySelector("#stats #score"),
+            document.querySelector("#stats #score")
           );
           animateScore(
             data.player.streak,
             document.querySelector("#stats #streak span"),
-            "",
+            ""
           );
         }
       });

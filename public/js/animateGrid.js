@@ -26,7 +26,7 @@ const animateGridItem = (
   n,
   p,
   i,
-  { duration = 500, stagger = 0, easing = "ease", ...opts },
+  { duration = 500, stagger = 0, easing = "ease", ...opts }
 ) => {
   if (p.x == n.x && p.y == n.y && p.width == n.width && p.height == n.height)
     maxI++;
@@ -54,11 +54,11 @@ const animateGridItem = (
       easing,
       delay: (i - maxI) * stagger,
       ...opts,
-    },
+    }
   );
   setTimeout(
     () => setItemPosition(g, c, n),
-    (i - maxI) * stagger + duration - 10,
+    (i - maxI) * stagger + duration - 10
   );
 };
 
@@ -116,9 +116,7 @@ const animateGrid = async (grid, after, opts = {}, afterAll = () => {}) => {
   });
   grid.dataset.t = setTimeout(
     () => resetItems(grid),
-    (children.length - maxI) * (opts.stagger || 0) +
-      (opts.duration || 500) +
-      10,
+    (children.length - maxI) * (opts.stagger || 0) + (opts.duration || 500) + 10
   );
   afterAll();
 };

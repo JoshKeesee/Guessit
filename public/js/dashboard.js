@@ -21,8 +21,9 @@
       const c = pack.dataset.created,
         u = pack.dataset.updated,
         s = c == u;
-      pack.querySelector(".tag.date").innerText =
-        `${s ? "Created" : "Updated"} ${timeAgo(new Date(s ? c : u))}`;
+      pack.querySelector(".tag.date").innerText = `${
+        s ? "Created" : "Updated"
+      } ${timeAgo(new Date(s ? c : u))}`;
       const id = pack.dataset.id;
       pack.onclick = (e) => {
         if (pack.querySelector("div.btns").contains(e.target)) return;
